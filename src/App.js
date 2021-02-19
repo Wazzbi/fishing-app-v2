@@ -13,6 +13,8 @@ import SummaryPage from "./components/summaryPage/SummaryPage";
 import NewsPage from "./components/newsPage/NewsPage";
 import UserPage from "./components/userPage/UserPage";
 
+// TODO redirect na landingpage kdyz zadané špatná cesta viz stará verze app v gitu
+
 const App = () => {
   return (
     <AuthProvider>
