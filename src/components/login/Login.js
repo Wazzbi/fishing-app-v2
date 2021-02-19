@@ -1,18 +1,18 @@
 import React, { useCallback, useContext } from "react";
 import { withRouter, Redirect } from "react-router";
-import app from "./base.js";
-import { AuthContext } from "./Auth.js";
+import app from "../../base.js";
+import { AuthContext } from "../../Auth.js";
 
 const Login = ({ history }) => {
   const handleLogin = useCallback(
-    async event => {
+    async (event) => {
       event.preventDefault();
       const { email, password } = event.target.elements;
       try {
         await app
           .auth()
           .signInWithEmailAndPassword(email.value, password.value);
-        history.push("/");
+        history.push("/home");
       } catch (error) {
         alert(error);
       }
@@ -23,7 +23,7 @@ const Login = ({ history }) => {
   const { currentUser } = useContext(AuthContext);
 
   if (currentUser) {
-    return <Redirect to="/" />;
+    return <Redirect to="/home" />;
   }
 
   return (
