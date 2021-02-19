@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { AuthContext } from "../../Auth";
 import app from "../../base";
-import { Link, withRouter } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import "./navigation.scss";
 
@@ -21,15 +21,9 @@ const Navigation = () => {
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="ml-auto">
-                <Link to={"/record"} className="cx-link">
-                  Record
-                </Link>
-                <Link to={"/summary"} className="cx-link">
-                  Summary
-                </Link>
-                <Link to={"/home"} className="cx-link">
-                  Home
-                </Link>
+                <Link to={"/record"}>Record</Link>
+                <Link to={"/summary"}>Summary</Link>
+                <Link to={"/home"}>Home</Link>
               </Nav>
 
               <Button
@@ -49,4 +43,4 @@ const Navigation = () => {
   return <AppNavbar />;
 };
 
-export default withRouter(Navigation);
+export default Navigation;
