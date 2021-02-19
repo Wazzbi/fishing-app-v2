@@ -1,5 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { AuthContext } from "../../Auth";
+
 import Button from "react-bootstrap/Button";
 
 const LandingPage = ({ history }) => {

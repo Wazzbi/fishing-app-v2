@@ -1,7 +1,8 @@
 import React, { useCallback, useContext } from "react";
-import { withRouter, Redirect } from "react-router";
-import app from "../../base.js";
+import { Redirect } from "react-router";
 import { AuthContext } from "../../Auth.js";
+import firebaseService from "../../services/firebase/firebase.service";
+import { Link } from "react-router-dom";
 
 const Login = ({ history }) => {
   const handleLogin = useCallback(
@@ -9,7 +10,7 @@ const Login = ({ history }) => {
       event.preventDefault();
       const { email, password } = event.target.elements;
       try {
-        await app
+        await firebaseService
           .auth()
           .signInWithEmailAndPassword(email.value, password.value);
         history.push("/home");
@@ -40,8 +41,10 @@ const Login = ({ history }) => {
         </label>
         <button type="submit">Log in</button>
       </form>
+      <br />
+      <Link to={"/signUp"}>Create new account</Link>
     </div>
   );
 };
 
-export default withRouter(Login);
+export default Login;

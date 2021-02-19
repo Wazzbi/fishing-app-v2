@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import app from "./base.js";
+import firebaseService from "./services/firebase/firebase.service";
 
 export const AuthContext = React.createContext();
 
@@ -9,9 +9,15 @@ export const AuthProvider = ({ children }) => {
   const [pending, setPending] = useState(true);
 
   useEffect(() => {
-    app.auth().onAuthStateChanged((user) => {
+    firebaseService.auth().onAuthStateChanged((user) => {
       setCurrentUser(user);
       setPending(false);
+
+      firebaseService
+        .getUserData(user && user.uid)
+        .then((res) =>
+          res ? setCurrentUserData(res) : setCurrentUserData(null)
+        );
     });
   }, []);
 
@@ -23,6 +29,7 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         currentUser,
+        currentUserData,
       }}
     >
       {children}

@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
-import { withRouter } from "react-router";
-import app from "../../base";
+import firebaseService from "../../services/firebase/firebase.service";
 
 const SignUp = ({ history }) => {
   const handleSignUp = useCallback(
@@ -8,7 +7,7 @@ const SignUp = ({ history }) => {
       event.preventDefault();
       const { email, password } = event.target.elements;
       try {
-        await app
+        await firebaseService
           .auth()
           .createUserWithEmailAndPassword(email.value, password.value);
         history.push("/");
@@ -37,4 +36,4 @@ const SignUp = ({ history }) => {
   );
 };
 
-export default withRouter(SignUp);
+export default SignUp;

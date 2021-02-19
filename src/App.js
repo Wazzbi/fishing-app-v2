@@ -11,6 +11,7 @@ import Navigation from "./components/navigation/Navigation";
 import RecordPage from "./components/recordPage/RecordPage";
 import SummaryPage from "./components/summaryPage/SummaryPage";
 import NewsPage from "./components/newsPage/NewsPage";
+import UserPage from "./components/userPage/UserPage";
 
 const App = () => {
   return (
@@ -26,6 +27,7 @@ const App = () => {
           <PrivateRoute exact path="/record" component={RecordPage} />
           <PrivateRoute exact path="/summary" component={SummaryPage} />
           <PrivateRoute exact path="/news" component={NewsPage} />
+          <PrivateRoute exact path="/user" component={UserPage} />
         </div>
       </Router>
     </AuthProvider>
