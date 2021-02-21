@@ -4,7 +4,7 @@ import { AuthContext } from "../../Auth.js";
 import firebaseService from "../../services/firebase/firebase.service";
 import { Link } from "react-router-dom";
 
-const Login = ({ history }) => {
+const LoginPage = ({ history }) => {
   const handleLogin = useCallback(
     async (event) => {
       event.preventDefault();
@@ -47,4 +47,4 @@ const Login = ({ history }) => {
   );
 };
 
-export default Login;
+export default LoginPage;

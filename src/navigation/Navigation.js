@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
-import { AuthContext } from "../../Auth";
-import firebaseService from "../../services/firebase/firebase.service";
+import { AuthContext } from "../Auth";
+import firebaseService from "../services/firebase/firebase.service";
 import { Link, withRouter } from "react-router-dom";
 
 import "./navigation.scss";

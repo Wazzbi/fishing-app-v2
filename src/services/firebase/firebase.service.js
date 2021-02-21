@@ -20,6 +20,8 @@ const user = (uid) => appl.database().ref(`users/${uid}`);
 class firebaseService {
   static auth = () => appl.auth();
 
+  static firebaseUser = (uid) => user(uid);
+
   static getUserData = (uid) => {
     return user(uid)
       .get()
