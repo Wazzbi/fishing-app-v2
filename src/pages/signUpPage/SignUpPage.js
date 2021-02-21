@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import firebaseService from "../../services/firebase/firebase.service";
 
-//TODO back to landingpage
+//TODO btn back to landingPage
 
 const SignUpPage = ({ history }) => {
   const [username, setUsername] = useState(null);
@@ -10,6 +10,10 @@ const SignUpPage = ({ history }) => {
   const [error, setError] = useState(null);
   const [isDisabled, setIsDisabled] = useState(true);
 
+  const d = new Date();
+  const thisYear = d.getFullYear();
+
+  // TODO refactoring... aby to byla jedna fce
   const onChangeUsername = (event) => {
     setUsername(event.target.value);
     setIsDisabled(!username || !email || !password);
@@ -29,14 +33,15 @@ const SignUpPage = ({ history }) => {
       const { username, email, password } = event.target.elements;
       const role = "user";
       try {
+        // create account
         await firebaseService
           .auth()
           .createUserWithEmailAndPassword(email.value, password.value)
           .then((authUser) => {
+            // create user in db
             firebaseService.firebaseUser(authUser.user.uid).set({
               username: username.value,
               email: email.value,
-              password: password.value,
               role,
             });
           });
