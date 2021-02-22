@@ -19,9 +19,11 @@ const user = (uid) => appl.database().ref(`users/${uid}`);
 
 // *** Record API ***
 const records = (uid) => appl.database().ref(`records/${uid}`);
-const newRecord = (uid) => appl.database().ref(`records/${uid}/records`);
-const record = (uid, recordName) =>
-  appl.database().ref(`records/${uid}/${recordName}`);
+const newRecordRef = (uid) => appl.database().ref(`records/${uid}/records`);
+const recordRef = (userUid, recordUid) =>
+  appl.database().ref(`records/${userUid}/records/${recordUid}`);
+const recordNewRowRef = (userUid, recordUid) =>
+  appl.database().ref(`records/${userUid}/records/${recordUid}/data`);
 
 class firebaseService {
   static auth = () => appl.auth();
@@ -30,8 +32,12 @@ class firebaseService {
 
   static firebaseUserRecords = (uid) => records(uid);
 
+  static firebaseUserRecord = (userUid, recordUid) =>
+    recordRef(userUid, recordUid);
+
   // TODO refactorovat GET metody (jsou téměř identický..)
 
+  // *** GET ***
   static getUserData = (uid) => {
     return user(uid)
       .get()
@@ -62,17 +68,43 @@ class firebaseService {
       });
   };
 
+  // *** CREATE ***
+  // TODO data upravit na konečnou podobu prázdného formuláře
   static createUserRecord = (uid) => {
-    return newRecord(uid).push(
+    return newRecordRef(uid).push(
       {
         name: "New Record",
-        data: {
-          prop1: "",
-          prop2: "",
-        },
       },
       (err) => console.log(err ? "error while pushing" : "successful push")
     );
+  };
+
+  static createUserRecordRow = (userUid, recordUid) => {
+    return recordNewRowRef(userUid, recordUid).push(
+      {
+        prop1: 111,
+        prop2: 222,
+      },
+      (err) => console.log(err ? "error while pushing" : "successful push")
+    );
+  };
+
+  // *** SET ***
+  static setUserRecord = (userUid, recordUid, record) => {
+    return recordRef(userUid, recordUid).set({
+      ...record,
+    });
+  };
+
+  // static setUserRecordAddRow = (userUid, recordUid, record) => {
+  //   return recordRef(userUid, recordUid).set({
+  //     ...record,
+  //   });
+  // };
+
+  // *** DELETE ***
+  static deleteUserRecord = (userUid, recordUid) => {
+    return recordRef(userUid, recordUid).remove();
   };
 }
 
