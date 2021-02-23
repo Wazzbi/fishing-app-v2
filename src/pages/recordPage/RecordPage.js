@@ -3,27 +3,68 @@ import firebaseService from "../../services/firebase/firebase.service";
 import { AuthContext } from "../../Auth";
 
 import Table from "react-bootstrap/Table";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 
-//TODO po přidání vynutit refresh records
-//TODO update, delete on record
-// TODO načtený data uložit do storu aby se při příští navštěvě page nemuseli data tahat znovu
-// TODO delete pop up confirmation
-// TODO addRow triggers refresh
-// TODO refresh přes state
-// TODO repetetivní getUserRecords pro refresh -> refactoring..
-// TODO když není žádný record zobrazit text nic není
+// ? TODO po přidání vynutit refresh records
+// ? TODO edit, delete on record
+// ? TODO načtený data uložit do storu aby se při příští navštěvě page nemuseli data tahat znovu
+// ? TODO delete pop up confirmation
+// ? TODO addRow triggers refresh
+// ? TODO repetetivní getUserRecords pro refresh -> refactoring..
+// ? TODO když není žádný record zobrazit text nic není
 // TODO addRow pop up a nasetovat init data
 
 const RecordPage = () => {
   const { currentUser } = useContext(AuthContext);
   const [records, setRecords] = useState(null);
+  const [show, setShow] = useState(false);
+  const [onDelete, setOnDelete] = useState(null);
+
+  const handleCloseAndDelete = () => {
+    setShow(false);
+    doDelete();
+  };
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+  const handleDelete = (element, params) => {
+    handleShow();
+    setOnDelete({
+      element,
+      params,
+    });
+  };
+
+  const doDelete = () => {
+    if (onDelete.element === "record") {
+      const { recordUid } = onDelete.params;
+      firebaseService.deleteUserRecord(currentUser.uid, recordUid);
+    }
+    if (onDelete.element === "row") {
+      const { recordUid, recordRowUid } = onDelete.params;
+      firebaseService.deleteUserRecordRow(
+        currentUser.uid,
+        recordUid,
+        recordRowUid
+      );
+    }
+    updateData();
+  };
 
   const doCreateRecordAndRefresh = () => {
-    // TODO první udělat jako new promise a provést sériově za sebou
-    firebaseService.createUserRecord(currentUser.uid);
-    firebaseService
-      .getUserRecords(currentUser && currentUser.uid)
-      .then((records) => (records ? setRecords(records) : setRecords(null)));
+    new Promise((resolve, reject) => {
+      resolve(firebaseService.createUserRecord(currentUser.uid));
+      reject(new Error("Currently unavaiable create record"));
+    })
+      .then(() => {
+        firebaseService
+          .getUserRecords(currentUser && currentUser.uid)
+          .then((records) =>
+            records ? setRecords(records) : setRecords(null)
+          );
+      })
+      .catch(alert);
   };
 
   const handleChangeRecordName = (userUid, recordUid, newRecordName) => {
@@ -87,33 +128,17 @@ const RecordPage = () => {
 
   const addRowAndRefresh = (recordUid) => {
     firebaseService.createUserRecordRow(currentUser.uid, recordUid);
-    firebaseService
-      .getUserRecords(currentUser && currentUser.uid)
-      .then((records) => (records ? setRecords(records) : setRecords(null)));
+    updateData();
   };
 
-  const deleteRecord = (recordUid) => {
-    firebaseService.deleteUserRecord(currentUser.uid, recordUid);
-    firebaseService
-      .getUserRecords(currentUser && currentUser.uid)
-      .then((records) => (records ? setRecords(records) : setRecords(null)));
-  };
-
-  const deleteRecordRow = (recordUid, recordRowUid) => {
-    firebaseService.deleteUserRecordRow(
-      currentUser.uid,
-      recordUid,
-      recordRowUid
-    );
+  const updateData = () => {
     firebaseService
       .getUserRecords(currentUser && currentUser.uid)
       .then((records) => (records ? setRecords(records) : setRecords(null)));
   };
 
   useEffect(() => {
-    firebaseService
-      .getUserRecords(currentUser && currentUser.uid)
-      .then((records) => (records ? setRecords(records) : setRecords(null)));
+    updateData();
   }, []);
 
   return (
@@ -124,6 +149,7 @@ const RecordPage = () => {
       </button>
       <br />
       <br />
+      {!records && <p>No records... Add some :-)</p>}
       {!!records &&
         Object.entries(records).map(([recordKey, value]) => (
           <>
@@ -147,7 +173,11 @@ const RecordPage = () => {
               <button onClick={() => addRowAndRefresh(recordKey)}>
                 add row
               </button>{" "}
-              <button onClick={() => deleteRecord(recordKey)}>delete</button>
+              <button
+                onClick={() => handleDelete("record", { recordUid: recordKey })}
+              >
+                delete
+              </button>
               <br />
               <Table striped bordered hover>
                 <thead>
@@ -169,7 +199,12 @@ const RecordPage = () => {
                               edit
                             </button>{" "}
                             <button
-                              onClick={() => deleteRecordRow(recordKey, rowKey)}
+                              onClick={() =>
+                                handleDelete("row", {
+                                  recordUid: recordKey,
+                                  recordRowUid: rowKey,
+                                })
+                              }
                             >
                               delete
                             </button>
@@ -206,6 +241,23 @@ const RecordPage = () => {
               <br />
               <br />
             </div>
+
+            <Modal show={show} onHide={handleClose} animation={false} centered>
+              <Modal.Header closeButton>
+                <Modal.Title>Modal heading</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                Woohoo, you're reading this text in a modal!
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleClose}>
+                  Close
+                </Button>
+                <Button variant="primary" onClick={handleCloseAndDelete}>
+                  DELETE
+                </Button>
+              </Modal.Footer>
+            </Modal>
           </>
         ))}
     </>
