@@ -91,8 +91,6 @@ class firebaseService {
 
   // *** SET ***
   static setUserRecord = (userUid, recordUid, record) => {
-    console.log(userUid + " " + recordUid);
-    console.log(record);
     return recordRef(userUid, recordUid).set({
       ...record,
     });

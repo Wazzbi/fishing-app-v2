@@ -38,9 +38,50 @@ const RecordPage = () => {
     firebaseService.setUserRecord(userUid, recordUid, updatedRecord);
   };
 
+  const handleChangeRecord = (
+    userUid,
+    recordUid,
+    updatedRow,
+    updatedKey,
+    updatedValue
+  ) => {
+    setRecords({
+      ...records,
+      [recordUid]: {
+        ...records[recordUid],
+        data: {
+          ...records[recordUid].data,
+          [updatedRow]: {
+            ...records[recordUid].data[updatedRow],
+            [updatedKey]: updatedValue,
+          },
+        },
+      },
+    });
+
+    const updatedRecord = {
+      ...records[recordUid],
+      data: {
+        ...records[recordUid].data,
+        [updatedRow]: {
+          ...records[recordUid].data[updatedRow],
+          [updatedKey]: updatedValue,
+        },
+      },
+    };
+    firebaseService.setUserRecord(userUid, recordUid, updatedRecord);
+  };
+
   const editRecordName = (key) => {
     const elName = document.getElementById(`${key}-recordName`);
     elName.disabled = !elName.disabled;
+  };
+
+  const editRow = (key) => {
+    const elements = document.getElementsByClassName(`row-${key}`);
+    for (let el of elements) {
+      el.disabled = !el.disabled;
+    }
   };
 
   const addRowAndRefresh = (recordUid) => {
@@ -72,23 +113,29 @@ const RecordPage = () => {
       <br />
       <br />
       {!!records &&
-        Object.entries(records).map(([key, value]) => (
+        Object.entries(records).map(([recordKey, value]) => (
           <>
-            <div key={key}>
+            <div key={recordKey}>
               <input
-                id={`${key}-recordName`}
+                id={`${recordKey}-recordName`}
                 name="recordName"
                 type="recordName"
                 placeholder="Record Name"
                 onChange={(e) =>
-                  handleChangeRecordName(currentUser.uid, key, e.target.value)
+                  handleChangeRecordName(
+                    currentUser.uid,
+                    recordKey,
+                    e.target.value
+                  )
                 }
                 value={value && value.name ? value.name : ""}
                 disabled
               />{" "}
-              <button onClick={() => editRecordName(key)}>rename</button>{" "}
-              <button onClick={() => addRowAndRefresh(key)}>add row</button>{" "}
-              <button onClick={() => deleteRecord(key)}>delete</button>
+              <button onClick={() => editRecordName(recordKey)}>rename</button>{" "}
+              <button onClick={() => addRowAndRefresh(recordKey)}>
+                add row
+              </button>{" "}
+              <button onClick={() => deleteRecord(recordKey)}>delete</button>
               <br />
               <Table striped bordered hover>
                 <thead>
@@ -100,17 +147,38 @@ const RecordPage = () => {
                 </thead>
                 <tbody>
                   {records &&
-                    records[key] &&
-                    records[key].data &&
-                    Object.entries(records[key].data).map((row) => (
+                    records[recordKey] &&
+                    records[recordKey].data &&
+                    Object.entries(records[recordKey].data).map((row) => (
                       <tr>
                         <td>
-                          <button>edit</button> <button>delete</button>
+                          <button onClick={() => editRow(row[0])}>edit</button>{" "}
+                          <button>delete</button>
                         </td>
                         {/** row[0] = key row[1] = value */}
-                        {Object.entries(row[1]).map(([key, value]) => (
-                          <td>{value}</td>
-                        ))}
+                        {/** prop${index} přes index procházet číselník a použít normální názvy !!!index start 1*/}
+                        {Object.entries(row[1]).map(
+                          ([propKey, value], index) => (
+                            <td>
+                              <input
+                                className={`row-${row[0]}`}
+                                name="prop"
+                                type="prop"
+                                onChange={(e) =>
+                                  handleChangeRecord(
+                                    currentUser.uid,
+                                    recordKey,
+                                    row[0],
+                                    `prop${index + 1}`,
+                                    e.target.value
+                                  )
+                                }
+                                value={value ? value : ""}
+                                disabled
+                              />
+                            </td>
+                          )
+                        )}
                       </tr>
                     ))}
                 </tbody>
