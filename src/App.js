@@ -12,6 +12,7 @@ import RecordPage from "./pages/recordPage/RecordPage";
 import SummaryPage from "./pages/summaryPage/SummaryPage";
 import NewsPage from "./pages/newsPage/NewsPage";
 import UserPage from "./pages/userPage/UserPage";
+import WeatherPage from "./pages/weatherPage/WeatherPage";
 
 // TODO redirect na landingpage kdyz zadané špatná cesta viz stará verze app v gitu
 
@@ -30,6 +31,7 @@ const App = () => {
           <PrivateRoute exact path="/summary" component={SummaryPage} />
           <PrivateRoute exact path="/news" component={NewsPage} />
           <PrivateRoute exact path="/user" component={UserPage} />
+          <PrivateRoute exact path="/weather" component={WeatherPage} />
         </div>
       </Router>
     </AuthProvider>

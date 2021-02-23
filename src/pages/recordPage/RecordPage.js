@@ -7,15 +7,6 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 
-// ? TODO po přidání vynutit refresh records
-// ? TODO edit, delete on record
-// ? TODO načtený data uložit do storu aby se při příští navštěvě page nemuseli data tahat znovu
-// ? TODO delete pop up confirmation
-// ? TODO addRow triggers refresh
-// ? TODO repetetivní getUserRecords pro refresh -> refactoring..
-// ? TODO když není žádný record zobrazit text nic není
-// ? TODO addRow pop up a nasetovat init data
-
 const RecordPage = () => {
   const { currentUser } = useContext(AuthContext);
   const [records, setRecords] = useState(null);
@@ -23,45 +14,6 @@ const RecordPage = () => {
   const [onDelete, setOnDelete] = useState(null);
   const [showModalAdd, setShowModalAdd] = useState(false);
   const [onAdd, setOnAdd] = useState(null);
-
-  const handleSubmitAdd = useCallback(async (event) => {
-    handleAddClose();
-    event.preventDefault();
-    const { prop1, prop2 } = event.target.elements;
-    addRowAndRefresh(onAdd, { prop1: prop1.value, prop2: prop2.value });
-  });
-
-  const handleCloseAndDelete = () => {
-    setShowModalDelete(false);
-    doDelete();
-  };
-  const handleDeleteClose = () => setShowModalDelete(false);
-  const handleDeleteShow = () => setShowModalDelete(true);
-
-  const handleDelete = (element, params) => {
-    const text =
-      element === "record"
-        ? "Chcete opravdu smazat celý záznam?"
-        : "Chcete opravdu smazat tento řádek?";
-    handleDeleteShow();
-    setOnDelete({
-      element,
-      params,
-      text,
-    });
-  };
-
-  const handleCloseAndAdd = () => {
-    setShowModalAdd(false);
-    // doAdd();
-  };
-  const handleAddClose = () => setShowModalAdd(false);
-  const handleAddShow = () => setShowModalAdd(true);
-
-  const handleAdd = (recordKey) => {
-    handleAddShow();
-    setOnAdd(recordKey);
-  };
 
   const doDelete = () => {
     if (onDelete.element === "record") {
@@ -164,6 +116,41 @@ const RecordPage = () => {
       .then((records) => (records ? setRecords(records) : setRecords(null)));
   };
 
+  const handleCloseAndDelete = () => {
+    setShowModalDelete(false);
+    doDelete();
+  };
+  const handleDeleteClose = () => setShowModalDelete(false);
+  const handleDeleteShow = () => setShowModalDelete(true);
+  const handleDelete = (element, params) => {
+    const text =
+      element === "record"
+        ? "Chcete opravdu smazat celý záznam?"
+        : "Chcete opravdu smazat tento řádek?";
+    handleDeleteShow();
+    setOnDelete({
+      element,
+      params,
+      text,
+    });
+  };
+
+  const handleSubmitAdd = useCallback(
+    async (event) => {
+      handleAddClose();
+      event.preventDefault();
+      const { prop1, prop2 } = event.target.elements;
+      addRowAndRefresh(onAdd, { prop1: prop1.value, prop2: prop2.value });
+    },
+    [addRowAndRefresh, onAdd]
+  );
+  const handleAddClose = () => setShowModalAdd(false);
+  const handleAddShow = () => setShowModalAdd(true);
+  const handleAdd = (recordKey) => {
+    handleAddShow();
+    setOnAdd(recordKey);
+  };
+
   useEffect(() => {
     updateData();
   }, []);
@@ -197,16 +184,12 @@ const RecordPage = () => {
                 disabled
               />{" "}
               <button onClick={() => editRecordName(recordKey)}>rename</button>{" "}
-              <button onClick={() => handleAdd(recordKey)}>
-                {/* <button onClick={() => addRowAndRefresh(recordKey)}> */}
-                add row
-              </button>{" "}
+              <button onClick={() => handleAdd(recordKey)}>add row</button>{" "}
               <button
                 onClick={() => handleDelete("record", { recordUid: recordKey })}
               >
                 delete
               </button>
-              <br />
               <Table striped bordered hover>
                 <thead>
                   <tr>
@@ -237,7 +220,6 @@ const RecordPage = () => {
                               delete
                             </button>
                           </td>
-                          {/** row[0] = key row[1] = value */}
                           {/** prop${index} přes index procházet číselník a použít normální názvy !!!index start 1*/}
                           {Object.entries(value).map(
                             ([propKey, value], index) => (
@@ -298,21 +280,21 @@ const RecordPage = () => {
               centered
             >
               <Modal.Header closeButton>
-                <Modal.Title>Potvrdit akci</Modal.Title>
+                <Modal.Title>Vyplnit řádek</Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <Form onSubmit={handleSubmitAdd}>
-                  <Form.Group controlId="formBasicEmail">
+                  <Form.Group>
                     <Form.Label>Prop1</Form.Label>
-                    <Form.Control type="text" name="prop1" />
+                    <Form.Control type="number" name="prop1" />
                     <Form.Text className="text-muted">
                       We'll never share your email with anyone else.
                     </Form.Text>
                   </Form.Group>
 
-                  <Form.Group controlId="formBasicPassword">
+                  <Form.Group>
                     <Form.Label>Prop2</Form.Label>
-                    <Form.Control type="text" name="prop2" />
+                    <Form.Control type="number" name="prop2" />
                   </Form.Group>
                   <Button variant="primary" type="submit">
                     Submit

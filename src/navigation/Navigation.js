@@ -30,21 +30,29 @@ const Navigation = () => {
             onToggle={(state) => setNavExpanded(state)}
             expanded={navExpanded}
           >
-            <Link to={"/home"}>App</Link>
+            <Navbar.Brand as={Link} to={"/home"}>
+              React-Bootstrap
+            </Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="ml-auto">
-                <Nav.Link href="#link" onSelect={closeNav}>
-                  <Link to={"/record"}>Record</Link>
+                <Nav.Link as={Link} to={"/weather"} onSelect={closeNav}>
+                  Weather
                 </Nav.Link>
-                <Nav.Link href="#link" onSelect={closeNav}>
-                  <Link to={"/summary"}>Summary</Link>
+                <Nav.Link as={Link} to={"/news"} onSelect={closeNav}>
+                  News
                 </Nav.Link>
-                <Nav.Link href="#link" onSelect={closeNav}>
-                  <Link to={"/home"}>Home</Link>
+                <Nav.Link as={Link} to={"/record"} onSelect={closeNav}>
+                  Record
                 </Nav.Link>
-                <Nav.Link href="#link" onSelect={closeNav}>
-                  <Link to={"/user"}>User</Link>
+                <Nav.Link as={Link} to={"/summary"} onSelect={closeNav}>
+                  Summary
+                </Nav.Link>
+                <Nav.Link as={Link} to={"/home"} onSelect={closeNav}>
+                  Home
+                </Nav.Link>
+                <Nav.Link as={Link} to={"/user"} onSelect={closeNav}>
+                  User
                 </Nav.Link>
               </Nav>
 

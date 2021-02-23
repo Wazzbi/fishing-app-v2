@@ -10,9 +10,6 @@ const SignUpPage = ({ history }) => {
   const [error, setError] = useState(null);
   const [isDisabled, setIsDisabled] = useState(true);
 
-  const d = new Date();
-  const thisYear = d.getFullYear();
-
   // TODO refactoring... aby to byla jedna fce
   const onChangeUsername = (event) => {
     setUsername(event.target.value);
