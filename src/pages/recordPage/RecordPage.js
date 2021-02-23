@@ -12,6 +12,7 @@ import Table from "react-bootstrap/Table";
 // TODO refresh přes state
 // TODO repetetivní getUserRecords pro refresh -> refactoring..
 // TODO když není žádný record zobrazit text nic není
+// TODO addRow pop up a nasetovat init data
 
 const RecordPage = () => {
   const { currentUser } = useContext(AuthContext);
@@ -98,6 +99,17 @@ const RecordPage = () => {
       .then((records) => (records ? setRecords(records) : setRecords(null)));
   };
 
+  const deleteRecordRow = (recordUid, recordRowUid) => {
+    firebaseService.deleteUserRecordRow(
+      currentUser.uid,
+      recordUid,
+      recordRowUid
+    );
+    firebaseService
+      .getUserRecords(currentUser && currentUser.uid)
+      .then((records) => (records ? setRecords(records) : setRecords(null)));
+  };
+
   useEffect(() => {
     firebaseService
       .getUserRecords(currentUser && currentUser.uid)
@@ -149,38 +161,46 @@ const RecordPage = () => {
                   {records &&
                     records[recordKey] &&
                     records[recordKey].data &&
-                    Object.entries(records[recordKey].data).map((row) => (
-                      <tr>
-                        <td>
-                          <button onClick={() => editRow(row[0])}>edit</button>{" "}
-                          <button>delete</button>
-                        </td>
-                        {/** row[0] = key row[1] = value */}
-                        {/** prop${index} přes index procházet číselník a použít normální názvy !!!index start 1*/}
-                        {Object.entries(row[1]).map(
-                          ([propKey, value], index) => (
-                            <td>
-                              <input
-                                className={`row-${row[0]}`}
-                                name="prop"
-                                type="prop"
-                                onChange={(e) =>
-                                  handleChangeRecord(
-                                    currentUser.uid,
-                                    recordKey,
-                                    row[0],
-                                    `prop${index + 1}`,
-                                    e.target.value
-                                  )
-                                }
-                                value={value ? value : ""}
-                                disabled
-                              />
-                            </td>
-                          )
-                        )}
-                      </tr>
-                    ))}
+                    Object.entries(records[recordKey].data).map(
+                      ([rowKey, value]) => (
+                        <tr>
+                          <td>
+                            <button onClick={() => editRow(rowKey)}>
+                              edit
+                            </button>{" "}
+                            <button
+                              onClick={() => deleteRecordRow(recordKey, rowKey)}
+                            >
+                              delete
+                            </button>
+                          </td>
+                          {/** row[0] = key row[1] = value */}
+                          {/** prop${index} přes index procházet číselník a použít normální názvy !!!index start 1*/}
+                          {Object.entries(value).map(
+                            ([propKey, value], index) => (
+                              <td>
+                                <input
+                                  className={`row-${rowKey}`}
+                                  name="prop"
+                                  type="prop"
+                                  onChange={(e) =>
+                                    handleChangeRecord(
+                                      currentUser.uid,
+                                      recordKey,
+                                      rowKey,
+                                      `prop${index + 1}`,
+                                      e.target.value
+                                    )
+                                  }
+                                  value={value ? value : ""}
+                                  disabled
+                                />
+                              </td>
+                            )
+                          )}
+                        </tr>
+                      )
+                    )}
                 </tbody>
               </Table>
               <br />

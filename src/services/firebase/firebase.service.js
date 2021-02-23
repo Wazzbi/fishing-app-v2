@@ -24,6 +24,8 @@ const recordRef = (userUid, recordUid) =>
   appl.database().ref(`records/${userUid}/${recordUid}`);
 const recordNewRowRef = (userUid, recordUid) =>
   appl.database().ref(`records/${userUid}/${recordUid}/data`);
+const recordRowRef = (userUid, recordUid, recordRowUid) =>
+  appl.database().ref(`records/${userUid}/${recordUid}/data/${recordRowUid}`);
 
 class firebaseService {
   static auth = () => appl.auth();
@@ -105,6 +107,10 @@ class firebaseService {
   // *** DELETE ***
   static deleteUserRecord = (userUid, recordUid) => {
     return recordRef(userUid, recordUid).remove();
+  };
+
+  static deleteUserRecordRow = (userUid, recordUid, recordRowUid) => {
+    return recordRowRef(userUid, recordUid, recordRowUid).remove();
   };
 }
 
