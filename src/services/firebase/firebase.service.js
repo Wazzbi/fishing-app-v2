@@ -19,11 +19,11 @@ const user = (uid) => appl.database().ref(`users/${uid}`);
 
 // *** Record API ***
 const records = (uid) => appl.database().ref(`records/${uid}`);
-const newRecordRef = (uid) => appl.database().ref(`records/${uid}/records`);
+const newRecordRef = (uid) => appl.database().ref(`records/${uid}`);
 const recordRef = (userUid, recordUid) =>
-  appl.database().ref(`records/${userUid}/records/${recordUid}`);
+  appl.database().ref(`records/${userUid}/${recordUid}`);
 const recordNewRowRef = (userUid, recordUid) =>
-  appl.database().ref(`records/${userUid}/records/${recordUid}/data`);
+  appl.database().ref(`records/${userUid}/${recordUid}/data`);
 
 class firebaseService {
   static auth = () => appl.auth();
@@ -91,6 +91,8 @@ class firebaseService {
 
   // *** SET ***
   static setUserRecord = (userUid, recordUid, record) => {
+    console.log(userUid + " " + recordUid);
+    console.log(record);
     return recordRef(userUid, recordUid).set({
       ...record,
     });

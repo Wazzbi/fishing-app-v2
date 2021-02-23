@@ -9,7 +9,9 @@ import Table from "react-bootstrap/Table";
 // TODO načtený data uložit do storu aby se při příští navštěvě page nemuseli data tahat znovu
 // TODO delete pop up confirmation
 // TODO addRow triggers refresh
+// TODO refresh přes state
 // TODO repetetivní getUserRecords pro refresh -> refactoring..
+// TODO když není žádný record zobrazit text nic není
 
 const RecordPage = () => {
   const { currentUser } = useContext(AuthContext);
@@ -25,14 +27,12 @@ const RecordPage = () => {
 
   const handleChangeRecordName = (userUid, recordUid, newRecordName) => {
     setRecords({
-      records: {
-        ...records.records,
-        [recordUid]: { ...records.records[recordUid], name: newRecordName },
-      },
+      ...records,
+      [recordUid]: { ...records[recordUid], name: newRecordName },
     });
 
     const updatedRecord = {
-      ...records.records[recordUid],
+      ...records[recordUid],
       name: newRecordName,
     };
     firebaseService.setUserRecord(userUid, recordUid, updatedRecord);
@@ -72,7 +72,7 @@ const RecordPage = () => {
       <br />
       <br />
       {!!records &&
-        Object.entries(records.records).map(([key, value]) => (
+        Object.entries(records).map(([key, value]) => (
           <>
             <div key={key}>
               <input
@@ -100,14 +100,14 @@ const RecordPage = () => {
                 </thead>
                 <tbody>
                   {records &&
-                    records.records &&
-                    records.records[key] &&
-                    records.records[key].data &&
-                    Object.entries(records.records[key].data).map((row) => (
+                    records[key] &&
+                    records[key].data &&
+                    Object.entries(records[key].data).map((row) => (
                       <tr>
                         <td>
                           <button>edit</button> <button>delete</button>
                         </td>
+                        {/** row[0] = key row[1] = value */}
                         {Object.entries(row[1]).map(([key, value]) => (
                           <td>{value}</td>
                         ))}
