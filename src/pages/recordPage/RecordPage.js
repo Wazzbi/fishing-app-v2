@@ -1,10 +1,11 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import firebaseService from "../../services/firebase/firebase.service";
 import { AuthContext } from "../../Auth";
 
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
+import Form from "react-bootstrap/Form";
 
 // ? TODO po přidání vynutit refresh records
 // ? TODO edit, delete on record
@@ -13,27 +14,53 @@ import Modal from "react-bootstrap/Modal";
 // ? TODO addRow triggers refresh
 // ? TODO repetetivní getUserRecords pro refresh -> refactoring..
 // ? TODO když není žádný record zobrazit text nic není
-// TODO addRow pop up a nasetovat init data
+// ? TODO addRow pop up a nasetovat init data
 
 const RecordPage = () => {
   const { currentUser } = useContext(AuthContext);
   const [records, setRecords] = useState(null);
-  const [show, setShow] = useState(false);
+  const [showModalDelete, setShowModalDelete] = useState(false);
   const [onDelete, setOnDelete] = useState(null);
+  const [showModalAdd, setShowModalAdd] = useState(false);
+  const [onAdd, setOnAdd] = useState(null);
+
+  const handleSubmitAdd = useCallback(async (event) => {
+    handleAddClose();
+    event.preventDefault();
+    const { prop1, prop2 } = event.target.elements;
+    addRowAndRefresh(onAdd, { prop1: prop1.value, prop2: prop2.value });
+  });
 
   const handleCloseAndDelete = () => {
-    setShow(false);
+    setShowModalDelete(false);
     doDelete();
   };
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const handleDeleteClose = () => setShowModalDelete(false);
+  const handleDeleteShow = () => setShowModalDelete(true);
 
   const handleDelete = (element, params) => {
-    handleShow();
+    const text =
+      element === "record"
+        ? "Chcete opravdu smazat celý záznam?"
+        : "Chcete opravdu smazat tento řádek?";
+    handleDeleteShow();
     setOnDelete({
       element,
       params,
+      text,
     });
+  };
+
+  const handleCloseAndAdd = () => {
+    setShowModalAdd(false);
+    // doAdd();
+  };
+  const handleAddClose = () => setShowModalAdd(false);
+  const handleAddShow = () => setShowModalAdd(true);
+
+  const handleAdd = (recordKey) => {
+    handleAddShow();
+    setOnAdd(recordKey);
   };
 
   const doDelete = () => {
@@ -126,8 +153,8 @@ const RecordPage = () => {
     }
   };
 
-  const addRowAndRefresh = (recordUid) => {
-    firebaseService.createUserRecordRow(currentUser.uid, recordUid);
+  const addRowAndRefresh = (recordUid, props) => {
+    firebaseService.createUserRecordRow(currentUser.uid, recordUid, props);
     updateData();
   };
 
@@ -170,7 +197,8 @@ const RecordPage = () => {
                 disabled
               />{" "}
               <button onClick={() => editRecordName(recordKey)}>rename</button>{" "}
-              <button onClick={() => addRowAndRefresh(recordKey)}>
+              <button onClick={() => handleAdd(recordKey)}>
+                {/* <button onClick={() => addRowAndRefresh(recordKey)}> */}
                 add row
               </button>{" "}
               <button
@@ -242,21 +270,55 @@ const RecordPage = () => {
               <br />
             </div>
 
-            <Modal show={show} onHide={handleClose} animation={false} centered>
+            <Modal
+              show={showModalDelete}
+              onHide={handleDeleteClose}
+              animation={false}
+              centered
+            >
               <Modal.Header closeButton>
-                <Modal.Title>Modal heading</Modal.Title>
+                <Modal.Title>Potvrdit akci</Modal.Title>
               </Modal.Header>
-              <Modal.Body>
-                Woohoo, you're reading this text in a modal!
-              </Modal.Body>
+              <Modal.Body>{onDelete && onDelete.text}</Modal.Body>
               <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
+                <Button variant="secondary" onClick={handleDeleteClose}>
                   Close
                 </Button>
                 <Button variant="primary" onClick={handleCloseAndDelete}>
                   DELETE
                 </Button>
               </Modal.Footer>
+            </Modal>
+
+            <Modal
+              show={showModalAdd}
+              onHide={handleAddClose}
+              animation={false}
+              backdrop="static"
+              centered
+            >
+              <Modal.Header closeButton>
+                <Modal.Title>Potvrdit akci</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Form onSubmit={handleSubmitAdd}>
+                  <Form.Group controlId="formBasicEmail">
+                    <Form.Label>Prop1</Form.Label>
+                    <Form.Control type="text" name="prop1" />
+                    <Form.Text className="text-muted">
+                      We'll never share your email with anyone else.
+                    </Form.Text>
+                  </Form.Group>
+
+                  <Form.Group controlId="formBasicPassword">
+                    <Form.Label>Prop2</Form.Label>
+                    <Form.Control type="text" name="prop2" />
+                  </Form.Group>
+                  <Button variant="primary" type="submit">
+                    Submit
+                  </Button>
+                </Form>
+              </Modal.Body>
             </Modal>
           </>
         ))}
