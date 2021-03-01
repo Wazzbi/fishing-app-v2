@@ -101,11 +101,24 @@ class firebaseService {
   };
 
   static createUserRecordRow = (userUid, recordUid, props) => {
-    const { prop1, prop2 } = props;
+    const {
+      date,
+      districtNumber,
+      subdistrictNumber,
+      kind,
+      pieces,
+      kilograms,
+      centimeters,
+    } = props;
     return recordNewRowRef(userUid, recordUid).push(
       {
-        prop1,
-        prop2,
+        date,
+        districtNumber,
+        subdistrictNumber,
+        kind,
+        pieces,
+        kilograms,
+        centimeters,
       },
       (err) => console.log(err ? "error while pushing" : "successful push")
     );

@@ -9,6 +9,8 @@ import Form from "react-bootstrap/Form";
 
 // TODO funkce zabalit do usecallback
 // TODO init download jen seznam záznamů (např jen prvních 5) a po rozkliknutí donačíst data
+// TODOD řazení nejnovější nahoře
+// TODO otestovat summary kterému smažu record
 
 const RecordPage = () => {
   const { currentUser } = useContext(AuthContext);
@@ -67,7 +69,9 @@ const RecordPage = () => {
     recordUid,
     updatedRow,
     updatedKey,
-    updatedValue
+    updatedValue,
+    updatedCellId = null,
+    validator = null
   ) => {
     setRecords({
       ...records,
@@ -82,6 +86,29 @@ const RecordPage = () => {
         },
       },
     });
+
+    // validator pro editaci polí
+    // TODO validace při zakládání řádku
+    if (!!validator) {
+      switch (validator) {
+        case "validateDistrictNumber":
+          if (updatedValue > 99999 && updatedValue < 1000000) {
+            const el = document.getElementById(updatedCellId);
+            el.style.backgroundColor = "white";
+            el.style.color = "initial";
+          } else {
+            const el = document.getElementById(updatedCellId);
+            el.style.backgroundColor = "#f8d7da";
+            el.style.color = "#a8686d";
+            return false;
+          }
+
+          break;
+
+        default:
+          break;
+      }
+    }
 
     const updatedRecord = {
       ...records[recordUid],
@@ -142,8 +169,24 @@ const RecordPage = () => {
     async (event) => {
       handleAddClose();
       event.preventDefault();
-      const { prop1, prop2 } = event.target.elements;
-      addRowAndRefresh(onAdd, { prop1: prop1.value, prop2: prop2.value });
+      const {
+        date,
+        districtNumber,
+        subdistrictNumber,
+        kind,
+        pieces,
+        kilograms,
+        centimeters,
+      } = event.target.elements;
+      addRowAndRefresh(onAdd, {
+        date: date.value,
+        districtNumber: districtNumber.value,
+        subdistrictNumber: subdistrictNumber.value,
+        kind: kind.value,
+        pieces: pieces.value,
+        kilograms: kilograms.value,
+        centimeters: centimeters.value,
+      });
     },
     [addRowAndRefresh, onAdd]
   );
@@ -195,8 +238,13 @@ const RecordPage = () => {
                 <thead>
                   <tr>
                     <th>Actions</th>
-                    <th>prop#1</th>
-                    <th>prop#2</th>
+                    <th>Date</th>
+                    <th>District Number</th>
+                    <th>Subdistrict Number</th>
+                    <th>Kind</th>
+                    <th>Pieces</th>
+                    <th>Kilograms</th>
+                    <th>Centimeters</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -221,29 +269,149 @@ const RecordPage = () => {
                               delete
                             </button>
                           </td>
-                          {/** prop${index} přes index procházet číselník a použít normální názvy !!!index start 1*/}
-                          {Object.entries(value).map(
-                            ([propKey, value], index) => (
-                              <td>
-                                <input
-                                  className={`row-${rowKey}`}
-                                  name="prop"
-                                  type="prop"
-                                  onChange={(e) =>
-                                    handleChangeRecord(
-                                      currentUser.uid,
-                                      recordKey,
-                                      rowKey,
-                                      `prop${index + 1}`,
-                                      e.target.value
-                                    )
-                                  }
-                                  value={value ? value : ""}
-                                  disabled
-                                />
-                              </td>
-                            )
-                          )}
+
+                          <td>
+                            <input
+                              className={`row-${rowKey}`}
+                              id={`row-${rowKey}-date`}
+                              type="date"
+                              onChange={(e) =>
+                                handleChangeRecord(
+                                  currentUser.uid,
+                                  recordKey,
+                                  rowKey,
+                                  "date",
+                                  e.target.value
+                                )
+                              }
+                              value={value.date ? value.date : ""}
+                              disabled
+                            />
+                          </td>
+
+                          <td>
+                            <input
+                              className={`row-${rowKey}`}
+                              id={`row-${rowKey}-districtNumber`}
+                              type="number"
+                              onChange={(e) =>
+                                handleChangeRecord(
+                                  currentUser.uid,
+                                  recordKey,
+                                  rowKey,
+                                  "districtNumber",
+                                  e.target.value,
+                                  `row-${rowKey}-districtNumber`,
+                                  "validateDistrictNumber"
+                                )
+                              }
+                              value={
+                                value.districtNumber ? value.districtNumber : ""
+                              }
+                              disabled
+                            />
+                          </td>
+
+                          <td>
+                            <input
+                              className={`row-${rowKey}`}
+                              id={`row-${rowKey}-subdistrictNumber`}
+                              type="number"
+                              onChange={(e) =>
+                                handleChangeRecord(
+                                  currentUser.uid,
+                                  recordKey,
+                                  rowKey,
+                                  "subdistrictNumber",
+                                  e.target.value
+                                )
+                              }
+                              value={
+                                value.subdistrictNumber
+                                  ? value.subdistrictNumber
+                                  : ""
+                              }
+                              disabled
+                            />
+                          </td>
+
+                          <td>
+                            <input
+                              className={`row-${rowKey}`}
+                              id={`row-${rowKey}-kind`}
+                              type="text"
+                              onChange={(e) =>
+                                handleChangeRecord(
+                                  currentUser.uid,
+                                  recordKey,
+                                  rowKey,
+                                  "kind",
+                                  e.target.value
+                                )
+                              }
+                              value={value.kind ? value.kind : ""}
+                              disabled
+                            />
+                          </td>
+
+                          <td>
+                            <input
+                              className={`row-${rowKey}`}
+                              id={`row-${rowKey}-pieces`}
+                              type="number"
+                              onChange={(e) =>
+                                handleChangeRecord(
+                                  currentUser.uid,
+                                  recordKey,
+                                  rowKey,
+                                  "pieces",
+                                  e.target.value
+                                )
+                              }
+                              value={value.pieces ? value.pieces : ""}
+                              disabled
+                            />
+                          </td>
+
+                          <td>
+                            <input
+                              className={`row-${rowKey}`}
+                              id={`row-${rowKey}-kilograms`}
+                              type="number"
+                              step=".01"
+                              onChange={(e) =>
+                                handleChangeRecord(
+                                  currentUser.uid,
+                                  recordKey,
+                                  rowKey,
+                                  "kilograms",
+                                  e.target.value
+                                )
+                              }
+                              value={value.kilograms ? value.kilograms : ""}
+                              disabled
+                            />
+                          </td>
+
+                          <td>
+                            <input
+                              className={`row-${rowKey}`}
+                              id={`row-${rowKey}-centimeters`}
+                              type="number"
+                              step=".01"
+                              onChange={(e) =>
+                                handleChangeRecord(
+                                  currentUser.uid,
+                                  recordKey,
+                                  rowKey,
+                                  "centimeters",
+                                  e.target.value
+                                )
+                              }
+                              value={value.centimeters ? value.centimeters : ""}
+                              disabled
+                            />
+                          </td>
                         </tr>
                       )
                     )}
@@ -286,17 +454,46 @@ const RecordPage = () => {
               <Modal.Body>
                 <Form onSubmit={handleSubmitAdd}>
                   <Form.Group>
-                    <Form.Label>Prop1</Form.Label>
-                    <Form.Control type="number" name="prop1" />
+                    <Form.Label>Date</Form.Label>
+                    <Form.Control type="date" name="date" />
+                  </Form.Group>
+
+                  <Form.Group>
+                    <Form.Label>District Number</Form.Label>
+                    <Form.Control type="number" name="districtNumber" />
                     <Form.Text className="text-muted">
                       We'll never share your email with anyone else.
                     </Form.Text>
                   </Form.Group>
 
                   <Form.Group>
-                    <Form.Label>Prop2</Form.Label>
-                    <Form.Control type="number" name="prop2" />
+                    <Form.Label>Subdistrict Number</Form.Label>
+                    <Form.Control type="number" name="subdistrictNumber" />
+                    <Form.Text className="text-muted">
+                      We'll never share your email with anyone else.
+                    </Form.Text>
                   </Form.Group>
+
+                  <Form.Group>
+                    <Form.Label>Kind</Form.Label>
+                    <Form.Control type="text" name="kind" />
+                  </Form.Group>
+
+                  <Form.Group>
+                    <Form.Label>Pieces</Form.Label>
+                    <Form.Control type="number" name="pieces" />
+                  </Form.Group>
+
+                  <Form.Group>
+                    <Form.Label>Kilograms</Form.Label>
+                    <Form.Control type="number" step=".01" name="kilograms" />
+                  </Form.Group>
+
+                  <Form.Group>
+                    <Form.Label>Centimeters</Form.Label>
+                    <Form.Control type="number" step=".01" name="centimeters" />
+                  </Form.Group>
+
                   <Button variant="primary" type="submit">
                     Submit
                   </Button>
