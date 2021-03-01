@@ -2,6 +2,8 @@ import React, { useEffect, useState, useContext, useCallback } from "react";
 import firebaseService from "../../services/firebase/firebase.service";
 import { AuthContext } from "../../Auth";
 
+import autocomplete from "autocompleter";
+
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -136,7 +138,59 @@ const RecordPage = () => {
       }
     }
 
-    const updatedRecord = {
+    if (updatedKey === "kind") {
+      var fishes = [{ label: "Kapr" }, { label: "Okoun" }];
+
+      var input = document.getElementById(updatedCellId);
+
+      //https://www.npmjs.com/package/autocompleter
+      autocomplete({
+        input: input,
+        fetch: function (text, update) {
+          text = text.toLowerCase();
+          // you can also use AJAX requests instead of preloaded data
+          var suggestions = fishes.filter((n) =>
+            n.label.toLowerCase().startsWith(text)
+          );
+          update(suggestions);
+        },
+        minLength: 1,
+        onSelect: function (item) {
+          setRecords({
+            ...records,
+            [recordUid]: {
+              ...records[recordUid],
+              data: {
+                ...records[recordUid].data,
+                [updatedRow]: {
+                  ...records[recordUid].data[updatedRow],
+                  [updatedKey]: item.label,
+                },
+              },
+            },
+          });
+
+          updatedRecord = {
+            ...records[recordUid],
+            data: {
+              ...records[recordUid].data,
+              [updatedRow]: {
+                ...records[recordUid].data[updatedRow],
+                [updatedKey]: item.label,
+              },
+            },
+          };
+
+          return firebaseService.setUserRecord(
+            userUid,
+            recordUid,
+            updatedRecord
+          );
+        },
+      });
+    }
+
+    let updatedRecord = {
       ...records[recordUid],
       data: {
         ...records[recordUid].data,
@@ -378,7 +432,8 @@ const RecordPage = () => {
                                   recordKey,
                                   rowKey,
                                   "kind",
-                                  e.target.value
+                                  e.target.value,
+                                  `row-${rowKey}-kind`
                                 )
                               }
                               value={value.kind ? value.kind : ""}

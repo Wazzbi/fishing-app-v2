@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "autocompleter": "^6.1.0",
     "bootstrap": "^4.6.0",
     "firebase": "^8.2.8",
     "node-sass": "4.14.1",
