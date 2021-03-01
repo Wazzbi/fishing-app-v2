@@ -89,6 +89,7 @@ const RecordPage = () => {
 
     // validator pro editaci polí
     // TODO validace při zakládání řádku
+    // TODO vyvést to do servisy
     if (!!validator) {
       switch (validator) {
         case "validateDistrictNumber":
@@ -102,7 +103,32 @@ const RecordPage = () => {
             el.style.color = "#a8686d";
             return false;
           }
+          break;
 
+        case "validateNoDigits":
+          if (/^\d+$/.test(updatedValue)) {
+            const el = document.getElementById(updatedCellId);
+            el.style.backgroundColor = "white";
+            el.style.color = "initial";
+          } else {
+            const el = document.getElementById(updatedCellId);
+            el.style.backgroundColor = "#f8d7da";
+            el.style.color = "#a8686d";
+            return false;
+          }
+          break;
+
+        case "validate2Digits":
+          if (/^\d+(?:\.\d{1,2})?$/.test(updatedValue)) {
+            const el = document.getElementById(updatedCellId);
+            el.style.backgroundColor = "white";
+            el.style.color = "initial";
+          } else {
+            const el = document.getElementById(updatedCellId);
+            el.style.backgroundColor = "#f8d7da";
+            el.style.color = "#a8686d";
+            return false;
+          }
           break;
 
         default:
@@ -116,10 +142,14 @@ const RecordPage = () => {
         ...records[recordUid].data,
         [updatedRow]: {
           ...records[recordUid].data[updatedRow],
-          [updatedKey]: updatedValue,
+          [updatedKey]:
+            updatedKey === "kilograms" || updatedKey === "centimeters"
+              ? Math.round(updatedValue * 100) / 100
+              : updatedValue,
         },
       },
     };
+
     firebaseService.setUserRecord(userUid, recordUid, updatedRecord);
   };
 
@@ -323,7 +353,9 @@ const RecordPage = () => {
                                   recordKey,
                                   rowKey,
                                   "subdistrictNumber",
-                                  e.target.value
+                                  e.target.value,
+                                  `row-${rowKey}-subdistrictNumber`,
+                                  "validateNoDigits"
                                 )
                               }
                               value={
@@ -365,7 +397,9 @@ const RecordPage = () => {
                                   recordKey,
                                   rowKey,
                                   "pieces",
-                                  e.target.value
+                                  e.target.value,
+                                  `row-${rowKey}-pieces`,
+                                  "validateNoDigits"
                                 )
                               }
                               value={value.pieces ? value.pieces : ""}
@@ -385,7 +419,9 @@ const RecordPage = () => {
                                   recordKey,
                                   rowKey,
                                   "kilograms",
-                                  e.target.value
+                                  e.target.value,
+                                  `row-${rowKey}-kilograms`,
+                                  "validate2Digits"
                                 )
                               }
                               value={value.kilograms ? value.kilograms : ""}
@@ -405,7 +441,9 @@ const RecordPage = () => {
                                   recordKey,
                                   rowKey,
                                   "centimeters",
-                                  e.target.value
+                                  e.target.value,
+                                  `row-${rowKey}-centimeters`,
+                                  "validate2Digits"
                                 )
                               }
                               value={value.centimeters ? value.centimeters : ""}
