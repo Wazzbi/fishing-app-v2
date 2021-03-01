@@ -7,6 +7,9 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 
+// TODO funkce zabalit do usecallback
+// TODO init download jen seznam záznamů (např jen prvních 5) a po rozkliknutí donačíst data
+
 const RecordPage = () => {
   const { currentUser } = useContext(AuthContext);
   const [records, setRecords] = useState(null);
@@ -158,9 +161,7 @@ const RecordPage = () => {
   return (
     <>
       <h1>RecordPage</h1>
-      <button onClick={() => doCreateRecordAndRefresh(currentUser.uid)}>
-        Add record card
-      </button>
+      <button onClick={doCreateRecordAndRefresh}>Add record card</button>
       <br />
       <br />
       {!records && <p>No records... Add some :-)</p>}
@@ -190,7 +191,7 @@ const RecordPage = () => {
               >
                 delete
               </button>
-              <Table striped bordered hover>
+              <Table responsive striped bordered hover>
                 <thead>
                   <tr>
                     <th>Actions</th>

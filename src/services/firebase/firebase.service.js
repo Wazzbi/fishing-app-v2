@@ -13,6 +13,7 @@ const config = {
 
 const appl = app.initializeApp(config);
 
+//TODO duplicitní reference
 // *** User API ***
 const user = (uid) => appl.database().ref(`users/${uid}`);
 // const users = () => appl.database().ref("users");
@@ -20,6 +21,7 @@ const user = (uid) => appl.database().ref(`users/${uid}`);
 // *** Record API ***
 const records = (uid) => appl.database().ref(`records/${uid}`);
 const newRecordRef = (uid) => appl.database().ref(`records/${uid}`);
+
 const recordRef = (userUid, recordUid) =>
   appl.database().ref(`records/${userUid}/${recordUid}`);
 const recordNewRowRef = (userUid, recordUid) =>
@@ -27,6 +29,14 @@ const recordNewRowRef = (userUid, recordUid) =>
 const recordRowRef = (userUid, recordUid, recordRowUid) =>
   appl.database().ref(`records/${userUid}/${recordUid}/data/${recordRowUid}`);
 
+// *** Summary API ***
+const summariesRef = (userUid) => appl.database().ref(`summaries/${userUid}`);
+const summaryRef = (userUid, summaryUid) =>
+  appl.database().ref(`summaries/${userUid}/${summaryUid}`);
+const newSummaryRef = (summaryUid) =>
+  appl.database().ref(`summaries/${summaryUid}`);
+
+// TODO přejmenovat metody podle CRUD
 class firebaseService {
   static auth = () => appl.auth();
 
@@ -40,34 +50,43 @@ class firebaseService {
   // TODO refactorovat GET metody (jsou téměř identický..)
 
   // *** GET ***
-  static getUserData = (uid) => {
-    return user(uid)
-      .get()
-      .then(function (snapshot) {
-        if (snapshot.exists()) {
-          return snapshot.val();
-        } else {
-          console.log("No data available");
-        }
-      })
-      .catch(function (error) {
-        console.error(error);
-      });
+  static getUserData = async (uid) => {
+    try {
+      const snapshot = await user(uid).get();
+      if (snapshot.exists()) {
+        return snapshot.val();
+      } else {
+        console.log("No data available");
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  static getUserRecords = (uid) => {
-    return records(uid)
-      .get()
-      .then(function (snapshot) {
-        if (snapshot.exists()) {
-          return snapshot.val();
-        } else {
-          console.log("No data available");
-        }
-      })
-      .catch(function (error) {
-        console.error(error);
-      });
+  static getUserRecords = async (uid) => {
+    try {
+      const snapshot = await records(uid).get();
+      if (snapshot.exists()) {
+        return snapshot.val();
+      } else {
+        console.log("No data available");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  static getUserSummaries = async (uid) => {
+    try {
+      const snapshot = await summariesRef(uid).get();
+      if (snapshot.exists()) {
+        return snapshot.val();
+      } else {
+        console.log("No data available");
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // *** CREATE ***
@@ -92,6 +111,15 @@ class firebaseService {
     );
   };
 
+  static createUserSummary = (uid) => {
+    return newSummaryRef(uid).push(
+      {
+        name: "New Summary",
+      },
+      (err) => console.log(err ? "error while pushing" : "successful push")
+    );
+  };
+
   // *** SET ***
   static setUserRecord = (userUid, recordUid, record) => {
     return recordRef(userUid, recordUid).set({
@@ -99,11 +127,11 @@ class firebaseService {
     });
   };
 
-  // static setUserRecordAddRow = (userUid, recordUid, record) => {
-  //   return recordRef(userUid, recordUid).set({
-  //     ...record,
-  //   });
-  // };
+  static setUserSummary = (userUid, summaryUid, summary) => {
+    return summaryRef(userUid, summaryUid).set({
+      ...summary,
+    });
+  };
 
   // *** DELETE ***
   static deleteUserRecord = (userUid, recordUid) => {
@@ -112,6 +140,10 @@ class firebaseService {
 
   static deleteUserRecordRow = (userUid, recordUid, recordRowUid) => {
     return recordRowRef(userUid, recordUid, recordRowUid).remove();
+  };
+
+  static deleteUserSummary = (userUid, summaryUid) => {
+    return summaryRef(userUid, summaryUid).remove();
   };
 }
 
