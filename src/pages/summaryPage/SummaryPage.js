@@ -36,14 +36,24 @@ const SummaryPage = () => {
         const { records: summaryRecords } = summaryValue;
 
         if (!!summaryRecords) {
+          let targetRecordsArray = [];
           // získej dané records
-          const targetRecords = Object.entries(records)
+          Object.entries(records)
             .filter(([recordKey, recordValue]) =>
               summaryRecords.includes(recordKey)
             )
-            .map(([recordKey, recoredValue]) => recoredValue.data);
-          // slouči hodnoty v každém record a pak sloučit records
-          console.log(`${index}: `, targetRecords);
+            .map(([recordKey, recoredValue]) => recoredValue.data)
+            .map((record) => {
+              // získej čistá data rows
+              Object.entries(record).map(([rowKey, rowValue]) =>
+                targetRecordsArray.push(rowValue)
+              );
+              // slouči okresky+podokresky a vytvoř nový objekt který sčítá ryby
+              // nesčítat když bude chybět okresek/podokresek/druh/ks/váha
+              // tyto odfiltrovaný přidat na konec a označit jako vadný
+            });
+
+          console.log(targetRecordsArray);
         } else {
           // setovat k summary prázdný pole records pokud nejsou data
           console.log(`${index}: `, "summary nemá records");

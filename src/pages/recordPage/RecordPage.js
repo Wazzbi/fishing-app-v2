@@ -40,32 +40,35 @@ const RecordPage = () => {
     const elementOk = () => {
       el.style.color = "initial";
       setAddNewRowValid(true);
-      return true;
     };
     const elementNok = () => {
       el.style.color = "red";
       setAddNewRowValid(false);
-      return false;
     };
+    let isValid = false;
     switch (validatorType) {
       case "validateDistrictNumber":
-        // TODO set contol pro submit button (disabled)
-        validatorService.validatorDistrictNumber(value) &&
-        validatorService.validatorNoDigits(value)
-          ? elementOk()
-          : elementNok();
+        isValid =
+          validatorService.validatorDistrictNumber(value) &&
+          validatorService.validatorNoDigits(value);
         break;
       case "validateNoDigits":
-        // TODO set contol pro submit button (disabled)
-        validatorService.validatorNoDigits(value) ? elementOk() : elementNok();
+        isValid = validatorService.validatorNoDigits(value);
         break;
       case "validate2Digits":
-        // TODO set contol pro submit button (disabled)
-        validatorService.validate2Digits(value) ? elementOk() : elementNok();
+        isValid = validatorService.validate2Digits(value);
         break;
 
       default:
         break;
+    }
+
+    if (isValid) {
+      elementOk();
+      return true;
+    } else {
+      elementNok();
+      return false;
     }
   };
 
@@ -159,13 +162,13 @@ const RecordPage = () => {
         default:
           break;
       }
-
       // když není validní nic neukládej do firebase
       if (!isValid) {
         return null;
       }
     }
 
+    // pokud přepisuji pole kind...
     if (updatedKey === "kind") {
       var fishes = [{ label: "Kapr" }, { label: "Okoun" }];
 
