@@ -1,6 +1,9 @@
 import React, { useEffect, useState, useContext, useCallback } from "react";
 import firebaseService from "../../services/firebase/firebase.service";
+import validatorService from "../../services/validators/validator.service";
+import autocompleterService from "../../services/utils/autocompleter.service";
 import { AuthContext } from "../../Auth";
+import "./recordPage.scss";
 
 import autocomplete from "autocompleter";
 
@@ -13,6 +16,7 @@ import Form from "react-bootstrap/Form";
 // TODO init download jen seznam záznamů (např jen prvních 5) a po rozkliknutí donačíst data
 // TODOD řazení nejnovější nahoře
 // TODO otestovat summary kterému smažu record
+// TODO oddělit view do vlastního souboru
 
 const RecordPage = () => {
   const { currentUser } = useContext(AuthContext);
@@ -21,6 +25,49 @@ const RecordPage = () => {
   const [onDelete, setOnDelete] = useState(null);
   const [showModalAdd, setShowModalAdd] = useState(false);
   const [onAdd, setOnAdd] = useState(null);
+  const [addNewRowValid, setAddNewRowValid] = useState(false); // dovolí uvožit prázdná pole, ale ne špatný vstupy
+  const [today, setToday] = useState(null);
+
+  const todayDate = () => {
+    const today = new Date();
+    const todayISO = today.toISOString().substr(0, 10);
+    setToday(todayISO);
+  };
+
+  // validace je dvojená v handleChangeRecord
+  const validator = (validatorType, value, elementId) => {
+    const el = document.getElementById(elementId);
+    const elementOk = () => {
+      el.style.color = "initial";
+      setAddNewRowValid(true);
+      return true;
+    };
+    const elementNok = () => {
+      el.style.color = "red";
+      setAddNewRowValid(false);
+      return false;
+    };
+    switch (validatorType) {
+      case "validateDistrictNumber":
+        // TODO set contol pro submit button (disabled)
+        validatorService.validatorDistrictNumber(value) &&
+        validatorService.validatorNoDigits(value)
+          ? elementOk()
+          : elementNok();
+        break;
+      case "validateNoDigits":
+        // TODO set contol pro submit button (disabled)
+        validatorService.validatorNoDigits(value) ? elementOk() : elementNok();
+        break;
+      case "validate2Digits":
+        // TODO set contol pro submit button (disabled)
+        validatorService.validate2Digits(value) ? elementOk() : elementNok();
+        break;
+
+      default:
+        break;
+    }
+  };
 
   const doDelete = () => {
     if (onDelete.element === "record") {
@@ -73,7 +120,7 @@ const RecordPage = () => {
     updatedKey,
     updatedValue,
     updatedCellId = null,
-    validator = null
+    validatorType = null
   ) => {
     setRecords({
       ...records,
@@ -90,51 +137,32 @@ const RecordPage = () => {
     });
 
     // validator pro editaci polí
-    // TODO validace při zakládání řádku
-    // TODO vyvést to do servisy
-    if (!!validator) {
-      switch (validator) {
+    if (!!validatorType) {
+      let isValid = false;
+      switch (validatorType) {
         case "validateDistrictNumber":
-          if (updatedValue > 99999 && updatedValue < 1000000) {
-            const el = document.getElementById(updatedCellId);
-            el.style.backgroundColor = "white";
-            el.style.color = "initial";
-          } else {
-            const el = document.getElementById(updatedCellId);
-            el.style.backgroundColor = "#f8d7da";
-            el.style.color = "#a8686d";
-            return false;
-          }
+          isValid = validator(
+            "validateDistrictNumber",
+            updatedValue,
+            updatedCellId
+          );
           break;
 
         case "validateNoDigits":
-          if (/^\d+$/.test(updatedValue)) {
-            const el = document.getElementById(updatedCellId);
-            el.style.backgroundColor = "white";
-            el.style.color = "initial";
-          } else {
-            const el = document.getElementById(updatedCellId);
-            el.style.backgroundColor = "#f8d7da";
-            el.style.color = "#a8686d";
-            return false;
-          }
+          isValid = validator("validateNoDigits", updatedValue, updatedCellId);
           break;
 
         case "validate2Digits":
-          if (/^\d+(?:\.\d{1,2})?$/.test(updatedValue)) {
-            const el = document.getElementById(updatedCellId);
-            el.style.backgroundColor = "white";
-            el.style.color = "initial";
-          } else {
-            const el = document.getElementById(updatedCellId);
-            el.style.backgroundColor = "#f8d7da";
-            el.style.color = "#a8686d";
-            return false;
-          }
+          isValid = validator("validate2Digits", updatedValue, updatedCellId);
           break;
 
         default:
           break;
+      }
+
+      // když není validní nic neukládej do firebase
+      if (!isValid) {
+        return null;
       }
     }
 
@@ -251,6 +279,7 @@ const RecordPage = () => {
 
   const handleSubmitAdd = useCallback(
     async (event) => {
+      setAddNewRowValid(false);
       handleAddClose();
       event.preventDefault();
       const {
@@ -283,6 +312,7 @@ const RecordPage = () => {
 
   useEffect(() => {
     updateData();
+    todayDate();
   }, []);
 
   return (
@@ -512,87 +542,158 @@ const RecordPage = () => {
               </Table>
               <br />
               <br />
-            </div>
-
-            <Modal
-              show={showModalDelete}
-              onHide={handleDeleteClose}
-              animation={false}
-              centered
-            >
-              <Modal.Header closeButton>
-                <Modal.Title>Potvrdit akci</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>{onDelete && onDelete.text}</Modal.Body>
-              <Modal.Footer>
-                <Button variant="secondary" onClick={handleDeleteClose}>
-                  Close
-                </Button>
-                <Button variant="primary" onClick={handleCloseAndDelete}>
-                  DELETE
-                </Button>
-              </Modal.Footer>
-            </Modal>
-
-            <Modal
-              show={showModalAdd}
-              onHide={handleAddClose}
-              animation={false}
-              backdrop="static"
-              centered
-            >
-              <Modal.Header closeButton>
-                <Modal.Title>Vyplnit řádek</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <Form onSubmit={handleSubmitAdd}>
-                  <Form.Group>
-                    <Form.Label>Date</Form.Label>
-                    <Form.Control type="date" name="date" />
-                  </Form.Group>
-
-                  <Form.Group>
-                    <Form.Label>District Number</Form.Label>
-                    <Form.Control type="number" name="districtNumber" />
-                    <Form.Text className="text-muted">
-                      We'll never share your email with anyone else.
-                    </Form.Text>
-                  </Form.Group>
-
-                  <Form.Group>
-                    <Form.Label>Subdistrict Number</Form.Label>
-                    <Form.Control type="number" name="subdistrictNumber" />
-                    <Form.Text className="text-muted">
-                      We'll never share your email with anyone else.
-                    </Form.Text>
-                  </Form.Group>
-
-                  <Form.Group>
-                    <Form.Label>Kind</Form.Label>
-                    <Form.Control type="text" name="kind" />
-                  </Form.Group>
-
-                  <Form.Group>
-                    <Form.Label>Pieces</Form.Label>
-                    <Form.Control type="number" name="pieces" />
-                  </Form.Group>
-
-                  <Form.Group>
-                    <Form.Label>Kilograms</Form.Label>
-                    <Form.Control type="number" step=".01" name="kilograms" />
-                  </Form.Group>
-
-                  <Form.Group>
-                    <Form.Label>Centimeters</Form.Label>
-                    <Form.Control type="number" step=".01" name="centimeters" />
-                  </Form.Group>
-
-                  <Button variant="primary" type="submit">
-                    Submit
+              <Modal
+                show={showModalDelete}
+                onHide={handleDeleteClose}
+                animation={false}
+                centered
+              >
+                <Modal.Header closeButton>
+                  <Modal.Title>Potvrdit akci</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>{onDelete && onDelete.text}</Modal.Body>
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={handleDeleteClose}>
+                    Close
                   </Button>
-                </Form>
-              </Modal.Body>
-            </Modal>
+                  <Button variant="primary" onClick={handleCloseAndDelete}>
+                    DELETE
+                  </Button>
+                </Modal.Footer>
+              </Modal>
+              <Modal
+                show={showModalAdd}
+                onHide={handleAddClose}
+                animation={false}
+                backdrop="static"
+                centered
+              >
+                <Modal.Header closeButton>
+                  <Modal.Title>Vyplnit řádek</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <Form onSubmit={handleSubmitAdd}>
+                    <Form.Group>
+                      <Form.Label>Date</Form.Label>
+                      <Form.Control
+                        type="date"
+                        name="date"
+                        defaultValue={today}
+                      />
+                    </Form.Group>
+
+                    <Form.Group>
+                      <Form.Label>District Number</Form.Label>
+                      <Form.Control
+                        type="number"
+                        name="districtNumber"
+                        id={`${recordKey}form-districtNumber`}
+                        onChange={(e) =>
+                          validator(
+                            "validateDistrictNumber",
+                            e.target.value,
+                            `${recordKey}form-districtNumber`
+                          )
+                        }
+                      />
+                      <Form.Text className="text-muted">
+                        We'll never share your email with anyone else.
+                      </Form.Text>
+                    </Form.Group>
+
+                    <Form.Group>
+                      <Form.Label>Subdistrict Number</Form.Label>
+                      <Form.Control
+                        type="number"
+                        name="subdistrictNumber"
+                        id={`${recordKey}form-subdistrictNumber`}
+                        onChange={(e) =>
+                          validator(
+                            "validateNoDigits",
+                            e.target.value,
+                            `${recordKey}form-subdistrictNumber`
+                          )
+                        }
+                      />
+                      <Form.Text className="text-muted">
+                        We'll never share your email with anyone else.
+                      </Form.Text>
+                    </Form.Group>
+
+                    <Form.Group>
+                      <Form.Label>Kind</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="kind"
+                        id={`${recordKey}form-kind`}
+                        autocomplete="off"
+                        onChange={() =>
+                          autocompleterService.do(`${recordKey}form-kind`)
+                        }
+                      />
+                    </Form.Group>
+
+                    <Form.Group>
+                      <Form.Label>Pieces</Form.Label>
+                      <Form.Control
+                        type="number"
+                        name="pieces"
+                        id={`${recordKey}form-pieces`}
+                        onChange={(e) =>
+                          validator(
+                            "validateNoDigits",
+                            e.target.value,
+                            `${recordKey}form-pieces`
+                          )
+                        }
+                      />
+                    </Form.Group>
+
+                    <Form.Group>
+                      <Form.Label>Kilograms</Form.Label>
+                      <Form.Control
+                        type="number"
+                        step=".01"
+                        name="kilograms"
+                        id={`${recordKey}form-kilograms`}
+                        onChange={(e) =>
+                          validator(
+                            "validate2Digits",
+                            e.target.value,
+                            `${recordKey}form-kilograms`
+                          )
+                        }
+                      />
+                    </Form.Group>
+
+                    <Form.Group>
+                      <Form.Label>Centimeters</Form.Label>
+                      <Form.Control
+                        type="number"
+                        step=".01"
+                        name="centimeters"
+                        id={`${recordKey}form-centimeters`}
+                        onChange={(e) =>
+                          validator(
+                            "validate2Digits",
+                            e.target.value,
+                            `${recordKey}form-centimeters`
+                          )
+                        }
+                      />
+                    </Form.Group>
+
+                    <Button
+                      variant="primary"
+                      type="submit"
+                      disabled={!addNewRowValid}
+                    >
+                      Submit
+                    </Button>
+                  </Form>
+                </Modal.Body>
+              </Modal>
+            </div>
           </>
         ))}
     </>
