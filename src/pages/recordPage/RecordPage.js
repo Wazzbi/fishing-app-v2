@@ -17,6 +17,7 @@ import Form from "react-bootstrap/Form";
 // TODOD řazení nejnovější nahoře
 // TODO otestovat summary kterému smažu record
 // TODO oddělit view do vlastního souboru
+// TODO validace jen přes modal (vyčistí to kód)
 
 const RecordPage = () => {
   const { currentUser } = useContext(AuthContext);

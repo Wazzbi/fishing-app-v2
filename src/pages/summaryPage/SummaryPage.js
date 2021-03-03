@@ -29,35 +29,89 @@ const SummaryPage = () => {
 
   // ! toto má setovat *setRecordsTogether*
   // ! má to být objekt summaries kde má každý sečtený records
-  const summariesData = () => {
-    if (!!summaries && !!records) {
-      Object.entries(summaries).map(([summaryKey, summaryValue], index) => {
-        // získej pole records z summary
-        const { records: summaryRecords } = summaryValue;
+  // TODO records, summaries zabraný -> přejmenovat
+  // TODO nesčítat když bude chybět okresek/podokresek/druh/ks/váha
+  // TODO tyto odfiltrovaný přidat na konec a označit jako vadný
+  const prepareData = (records, summaries) => {
+    let finalData = {};
+    Object.entries(summaries).map(([summaryKey, summaryValue], index) => {
+      // získej pole records z summary
+      const { records: summaryRecords } = summaryValue;
 
-        if (!!summaryRecords) {
-          let targetRecordsArray = [];
-          // získej dané records
-          Object.entries(records)
-            .filter(([recordKey, recordValue]) =>
-              summaryRecords.includes(recordKey)
-            )
-            .map(([recordKey, recoredValue]) => recoredValue.data)
-            .map((record) => {
-              // získej čistá data rows
-              Object.entries(record).map(([rowKey, rowValue]) =>
-                targetRecordsArray.push(rowValue)
-              );
-              // slouči okresky+podokresky a vytvoř nový objekt který sčítá ryby
-              // nesčítat když bude chybět okresek/podokresek/druh/ks/váha
-              // tyto odfiltrovaný přidat na konec a označit jako vadný
-            });
+      if (!!summaryRecords) {
+        let recordsArray = [];
+        // získej dané records pro každý summary
+        Object.entries(records)
+          .filter(([recordKey, recordValue]) =>
+            summaryRecords.includes(recordKey)
+          )
+          .map(([recordKey, recoredValue]) => {
+            // získej čistá data rows
+            Object.entries(recoredValue.data).map(([rowKey, rowValue]) =>
+              recordsArray.push(rowValue)
+            );
+          });
 
-          console.log(targetRecordsArray);
-        } else {
-          // setovat k summary prázdný pole records pokud nejsou data
-          console.log(`${index}: `, "summary nemá records");
-        }
+        recordsArray.map((row, index) => {
+          // TODO zde ošetřit neúplná data (if něco empty...) číslo podrevíru může být prázdný
+          // TODO přidat pole visited kolikrát tam rybář byl
+
+          const visitedCounter =
+            finalData &&
+            finalData[summaryKey] &&
+            finalData[summaryKey][
+              `${row.districtNumber}-${row.subdistrictNumber || 0}`
+            ] &&
+            finalData[summaryKey][
+              `${row.districtNumber}-${row.subdistrictNumber || 0}`
+            ].visited
+              ? finalData[summaryKey][
+                  `${row.districtNumber}-${row.subdistrictNumber || 0}`
+                ].visited + 1
+              : 1;
+
+          const previousData = finalData && finalData[summaryKey];
+          const previousDistrict =
+            previousData &&
+            previousData[`${row.districtNumber}-${row.subdistrictNumber || 0}`];
+          const previousFishes = previousDistrict && previousDistrict.fishes;
+          const previousKind = previousFishes && previousFishes[row.kind];
+          const previousPieces = previousKind && previousKind.pieces;
+          const previousKilograms = previousKind && previousKind.kilograms;
+
+          finalData = {
+            ...finalData,
+            [summaryKey]: {
+              ...previousData,
+              [`${row.districtNumber}-${row.subdistrictNumber || 0}`]: {
+                ...previousDistrict,
+                districtNumber: row.districtNumber,
+                subdistrictNumber: row.subdistrictNumber || 0,
+                visited: visitedCounter,
+                fishes: {
+                  ...previousFishes,
+                  [row.kind.toLowerCase()]: {
+                    ...previousKind,
+                    pieces: (previousPieces || 0) + +row.pieces,
+                    kilograms: (previousKilograms || 0) + +row.kilograms,
+                  },
+                },
+              },
+            },
+          };
+
+          console.log(finalData);
+        });
+      } else {
+        // setovat k summary prázdný pole records pokud nejsou data
+        console.log(`${index}: `, "summary nemá records");
+      }
+    });
+
+    if (!!finalData) {
+      setRecordsTogether({
+        // ...recordsTogether,
+        ...finalData,
       });
     }
   };
@@ -74,14 +128,31 @@ const SummaryPage = () => {
   };
 
   const updateData = () => {
-    firebaseService
-      .getUserRecords(currentUser && currentUser.uid)
-      .then((records) => (records ? setRecords(records) : setRecords(null)));
-    firebaseService
-      .getUserSummaries(currentUser && currentUser.uid)
-      .then((summaries) =>
-        summaries ? setSummaries(summaries) : setSummaries(null)
-      );
+    // protože je useState async dotahuji data přes proměnné...
+    let updateRecords, updateSummaries;
+    new Promise((resolve, reject) => {
+      resolve(firebaseService.getUserRecords(currentUser && currentUser.uid));
+      reject(new Error("Nemohu načíst záznamy uživatele"));
+    })
+      .then((records) => {
+        updateRecords = records;
+        records ? setRecords(records) : setRecords(null);
+      })
+      .then(() => {
+        new Promise((resolve, reject) => {
+          resolve(
+            firebaseService.getUserSummaries(currentUser && currentUser.uid)
+          );
+          reject(new Error("Nemohu načíst souhrny uživatele"));
+        })
+          .then((summaries) => {
+            updateSummaries = summaries;
+            summaries ? setSummaries(summaries) : setSummaries(null);
+          })
+          .then(() => {
+            prepareData(updateRecords, updateSummaries);
+          });
+      });
   };
 
   const handleSubmitChange = () => {
@@ -106,8 +177,8 @@ const SummaryPage = () => {
       .then(() => {
         firebaseService
           .getUserSummaries(currentUser && currentUser.uid)
-          .then((summaries) =>
-            summaries ? setSummaries(summaries) : setSummaries(null)
+          .then((freshSummaries) =>
+            freshSummaries ? setSummaries(freshSummaries) : setSummaries(null)
           );
       })
       .catch(alert);
@@ -126,16 +197,21 @@ const SummaryPage = () => {
     firebaseService.setUserSummary(userUid, summaryUid, updatedSummary);
   };
 
-  const handleChangeRecords = (userUid, summaryUid, records) => {
+  const handleChangeRecords = (userUid, summaryUid, changeRecords) => {
     setSummaries({
       ...summaries,
-      [summaryUid]: { ...summaries[summaryUid], records: [...records] },
+      [summaryUid]: { ...summaries[summaryUid], records: [...changeRecords] },
     });
 
     const updatedSummary = {
       ...summaries[summaryUid],
-      records: [...records],
+      records: [...changeRecords],
     };
+
+    prepareData(records, {
+      ...summaries,
+      [summaryUid]: { ...summaries[summaryUid], records: [...changeRecords] },
+    });
     firebaseService.setUserSummary(userUid, summaryUid, updatedSummary);
   };
 
@@ -161,9 +237,11 @@ const SummaryPage = () => {
 
   const doDelete = () => {
     const { summaryUid } = onDelete.params;
-    firebaseService.deleteUserSummary(currentUser.uid, summaryUid);
 
-    updateData();
+    new Promise((resolve, reject) => {
+      resolve(firebaseService.deleteUserSummary(currentUser.uid, summaryUid));
+      reject(new Error("Nemohu nahrát záznamy uživatele"));
+    }).then(() => updateData());
   };
 
   const isChecked = (recordKey) => {
@@ -221,29 +299,89 @@ const SummaryPage = () => {
             <Table responsive striped bordered hover>
               <thead>
                 <tr>
-                  <th>prop#1</th>
-                  <th>prop#2</th>
+                  <th colSpan="2">Revír</th>
+                  <th rowSpan="2">Číslo podrevíru</th>
+                  <th colSpan="2">1 Kapr</th>
+                  <th colSpan="2">2 Okoun</th>
+                  <th colSpan="2">3 Candát</th>
+                  <th rowSpan="2">Počet docházek</th>
+                </tr>
+                <tr>
+                  <th>Číslo</th>
+                  <th>Název</th>
+                  <th>Ks</th>
+                  <th>Kg</th>
+                  <th>Ks</th>
+                  <th>Kg</th>
+                  <th>Ks</th>
+                  <th>Kg</th>
                 </tr>
               </thead>
               <tbody>
-                {
-                  !!summaries && !!records && summariesData()
-                  // false &&
-                  //   records[summaryKey] &&
-                  //   records[summaryKey].data &&
-                  //   Object.entries(records[summaryKey].data).map(
-                  //     ([rowKey, value]) => (
-                  //       <tr>
-                  //         {/** prop${index} přes index procházet číselník a použít normální názvy !!!index start 1*/}
-                  //         {Object.entries(value).map(
-                  //           ([propKey, value], index) => (
-                  //             <td>{value ? value : ""}</td>
-                  //           )
-                  //         )}
-                  //       </tr>
-                  //     )
-                  //   )
-                }
+                {!!recordsTogether &&
+                  !!recordsTogether[summaryKey] &&
+                  Object.entries(recordsTogether[summaryKey]).map(
+                    ([rowDataKey, rowDataValue]) => (
+                      <tr>
+                        <td>{rowDataValue.districtNumber}</td>
+                        <td> </td>
+                        <td>
+                          {rowDataValue.subdistrictNumber
+                            ? rowDataValue.subdistrictNumber
+                            : "-"}
+                        </td>
+                        <td>
+                          {rowDataValue &&
+                          rowDataValue.fishes &&
+                          rowDataValue.fishes.kapr &&
+                          rowDataValue.fishes.kapr.pieces
+                            ? rowDataValue.fishes.kapr.pieces
+                            : "-"}
+                        </td>
+                        <td>
+                          {rowDataValue &&
+                          rowDataValue.fishes &&
+                          rowDataValue.fishes.kapr &&
+                          rowDataValue.fishes.kapr.kilograms
+                            ? rowDataValue.fishes.kapr.kilograms
+                            : "-"}
+                        </td>
+                        <td>
+                          {rowDataValue &&
+                          rowDataValue.fishes &&
+                          rowDataValue.fishes.okoun &&
+                          rowDataValue.fishes.okoun.pieces
+                            ? rowDataValue.fishes.okoun.pieces
+                            : "-"}
+                        </td>
+                        <td>
+                          {rowDataValue &&
+                          rowDataValue.fishes &&
+                          rowDataValue.fishes.okoun &&
+                          rowDataValue.fishes.okoun.kilograms
+                            ? rowDataValue.fishes.okoun.kilograms
+                            : "-"}
+                        </td>
+                        <td>
+                          {rowDataValue &&
+                          rowDataValue.fishes &&
+                          rowDataValue.fishes.candat &&
+                          rowDataValue.fishes.candat.pieces
+                            ? rowDataValue.fishes.candat.pieces
+                            : "-"}
+                        </td>
+                        <td>
+                          {rowDataValue &&
+                          rowDataValue.fishes &&
+                          rowDataValue.fishes.candat &&
+                          rowDataValue.fishes.candat.kilograms
+                            ? rowDataValue.fishes.candat.kilograms
+                            : "-"}
+                        </td>
+                        <td>{rowDataValue.visited}</td>
+                      </tr>
+                    )
+                  )}
               </tbody>
             </Table>
             <br />
