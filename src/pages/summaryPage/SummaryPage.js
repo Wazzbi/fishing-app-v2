@@ -7,14 +7,12 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 
-// ? TODO načíst records
-// TODO možnost slučovat records do jednoho summary
 // TODO zobrazovat seznam summary
 // TODO poslat vybraný summary do mailu
-// ? TODO v summary data readonly
-// TODO nějaký grafy
 // TODO rename udělat jako focus na input a zrušit tlačítko
-// TODOD řazení nejnovější nahoře
+// TODO řazení nejnovější nahoře
+// TODO records, summaries zabraný -> přejmenovat
+// TODO zablokovat SEND když budou nějaká nevalidní data
 
 const SummaryPage = () => {
   const { currentUser } = useContext(AuthContext);
@@ -27,13 +25,9 @@ const SummaryPage = () => {
   const [onDelete, setOnDelete] = useState(null);
   const [recordsTogether, setRecordsTogether] = useState(null);
 
-  // ! toto má setovat *setRecordsTogether*
-  // ! má to být objekt summaries kde má každý sečtený records
-  // TODO records, summaries zabraný -> přejmenovat
-  // TODO nesčítat když bude chybět okresek/podokresek/druh/ks/váha
-  // TODO tyto odfiltrovaný přidat na konec a označit jako vadný
   const prepareData = (records, summaries) => {
     let finalData = {};
+
     Object.entries(summaries).map(([summaryKey, summaryValue], index) => {
       // získej pole records z summary
       const { records: summaryRecords } = summaryValue;
@@ -53,8 +47,7 @@ const SummaryPage = () => {
           });
 
         recordsArray.map((row, index) => {
-          // TODO zde ošetřit neúplná data (if něco empty...) číslo podrevíru může být prázdný
-          // TODO přidat pole visited kolikrát tam rybář byl
+          let alertMissingData = false;
 
           const visitedCounter =
             finalData &&
@@ -74,10 +67,20 @@ const SummaryPage = () => {
           const previousDistrict =
             previousData &&
             previousData[`${row.districtNumber}-${row.subdistrictNumber || 0}`];
+          const previousDistrictAlert =
+            previousDistrict && previousDistrict.alertMissingData
+              ? previousDistrict.alertMissingData
+              : [];
           const previousFishes = previousDistrict && previousDistrict.fishes;
           const previousKind = previousFishes && previousFishes[row.kind];
           const previousPieces = previousKind && previousKind.pieces;
           const previousKilograms = previousKind && previousKind.kilograms;
+
+          if (!!!row.kind && !!!row.kilograms && !!!row.pieces) {
+            alertMissingData = false;
+          } else if (!!!row.kind || !!!row.kilograms || !!!row.pieces) {
+            alertMissingData = true;
+          }
 
           finalData = {
             ...finalData,
@@ -88,9 +91,10 @@ const SummaryPage = () => {
                 districtNumber: row.districtNumber,
                 subdistrictNumber: row.subdistrictNumber || 0,
                 visited: visitedCounter,
+                alertMissingData: [...previousDistrictAlert, alertMissingData],
                 fishes: {
                   ...previousFishes,
-                  [row.kind.toLowerCase()]: {
+                  [row.kind.toLowerCase() || "none"]: {
                     ...previousKind,
                     pieces: (previousPieces || 0) + +row.pieces,
                     kilograms: (previousKilograms || 0) + +row.kilograms,
@@ -99,8 +103,6 @@ const SummaryPage = () => {
               },
             },
           };
-
-          console.log(finalData);
         });
       } else {
         // setovat k summary prázdný pole records pokud nejsou data
@@ -323,7 +325,23 @@ const SummaryPage = () => {
                   Object.entries(recordsTogether[summaryKey]).map(
                     ([rowDataKey, rowDataValue]) => (
                       <tr>
-                        <td>{rowDataValue.districtNumber}</td>
+                        <td>
+                          {rowDataValue.districtNumber}{" "}
+                          <span
+                            title="chybějící povinná data: druh ryby, váha nebo počet kusů"
+                            style={{
+                              color: "red",
+                              fontWeight: "bold",
+                              cursor: "pointer",
+                            }}
+                          >
+                            {rowDataValue.alertMissingData.some(
+                              (a) => a === true
+                            )
+                              ? "(!)"
+                              : ""}
+                          </span>
+                        </td>
                         <td> </td>
                         <td>
                           {rowDataValue.subdistrictNumber

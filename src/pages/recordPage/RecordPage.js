@@ -14,10 +14,9 @@ import Form from "react-bootstrap/Form";
 
 // TODO funkce zabalit do usecallback
 // TODO init download jen seznam záznamů (např jen prvních 5) a po rozkliknutí donačíst data
-// TODOD řazení nejnovější nahoře
-// TODO otestovat summary kterému smažu record
+// TODO řazení nejnovější nahoře
 // TODO oddělit view do vlastního souboru
-// TODO validace jen přes modal (vyčistí to kód)
+// TODO validace jen přes modal (vyčistí to kód) udělat edit row v stejným modalu
 
 const RecordPage = () => {
   const { currentUser } = useContext(AuthContext);
@@ -307,7 +306,10 @@ const RecordPage = () => {
     },
     [addRowAndRefresh, onAdd]
   );
-  const handleAddClose = () => setShowModalAdd(false);
+  const handleAddClose = () => {
+    setAddNewRowValid(false);
+    setShowModalAdd(false);
+  };
   const handleAddShow = () => setShowModalAdd(true);
   const handleAdd = (recordKey) => {
     handleAddShow();
@@ -385,7 +387,37 @@ const RecordPage = () => {
                               }
                             >
                               delete
-                            </button>
+                            </button>{" "}
+                            {!!!value.kind ||
+                            !!!value.pieces ||
+                            !!!value.kilograms ? (
+                              <span
+                                title="chybějící povinná data: druh ryby, váha nebo počet kusů"
+                                style={{
+                                  color: "red",
+                                  fontWeight: "bold",
+                                  cursor: "pointer",
+                                }}
+                              >
+                                (!)
+                              </span>
+                            ) : (
+                              ""
+                            )}
+                            {!!!value.centimeters ? (
+                              <span
+                                title="chybějící data: centimetry"
+                                style={{
+                                  color: "blue",
+                                  fontWeight: "bold",
+                                  cursor: "pointer",
+                                }}
+                              >
+                                (!)
+                              </span>
+                            ) : (
+                              ""
+                            )}
                           </td>
 
                           <td>
@@ -589,6 +621,7 @@ const RecordPage = () => {
                     <Form.Group>
                       <Form.Label>District Number</Form.Label>
                       <Form.Control
+                        required
                         type="number"
                         name="districtNumber"
                         id={`${recordKey}form-districtNumber`}
@@ -608,6 +641,7 @@ const RecordPage = () => {
                     <Form.Group>
                       <Form.Label>Subdistrict Number</Form.Label>
                       <Form.Control
+                        required
                         type="number"
                         name="subdistrictNumber"
                         id={`${recordKey}form-subdistrictNumber`}
@@ -620,7 +654,7 @@ const RecordPage = () => {
                         }
                       />
                       <Form.Text className="text-muted">
-                        We'll never share your email with anyone else.
+                        Pokud podokresek nemá číslo vyplňte nulu.
                       </Form.Text>
                     </Form.Group>
 
