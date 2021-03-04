@@ -121,6 +121,7 @@ const RecordPage = () => {
 
   const handleSubmitChange = (event) => {
     // TODO musel jsem to rozbalit z callback zkusit znovu zabalit jako druhou handle funkci
+    // TODO když se nic nezmění nic neposílat a neměmit v useState
     handleAddClose();
     event.preventDefault();
     const {
