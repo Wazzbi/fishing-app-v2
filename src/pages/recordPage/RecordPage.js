@@ -25,7 +25,6 @@ const RecordPage = () => {
   const [onDelete, setOnDelete] = useState(null);
   const [showModalAdd, setShowModalAdd] = useState(false);
   const [onAdd, setOnAdd] = useState(null);
-  const [addNewRowValid, setAddNewRowValid] = useState(false); // dovolí uvožit prázdná pole, ale ne špatný vstupy
   const [today, setToday] = useState(null);
   const [editRowData, setEditRowData] = useState(null);
 
@@ -40,11 +39,9 @@ const RecordPage = () => {
     const el = document.getElementById(elementId);
     const elementOk = () => {
       el.style.color = "initial";
-      setAddNewRowValid(true);
     };
     const elementNok = () => {
       el.style.color = "red";
-      setAddNewRowValid(false);
     };
     let isValid = false;
     switch (validatorType) {
@@ -66,10 +63,10 @@ const RecordPage = () => {
 
     if (isValid) {
       elementOk();
-      return true;
+      // return true;
     } else {
       elementNok();
-      return false;
+      // return false;
     }
   };
 
@@ -120,14 +117,10 @@ const RecordPage = () => {
   const editRow = (recordUid, rowUid, rowValue) => {
     setEditRowData({ recordUid, rowUid, rowValue });
     handleAddShow();
-
-    // TODO nasetovat novou useState s hodnotami editovaného řádku
-    // TODO poté sloučit s targetTecord a poslat do firebase + update
   };
 
   const handleSubmitChange = (event) => {
     // TODO musel jsem to rozbalit z callback zkusit znovu zabalit jako druhou handle funkci
-    setAddNewRowValid(false);
     handleAddClose();
     event.preventDefault();
     const {
@@ -150,15 +143,11 @@ const RecordPage = () => {
       centimeters: centimeters.value,
     };
 
-    console.log(updatedRow.kilograms);
-
     setRecords({
-      ...records, // všechny záznamy
+      ...records,
       [editRowData.recordUid]: {
-        // konkrétní záznam
         ...records[editRowData.recordUid],
         data: {
-          // všechny řádky
           ...records[editRowData.recordUid].data,
           [editRowData.rowUid]: updatedRow,
         },
@@ -219,7 +208,6 @@ const RecordPage = () => {
 
   const handleSubmitAdd = useCallback(
     async (event) => {
-      setAddNewRowValid(false);
       setEditRowData(null);
       handleAddClose();
       event.preventDefault();
@@ -245,7 +233,6 @@ const RecordPage = () => {
     [addRowAndRefresh, onAdd]
   );
   const handleAddClose = () => {
-    setAddNewRowValid(false);
     setEditRowData(null);
     setShowModalAdd(false);
   };
@@ -536,7 +523,7 @@ const RecordPage = () => {
                         type="text"
                         name="kind"
                         id={`${recordKey}form-kind`}
-                        autocomplete="off"
+                        autoComplete="off"
                         defaultValue={
                           !!editRowData ? editRowData.rowValue.kind : ""
                         }
@@ -605,11 +592,7 @@ const RecordPage = () => {
                       />
                     </Form.Group>
 
-                    <Button
-                      variant="primary"
-                      type="submit"
-                      disabled={!addNewRowValid}
-                    >
+                    <Button variant="primary" type="submit">
                       Submit
                     </Button>
                   </Form>
