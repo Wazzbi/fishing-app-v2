@@ -27,6 +27,7 @@ const RecordPage = () => {
   const [onAdd, setOnAdd] = useState(null);
   const [addNewRowValid, setAddNewRowValid] = useState(false); // dovolí uvožit prázdná pole, ale ne špatný vstupy
   const [today, setToday] = useState(null);
+  const [editRowData, setEditRowData] = useState(null);
 
   const todayDate = () => {
     const today = new Date();
@@ -116,138 +117,74 @@ const RecordPage = () => {
     firebaseService.setUserRecord(userUid, recordUid, updatedRecord);
   };
 
-  const handleChangeRecord = (
-    userUid,
-    recordUid,
-    updatedRow,
-    updatedKey,
-    updatedValue,
-    updatedCellId = null,
-    validatorType = null
-  ) => {
+  const editRow = (recordUid, rowUid, rowValue) => {
+    setEditRowData({ recordUid, rowUid, rowValue });
+    handleAddShow();
+
+    // TODO nasetovat novou useState s hodnotami editovaného řádku
+    // TODO poté sloučit s targetTecord a poslat do firebase + update
+  };
+
+  const handleSubmitChange = (event) => {
+    // TODO musel jsem to rozbalit z callback zkusit znovu zabalit jako druhou handle funkci
+    setAddNewRowValid(false);
+    handleAddClose();
+    event.preventDefault();
+    const {
+      date,
+      districtNumber,
+      subdistrictNumber,
+      kind,
+      pieces,
+      kilograms,
+      centimeters,
+    } = event.target.elements;
+
+    const updatedRow = {
+      date: date.value,
+      districtNumber: districtNumber.value,
+      subdistrictNumber: subdistrictNumber.value,
+      kind: kind.value,
+      pieces: pieces.value,
+      kilograms: kilograms.value,
+      centimeters: centimeters.value,
+    };
+
+    console.log(updatedRow.kilograms);
+
     setRecords({
-      ...records,
-      [recordUid]: {
-        ...records[recordUid],
+      ...records, // všechny záznamy
+      [editRowData.recordUid]: {
+        // konkrétní záznam
+        ...records[editRowData.recordUid],
         data: {
-          ...records[recordUid].data,
-          [updatedRow]: {
-            ...records[recordUid].data[updatedRow],
-            [updatedKey]: updatedValue,
-          },
+          // všechny řádky
+          ...records[editRowData.recordUid].data,
+          [editRowData.rowUid]: updatedRow,
         },
       },
     });
 
-    // validator pro editaci polí
-    if (!!validatorType) {
-      let isValid = false;
-      switch (validatorType) {
-        case "validateDistrictNumber":
-          isValid = validator(
-            "validateDistrictNumber",
-            updatedValue,
-            updatedCellId
-          );
-          break;
-
-        case "validateNoDigits":
-          isValid = validator("validateNoDigits", updatedValue, updatedCellId);
-          break;
-
-        case "validate2Digits":
-          isValid = validator("validate2Digits", updatedValue, updatedCellId);
-          break;
-
-        default:
-          break;
-      }
-      // když není validní nic neukládej do firebase
-      if (!isValid) {
-        return null;
-      }
-    }
-
-    // pokud přepisuji pole kind...
-    if (updatedKey === "kind") {
-      var fishes = [{ label: "Kapr" }, { label: "Okoun" }];
-
-      var input = document.getElementById(updatedCellId);
-
-      //https://www.npmjs.com/package/autocompleter
-      autocomplete({
-        input: input,
-        fetch: function (text, update) {
-          text = text.toLowerCase();
-          // you can also use AJAX requests instead of preloaded data
-          var suggestions = fishes.filter((n) =>
-            n.label.toLowerCase().startsWith(text)
-          );
-          update(suggestions);
-        },
-        minLength: 1,
-        onSelect: function (item) {
-          setRecords({
-            ...records,
-            [recordUid]: {
-              ...records[recordUid],
-              data: {
-                ...records[recordUid].data,
-                [updatedRow]: {
-                  ...records[recordUid].data[updatedRow],
-                  [updatedKey]: item.label,
-                },
-              },
-            },
-          });
-
-          updatedRecord = {
-            ...records[recordUid],
-            data: {
-              ...records[recordUid].data,
-              [updatedRow]: {
-                ...records[recordUid].data[updatedRow],
-                [updatedKey]: item.label,
-              },
-            },
-          };
-
-          return firebaseService.setUserRecord(
-            userUid,
-            recordUid,
-            updatedRecord
-          );
-        },
-      });
-    }
-
     let updatedRecord = {
-      ...records[recordUid],
+      ...records[editRowData.recordUid],
       data: {
-        ...records[recordUid].data,
-        [updatedRow]: {
-          ...records[recordUid].data[updatedRow],
-          [updatedKey]:
-            updatedKey === "kilograms" || updatedKey === "centimeters"
-              ? Math.round(updatedValue * 100) / 100
-              : updatedValue,
-        },
+        ...records[editRowData.recordUid].data,
+        [editRowData.rowUid]: updatedRow,
       },
     };
 
-    firebaseService.setUserRecord(userUid, recordUid, updatedRecord);
+    firebaseService.setUserRecord(
+      currentUser.uid,
+      editRowData.recordUid,
+      updatedRecord
+    );
+
+    setEditRowData(null);
   };
 
   const editRecordName = (key) => {
     const elName = document.getElementById(`${key}-recordName`);
     elName.disabled = !elName.disabled;
-  };
-
-  const editRow = (key) => {
-    const elements = document.getElementsByClassName(`row-${key}`);
-    for (let el of elements) {
-      el.disabled = !el.disabled;
-    }
   };
 
   const addRowAndRefresh = (recordUid, props) => {
@@ -283,6 +220,7 @@ const RecordPage = () => {
   const handleSubmitAdd = useCallback(
     async (event) => {
       setAddNewRowValid(false);
+      setEditRowData(null);
       handleAddClose();
       event.preventDefault();
       const {
@@ -308,6 +246,7 @@ const RecordPage = () => {
   );
   const handleAddClose = () => {
     setAddNewRowValid(false);
+    setEditRowData(null);
     setShowModalAdd(false);
   };
   const handleAddShow = () => setShowModalAdd(true);
@@ -375,7 +314,9 @@ const RecordPage = () => {
                       ([rowKey, value]) => (
                         <tr>
                           <td>
-                            <button onClick={() => editRow(rowKey)}>
+                            <button
+                              onClick={() => editRow(recordKey, rowKey, value)}
+                            >
                               edit
                             </button>{" "}
                             <button
@@ -421,155 +362,68 @@ const RecordPage = () => {
                           </td>
 
                           <td>
-                            <input
+                            <span
                               className={`row-${rowKey}`}
                               id={`row-${rowKey}-date`}
-                              type="date"
-                              onChange={(e) =>
-                                handleChangeRecord(
-                                  currentUser.uid,
-                                  recordKey,
-                                  rowKey,
-                                  "date",
-                                  e.target.value
-                                )
-                              }
-                              value={value.date ? value.date : ""}
-                              disabled
-                            />
+                            >
+                              {value.date ? value.date : ""}
+                            </span>
                           </td>
 
                           <td>
-                            <input
+                            <span
                               className={`row-${rowKey}`}
                               id={`row-${rowKey}-districtNumber`}
-                              type="number"
-                              onChange={(e) =>
-                                handleChangeRecord(
-                                  currentUser.uid,
-                                  recordKey,
-                                  rowKey,
-                                  "districtNumber",
-                                  e.target.value,
-                                  `row-${rowKey}-districtNumber`,
-                                  "validateDistrictNumber"
-                                )
-                              }
-                              value={
-                                value.districtNumber ? value.districtNumber : ""
-                              }
-                              disabled
-                            />
+                            >
+                              {value.districtNumber ? value.districtNumber : ""}
+                            </span>
                           </td>
 
                           <td>
-                            <input
+                            <span
                               className={`row-${rowKey}`}
                               id={`row-${rowKey}-subdistrictNumber`}
-                              type="number"
-                              onChange={(e) =>
-                                handleChangeRecord(
-                                  currentUser.uid,
-                                  recordKey,
-                                  rowKey,
-                                  "subdistrictNumber",
-                                  e.target.value,
-                                  `row-${rowKey}-subdistrictNumber`,
-                                  "validateNoDigits"
-                                )
-                              }
-                              value={
-                                value.subdistrictNumber
-                                  ? value.subdistrictNumber
-                                  : ""
-                              }
-                              disabled
-                            />
+                            >
+                              {value.subdistrictNumber
+                                ? value.subdistrictNumber
+                                : ""}
+                            </span>
                           </td>
 
                           <td>
-                            <input
+                            <span
                               className={`row-${rowKey}`}
                               id={`row-${rowKey}-kind`}
-                              type="text"
-                              onChange={(e) =>
-                                handleChangeRecord(
-                                  currentUser.uid,
-                                  recordKey,
-                                  rowKey,
-                                  "kind",
-                                  e.target.value,
-                                  `row-${rowKey}-kind`
-                                )
-                              }
-                              value={value.kind ? value.kind : ""}
-                              disabled
-                            />
+                            >
+                              {value.kind ? value.kind : ""}
+                            </span>
                           </td>
 
                           <td>
-                            <input
+                            <span
                               className={`row-${rowKey}`}
                               id={`row-${rowKey}-pieces`}
-                              type="number"
-                              onChange={(e) =>
-                                handleChangeRecord(
-                                  currentUser.uid,
-                                  recordKey,
-                                  rowKey,
-                                  "pieces",
-                                  e.target.value,
-                                  `row-${rowKey}-pieces`,
-                                  "validateNoDigits"
-                                )
-                              }
-                              value={value.pieces ? value.pieces : ""}
-                              disabled
-                            />
+                            >
+                              {value.pieces ? value.pieces : ""}
+                            </span>
                           </td>
 
                           <td>
-                            <input
+                            <span
                               className={`row-${rowKey}`}
                               id={`row-${rowKey}-kilograms`}
-                              type="number"
-                              step=".01"
-                              onChange={(e) =>
-                                handleChangeRecord(
-                                  currentUser.uid,
-                                  recordKey,
-                                  rowKey,
-                                  "kilograms",
-                                  e.target.value,
-                                  `row-${rowKey}-kilograms`,
-                                  "validate2Digits"
-                                )
-                              }
-                              value={value.kilograms ? value.kilograms : ""}
-                              disabled
-                            />
+                            >
+                              {value.kilograms ? value.kilograms : ""}
+                            </span>
                           </td>
 
                           <td>
-                            <input
+                            <span
                               className={`row-${rowKey}`}
                               id={`row-${rowKey}-centimeters`}
-                              type="number"
-                              step=".01"
-                              onChange={(e) =>
-                                handleChangeRecord(
-                                  currentUser.uid,
-                                  recordKey,
-                                  rowKey,
-                                  "centimeters",
-                                  e.target.value,
-                                  `row-${rowKey}-centimeters`,
-                                  "validate2Digits"
-                                )
-                              }
-                              value={value.centimeters ? value.centimeters : ""}
-                              disabled
-                            />
+                            >
+                              {value.centimeters ? value.centimeters : ""}
+                            </span>
                           </td>
                         </tr>
                       )
@@ -605,16 +459,24 @@ const RecordPage = () => {
                 centered
               >
                 <Modal.Header closeButton>
-                  <Modal.Title>Vyplnit řádek</Modal.Title>
+                  <Modal.Title>
+                    {!!editRowData ? "Upravit řádek" : "Vyplnit řádek"}
+                  </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                  <Form onSubmit={handleSubmitAdd}>
+                  <Form
+                    onSubmit={
+                      !!editRowData ? handleSubmitChange : handleSubmitAdd
+                    }
+                  >
                     <Form.Group>
                       <Form.Label>Date</Form.Label>
                       <Form.Control
                         type="date"
                         name="date"
-                        defaultValue={today}
+                        defaultValue={
+                          !!editRowData ? editRowData.rowValue.date : today
+                        }
                       />
                     </Form.Group>
 
@@ -625,6 +487,11 @@ const RecordPage = () => {
                         type="number"
                         name="districtNumber"
                         id={`${recordKey}form-districtNumber`}
+                        defaultValue={
+                          !!editRowData
+                            ? editRowData.rowValue.districtNumber
+                            : ""
+                        }
                         onChange={(e) =>
                           validator(
                             "validateDistrictNumber",
@@ -645,6 +512,11 @@ const RecordPage = () => {
                         type="number"
                         name="subdistrictNumber"
                         id={`${recordKey}form-subdistrictNumber`}
+                        defaultValue={
+                          !!editRowData
+                            ? editRowData.rowValue.subdistrictNumber
+                            : ""
+                        }
                         onChange={(e) =>
                           validator(
                             "validateNoDigits",
@@ -665,6 +537,9 @@ const RecordPage = () => {
                         name="kind"
                         id={`${recordKey}form-kind`}
                         autocomplete="off"
+                        defaultValue={
+                          !!editRowData ? editRowData.rowValue.kind : ""
+                        }
                         onChange={() =>
                           autocompleterService.do(`${recordKey}form-kind`)
                         }
@@ -677,6 +552,9 @@ const RecordPage = () => {
                         type="number"
                         name="pieces"
                         id={`${recordKey}form-pieces`}
+                        defaultValue={
+                          !!editRowData ? editRowData.rowValue.pieces : ""
+                        }
                         onChange={(e) =>
                           validator(
                             "validateNoDigits",
@@ -694,6 +572,9 @@ const RecordPage = () => {
                         step=".01"
                         name="kilograms"
                         id={`${recordKey}form-kilograms`}
+                        defaultValue={
+                          !!editRowData ? editRowData.rowValue.kilograms : ""
+                        }
                         onChange={(e) =>
                           validator(
                             "validate2Digits",
@@ -711,6 +592,9 @@ const RecordPage = () => {
                         step=".01"
                         name="centimeters"
                         id={`${recordKey}form-centimeters`}
+                        defaultValue={
+                          !!editRowData ? editRowData.rowValue.centimeters : ""
+                        }
                         onChange={(e) =>
                           validator(
                             "validate2Digits",
