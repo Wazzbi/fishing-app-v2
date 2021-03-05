@@ -39,7 +39,7 @@ const newSummaryRef = (summaryUid) =>
   appl.database().ref(`summaries/${summaryUid}`);
 
 // *** Post API ***
-const posts = appl.database().ref(`post/`);
+const postsRef = appl.database().ref(`post/`);
 const postImageRef = () => appl.storage().ref("images/test.png");
 
 // TODO přejmenovat metody podle CRUD
@@ -97,18 +97,21 @@ class firebaseService {
 
   // *** CREATE ***
   // TODO data upravit na konečnou podobu prázdného formuláře
-  static createPost = (file, text) => {
-    postImageRef()
-      .put(file, { contentType: "image/png" })
-      .then((snapshot) => {
-        console.log("Uploaded.");
-      });
-    return posts.push(
+  static createPost = (text) => {
+    return postsRef.push(
       {
         text,
       },
       (err) => console.log(err ? "error while pushing" : "successful push")
     );
+  };
+
+  static createImage = (file) => {
+    return postImageRef()
+      .put(file, { contentType: "image/png" })
+      .then((snapshot) => {
+        console.log("Uploaded.");
+      });
   };
 
   static createUserRecord = (uid) => {
