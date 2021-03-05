@@ -5,8 +5,6 @@ import autocompleterService from "../../services/utils/autocompleter.service";
 import { AuthContext } from "../../Auth";
 import "./recordPage.scss";
 
-import autocomplete from "autocompleter";
-
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -17,6 +15,8 @@ import Form from "react-bootstrap/Form";
 // TODO řazení nejnovější nahoře
 // TODO oddělit view do vlastního souboru
 // TODO validace jen přes modal (vyčistí to kód) udělat edit row v stejným modalu
+// TODO modaly mít taky samostatných souborech
+// TODO nešel by today získat i jinak než ho mít ve state
 
 const RecordPage = () => {
   const { currentUser } = useContext(AuthContext);

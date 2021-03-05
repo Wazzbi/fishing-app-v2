@@ -13,6 +13,7 @@ import Form from "react-bootstrap/Form";
 // TODO řazení nejnovější nahoře
 // TODO records, summaries zabraný -> přejmenovat
 // TODO zablokovat SEND když budou nějaká nevalidní data
+// TODO sloupce s rybama přes loop
 
 const SummaryPage = () => {
   const { currentUser } = useContext(AuthContext);
