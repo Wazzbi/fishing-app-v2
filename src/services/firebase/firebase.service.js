@@ -40,8 +40,8 @@ const newSummaryRef = (summaryUid) =>
 
 // *** Post API ***
 const postsRef = appl.database().ref(`post/`);
-const postImageRef = (name, type) =>
-  appl.storage().ref(`images/${name}.${type}`);
+const postImageRef = (name, size, type) =>
+  appl.storage().ref(`images/${name}/${name}-${size}.${type}`);
 
 // TODO přejmenovat metody podle CRUD
 class firebaseService {
@@ -98,21 +98,31 @@ class firebaseService {
 
   // *** CREATE ***
   // TODO data upravit na konečnou podobu prázdného formuláře
-  static createPost = (text) => {
+  static createPost = (text, image) => {
     return postsRef.push(
       {
         text,
+        image,
       },
       (err) => console.log(err ? "error while pushing" : "successful push")
     );
   };
 
-  static createImage = (file, name, type) => {
-    return postImageRef(name, type)
-      .put(file)
-      .then((snapshot) => {
-        console.log("Uploaded.");
-      });
+  static createImage = async (images) => {
+    await postImageRef(images.max.name, images.max.size, images.max.type).put(
+      images.max.blob
+    );
+    console.log("Uploaded Max.");
+
+    await postImageRef(images.med.name, images.med.size, images.med.type).put(
+      images.med.blob
+    );
+    console.log("Uploaded Med.");
+
+    await postImageRef(images.min.name, images.min.size, images.min.type).put(
+      images.min.blob
+    );
+    console.log("Uploaded Min.");
   };
 
   static createUserRecord = (uid) => {

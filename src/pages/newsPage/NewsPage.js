@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
 import "./newsPage.scss";
 import firebaseService from "../../services/firebase/firebase.service";
+import imageCompression from "browser-image-compression";
 
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -13,11 +14,7 @@ const shortid = require("shortid");
 
 const NewsPage = () => {
   const [show, setShow] = useState(false);
-  const [uploadImage, setUploadImage] = useState({
-    blob: null,
-    name: null,
-    type: null,
-  });
+  const [uploadImages, setUploadImages] = useState(null);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -27,29 +24,59 @@ const NewsPage = () => {
     event.preventDefault();
     const { text } = event.target.elements;
     // TODO createPost posílat uploadImage podle kterého si budu post pak načítat obrázky
-    console.log("type ", uploadImage.type);
-    firebaseService.createPost(text.value);
-    firebaseService.createImage(
-      uploadImage.blob,
-      uploadImage.name,
-      uploadImage.type
-    );
+    firebaseService.createPost(text.value, uploadImages.max.name);
+    firebaseService.createImage(uploadImages);
   };
 
   const handleChangeImage = (e) => {
     // TODO nahrávání více fotek (přidat další input)
-    // TODO ukládat aspoň dve velikosti obrázku a pak podle pc/mobile vracet
     const f = e.target.files[0];
     const fr = new FileReader();
 
-    fr.onload = function (ev2) {
+    console.log(f);
+
+    fr.onload = async (ev2) => {
       const name = shortid.generate();
-      const blob = dataURLtoFile(ev2.target.result, name);
+      const file = dataURLtoFile(ev2.target.result, name);
       const type =
         f.type.indexOf("/") !== -1
           ? f.type.slice(f.type.indexOf("/") + 1)
           : f.type;
-      setUploadImage({ blob, name, type });
+
+      // TODO options vyvést do souboru konstant
+      const optionsMax = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 800,
+        useWebWorker: true,
+      };
+
+      const optionsMed = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 400,
+        useWebWorker: true,
+      };
+
+      const optionsMin = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 200,
+        useWebWorker: true,
+      };
+
+      try {
+        let o;
+        await imageCompression(file, optionsMax).then((blob) => {
+          o = { ...o, max: { blob, name, type, size: 800 } };
+        });
+        await imageCompression(file, optionsMed).then((blob) => {
+          o = { ...o, med: { blob, name, type, size: 400 } };
+        });
+        await imageCompression(file, optionsMin).then((blob) => {
+          o = { ...o, min: { blob, name, type, size: 200 } };
+        });
+        setUploadImages(o);
+      } catch (err) {
+        console.error(err);
+      }
     };
 
     if (f) {
