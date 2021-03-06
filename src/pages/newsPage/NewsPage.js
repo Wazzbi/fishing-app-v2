@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import "./newsPage.scss";
 import firebaseService from "../../services/firebase/firebase.service";
 import imageCompression from "browser-image-compression";
@@ -15,16 +15,24 @@ const shortid = require("shortid");
 const NewsPage = () => {
   const [show, setShow] = useState(false);
   const [uploadImages, setUploadImages] = useState(null);
+  const [posts, setPosts] = useState(null);
+  const [images, setImages] = useState([]);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
   const handleSubmit = (event) => {
+    // !! když se přiloží obr a rychle klikne submit tak jestě není reference v useState
+    // !! udělat disable na submit než se vytvoří objekt v useState
     handleClose();
     event.preventDefault();
     const { text } = event.target.elements;
     // TODO createPost posílat uploadImage podle kterého si budu post pak načítat obrázky
-    firebaseService.createPost(text.value, uploadImages.max.name);
+    firebaseService.createPost(
+      text.value,
+      uploadImages.max.name,
+      uploadImages.max.type
+    );
     firebaseService.createImage(uploadImages);
   };
 
@@ -98,10 +106,31 @@ const NewsPage = () => {
     return new File([u8arr], filename, { type: mime });
   };
 
+  useEffect(() => {
+    firebaseService.getPosts().then((r) => {
+      setPosts({ ...posts, ...r });
+      Object.entries(r).map(([postKey, postValue]) => {
+        firebaseService
+          .getImageUrl(postValue.image, 400, postValue.type)
+          .then((r) => setImages({ ...images, [postKey]: r }));
+      });
+    });
+  }, []);
+
   return (
     <>
       <h1>NewsPage</h1>
-      <div className="main"></div>
+      <div className="main">
+        {!!posts &&
+          Object.entries(posts).map(([postKey, postValue]) => {
+            return (
+              <section>
+                <img src={images[postKey]}></img>
+                <article>{postValue.text}</article>
+              </section>
+            );
+          })}
+      </div>
       <Button variant="success" className="float-btn" onClick={handleShow}>
         ADD POST
       </Button>

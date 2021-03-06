@@ -40,23 +40,49 @@ const newSummaryRef = (summaryUid) =>
 
 // *** Post API ***
 const postsRef = appl.database().ref(`post/`);
+
+// *** Images API
 const postImageRef = (name, size, type) =>
   appl.storage().ref(`images/${name}/${name}-${size}.${type}`);
 
 // TODO přejmenovat metody podle CRUD
 class firebaseService {
+  // TODO toto může být jen export konstant...
   static auth = () => appl.auth();
-
   static firebaseUser = (uid) => user(uid);
-
   static firebaseUserRecords = (uid) => records(uid);
-
   static firebaseUserRecord = (userUid, recordUid) =>
     recordRef(userUid, recordUid);
 
   // TODO refactorovat GET metody (jsou téměř identický..)
 
   // *** GET ***
+  static getImageUrl = (name, size, type) => {
+    const defaultSize = size || 400;
+    const pathRef = appl
+      .storage()
+      .ref(`images/${name}/${name}-${defaultSize}.${type}`);
+
+    return appl
+      .storage()
+      .ref()
+      .child(`images/${name}/${name}-${defaultSize}.${type}`)
+      .getDownloadURL();
+  };
+
+  static getPosts = async () => {
+    try {
+      const snapshot = await postsRef.get();
+      if (snapshot.exists()) {
+        return snapshot.val();
+      } else {
+        console.log("No data available");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   static getUserData = async (uid) => {
     try {
       const snapshot = await user(uid).get();
@@ -98,11 +124,12 @@ class firebaseService {
 
   // *** CREATE ***
   // TODO data upravit na konečnou podobu prázdného formuláře
-  static createPost = (text, image) => {
+  static createPost = (text, image, type) => {
     return postsRef.push(
       {
         text,
         image,
+        type,
       },
       (err) => console.log(err ? "error while pushing" : "successful push")
     );
