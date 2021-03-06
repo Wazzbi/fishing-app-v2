@@ -6,11 +6,18 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 
+const shortid = require("shortid");
+
 // TODO emoji, odkazy
+// TODO main kontajner udělat squeeze a nakonec s flex-base nebo min-width
 
 const NewsPage = () => {
   const [show, setShow] = useState(false);
-  const [uploadImage, setUploadImage] = useState(null);
+  const [uploadImage, setUploadImage] = useState({
+    blob: null,
+    name: null,
+    type: null,
+  });
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -20,28 +27,34 @@ const NewsPage = () => {
     event.preventDefault();
     const { text } = event.target.elements;
     // TODO createPost posílat uploadImage podle kterého si budu post pak načítat obrázky
-    console.log("type ", uploadImage);
+    console.log("type ", uploadImage.type);
     firebaseService.createPost(text.value);
+    firebaseService.createImage(
+      uploadImage.blob,
+      uploadImage.name,
+      uploadImage.type
+    );
   };
 
   const handleChangeImage = (e) => {
-    // TODO uložit s unikátním názvem obrázku
-    // TODO odmazat obrázek
     // TODO nahrávání více fotek (přidat další input)
     // TODO ukládat aspoň dve velikosti obrázku a pak podle pc/mobile vracet
-    // TODO načítat pouze obr soubory
-    var f = e.target.files[0];
-    var fr = new FileReader();
-
-    setUploadImage(f.name);
+    const f = e.target.files[0];
+    const fr = new FileReader();
 
     fr.onload = function (ev2) {
-      console.dir(ev2);
-      let blob = dataURLtoFile(ev2.target.result, "test");
-      firebaseService.createImage(blob);
+      const name = shortid.generate();
+      const blob = dataURLtoFile(ev2.target.result, name);
+      const type =
+        f.type.indexOf("/") !== -1
+          ? f.type.slice(f.type.indexOf("/") + 1)
+          : f.type;
+      setUploadImage({ blob, name, type });
     };
 
-    fr.readAsDataURL(f);
+    if (f) {
+      fr.readAsDataURL(f);
+    }
   };
 
   const dataURLtoFile = (dataurl, filename) => {
@@ -83,6 +96,7 @@ const NewsPage = () => {
               <Form.File
                 name="file"
                 label="Example file input"
+                accept="image/*"
                 onChange={handleChangeImage}
               />
             </Form.Group>

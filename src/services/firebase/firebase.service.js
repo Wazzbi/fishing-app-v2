@@ -40,7 +40,8 @@ const newSummaryRef = (summaryUid) =>
 
 // *** Post API ***
 const postsRef = appl.database().ref(`post/`);
-const postImageRef = () => appl.storage().ref("images/test.png");
+const postImageRef = (name, type) =>
+  appl.storage().ref(`images/${name}.${type}`);
 
 // TODO přejmenovat metody podle CRUD
 class firebaseService {
@@ -106,9 +107,9 @@ class firebaseService {
     );
   };
 
-  static createImage = (file) => {
-    return postImageRef()
-      .put(file, { contentType: "image/png" })
+  static createImage = (file, name, type) => {
+    return postImageRef(name, type)
+      .put(file)
       .then((snapshot) => {
         console.log("Uploaded.");
       });
