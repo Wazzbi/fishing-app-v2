@@ -11,6 +11,8 @@ const shortid = require("shortid");
 
 // TODO emoji, odkazy
 // TODO main kontajner udělat squeeze a nakonec s flex-base nebo min-width
+// TODO funkce update bude chtít vychitat pro infinite scroll + nejaký loading anime než se načte update
+// TODO pořadí posts od nejnovejšího
 
 const NewsPage = () => {
   const [show, setShow] = useState(false);
@@ -28,12 +30,16 @@ const NewsPage = () => {
     event.preventDefault();
     const { text } = event.target.elements;
     // TODO createPost posílat uploadImage podle kterého si budu post pak načítat obrázky
-    firebaseService.createPost(
-      text.value,
-      uploadImages.max.name,
-      uploadImages.max.type
+    const imgName =
+      (uploadImages && uploadImages.max && uploadImages.max.name) || "";
+    const imgType =
+      (uploadImages && uploadImages.max && uploadImages.max.type) || "";
+    firebaseService.createPost(text.value, imgName, imgType).then(() =>
+      firebaseService.createImage(uploadImages).then(() => {
+        setUploadImages(null);
+        update();
+      })
     );
-    firebaseService.createImage(uploadImages);
   };
 
   const handleChangeImage = (e) => {
@@ -106,15 +112,34 @@ const NewsPage = () => {
     return new File([u8arr], filename, { type: mime });
   };
 
-  useEffect(() => {
+  const update = () => {
     firebaseService.getPosts().then((r) => {
-      setPosts({ ...posts, ...r });
-      Object.entries(r).map(([postKey, postValue]) => {
-        firebaseService
-          .getImageUrl(postValue.image, 400, postValue.type)
-          .then((r) => setImages({ ...images, [postKey]: r }));
-      });
+      if (!!r) {
+        setPosts({ ...posts, ...r });
+
+        let e = {};
+        const getImagesPromise = async (postKey, postValue) => {
+          if (postValue.image) {
+            let promise = firebaseService.getImageUrl(
+              postValue.image,
+              400,
+              postValue.type
+            );
+            let response = await promise;
+            e = { ...e, [postKey]: response };
+            setImages({ ...images, ...e });
+          }
+        };
+
+        Object.entries(r).map(([postKey, postValue]) => {
+          getImagesPromise(postKey, postValue);
+        });
+      }
     });
+  };
+
+  useEffect(() => {
+    update();
   }, []);
 
   return (
@@ -122,10 +147,19 @@ const NewsPage = () => {
       <h1>NewsPage</h1>
       <div className="main">
         {!!posts &&
+          !!images &&
           Object.entries(posts).map(([postKey, postValue]) => {
             return (
               <section>
-                <img src={images[postKey]}></img>
+                {images[postKey] ? (
+                  <img
+                    src={images[postKey]}
+                    style={{ width: "100%", maxWidth: "400px", height: "auto" }}
+                  ></img>
+                ) : (
+                  ""
+                )}
+
                 <article>{postValue.text}</article>
               </section>
             );

@@ -136,20 +136,22 @@ class firebaseService {
   };
 
   static createImage = async (images) => {
-    await postImageRef(images.max.name, images.max.size, images.max.type).put(
-      images.max.blob
-    );
-    console.log("Uploaded Max.");
+    if (images) {
+      await postImageRef(images.max.name, images.max.size, images.max.type).put(
+        images.max.blob
+      );
+      console.log("Uploaded Max.");
 
-    await postImageRef(images.med.name, images.med.size, images.med.type).put(
-      images.med.blob
-    );
-    console.log("Uploaded Med.");
+      await postImageRef(images.med.name, images.med.size, images.med.type).put(
+        images.med.blob
+      );
+      console.log("Uploaded Med.");
 
-    await postImageRef(images.min.name, images.min.size, images.min.type).put(
-      images.min.blob
-    );
-    console.log("Uploaded Min.");
+      await postImageRef(images.min.name, images.min.size, images.min.type).put(
+        images.min.blob
+      );
+      console.log("Uploaded Min.");
+    }
   };
 
   static createUserRecord = (uid) => {
