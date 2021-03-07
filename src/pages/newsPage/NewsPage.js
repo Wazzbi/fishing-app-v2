@@ -1,14 +1,17 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import "./newsPage.scss";
 import firebaseService from "../../services/firebase/firebase.service";
 import imageCompression from "browser-image-compression";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { AuthContext } from "../../Auth";
 
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
+import Row from "react-bootstrap/Row";
+import Card from "react-bootstrap/Card";
 
 const shortid = require("shortid");
 
@@ -17,8 +20,10 @@ const shortid = require("shortid");
 // TODO funkce init bude chtít vychitat pro infinite scroll + nejaký loading anime než se načte init
 // TODO pořadí posts od nejnovejšího
 // TODO při submit nahoře proužek s nahráváním
+// TODO ukládat/zobrazovat jméno uzivatele + datum/čas kdy vytvořeno
 
 const NewsPage = () => {
+  const { currentUserData } = useContext(AuthContext);
   const [show, setShow] = useState(false);
   const [uploadImages, setUploadImages] = useState(null);
   const [posts, setPosts] = useState(null);
@@ -31,27 +36,44 @@ const NewsPage = () => {
     // !! udělat disable na submit než se vytvoří objekt v useState
     handleClose();
     event.preventDefault();
-    const { text } = event.target.elements;
-    // TODO createPost posílat uploadImage podle kterého si budu post pak načítat obrázky
+    const { title, text } = event.target.elements;
+    const usrname = currentUserData && currentUserData.username;
+
+    let currentdate = new Date();
+    let datetime =
+      currentdate.getDate() +
+      "." +
+      (currentdate.getMonth() + 1) +
+      "." +
+      currentdate.getFullYear() +
+      " " +
+      currentdate.getHours() +
+      ":" +
+      currentdate.getMinutes() +
+      ":" +
+      currentdate.getSeconds();
+
+    const created = datetime;
+
     const imgName =
       (uploadImages && uploadImages.max && uploadImages.max.name) || "";
     const imgType =
       (uploadImages && uploadImages.max && uploadImages.max.type) || "";
-    firebaseService.createPost(text.value, imgName, imgType).then(() =>
-      firebaseService.createImage(uploadImages).then(() => {
-        setUploadImages(null);
+    firebaseService
+      .createPost(text.value, imgName, imgType, usrname, created, title.value)
+      .then(() =>
+        firebaseService.createImage(uploadImages).then(() => {
+          setUploadImages(null);
 
-        init();
-      })
-    );
+          init();
+        })
+      );
   };
 
   const handleChangeImage = (e) => {
     // TODO nahrávání více fotek (přidat další input)
     const f = e.target.files[0];
     const fr = new FileReader();
-
-    console.log(f);
 
     fr.onload = async (ev2) => {
       const name = shortid.generate();
@@ -117,15 +139,12 @@ const NewsPage = () => {
   };
 
   const init = () => {
-    let ee = {};
-    let loaded = 0;
-    firebaseService.getPostsInit().on("child_added", function (data) {
-      ee = { ...ee, [data.key]: data.val() };
-      ++loaded;
+    let ww = {};
+    firebaseService.getPostsInit().once("value", (snapshot) => {
+      snapshot.forEach((childSnapshot) => {
+        ww = { ...ww, [childSnapshot.key]: childSnapshot.val() };
 
-      // init load je nastavený na pět posts
-      if (loaded === 5) {
-        let e = {};
+        // TODO toto refaktorovat je to zdvojený v fetchMorePosts
         const addImagetoPost = async (postKey, postValue) => {
           if (postValue.image) {
             let promise = firebaseService.getImageUrl(
@@ -134,27 +153,22 @@ const NewsPage = () => {
               postValue.type
             );
             let response = await promise;
-            ee = { ...ee, [postKey]: { ...ee[postKey], imageUrl: response } };
+            ww = { ...ww, [postKey]: { ...ww[postKey], imageUrl: response } };
           }
-          setPosts({ ...posts, ...ee });
+          setPosts({ ...posts, ...ww });
         };
-
-        Object.entries(ee).map(([postKey, postValue]) => {
-          addImagetoPost(postKey, postValue);
-        });
-      }
+        addImagetoPost(childSnapshot.key, childSnapshot.val());
+      });
     });
   };
 
   const fetchMorePosts = async (timeStamp) => {
     let ww = {};
-    firebaseService
-      .getPostsLimited(timeStamp)
-      .on("child_added", function (data) {
-        ww = { ...ww, [data.key]: data.val() };
+    firebaseService.getPostsLimited(timeStamp).once("value", (snapshot) => {
+      snapshot.forEach((childSnapshot) => {
+        ww = { ...ww, [childSnapshot.key]: childSnapshot.val() };
 
-        let e = {};
-        const getImagesPromise = async (postKey, postValue) => {
+        const addImagetoPost = async (postKey, postValue) => {
           if (postValue.image) {
             let promise = firebaseService.getImageUrl(
               postValue.image,
@@ -162,16 +176,13 @@ const NewsPage = () => {
               postValue.type
             );
             let response = await promise;
-            console.warn(!!response);
             ww = { ...ww, [postKey]: { ...ww[postKey], imageUrl: response } };
           }
           setPosts({ ...posts, ...ww });
         };
-
-        Object.entries(ww).map(([postKey, postValue]) => {
-          getImagesPromise(postKey, postValue);
-        });
+        addImagetoPost(childSnapshot.key, childSnapshot.val());
       });
+    });
   };
 
   // https://www.npmjs.com/package/react-lazy-load-image-component
@@ -188,28 +199,49 @@ const NewsPage = () => {
         dataLength={postsRender.length}
         next={() => fetchMorePosts(lastPostTimeStamp)}
         hasMore={true}
-        // loader={<h4>Loading...</h4>}
       >
         {postsRender.map(([postKey, postValue]) => (
-          <section>
-            {posts[postKey] ? (
+          <>
+            <Row className="cx-card">
+              {posts[postKey] ? (
+                <div
+                  className="cx-card-image"
+                  style={{
+                    maxWidth: "400px",
+                    minHeight: "237px",
+                  }}
+                >
+                  <LazyLoadImage
+                    alt={""}
+                    effect="blur"
+                    src={posts[postKey].imageUrl}
+                    width={"100%"}
+                    height={"auto"}
+                  />
+                </div>
+              ) : (
+                ""
+              )}
               <div
-                style={{ width: "100%", maxWidth: "400px", minHeight: "237px" }}
+                className="cx-card-body"
+                style={{
+                  maxHeight: "200px",
+                  overflowY: "hidden",
+                  maxWidth: "380px",
+                }}
               >
-                <LazyLoadImage
-                  alt={""}
-                  effect="blur"
-                  src={posts[postKey].imageUrl}
-                  width={"100%"}
-                  height={"auto"}
-                />
+                {postValue.title ? (
+                  <Card.Title>{postValue.title}</Card.Title>
+                ) : (
+                  ""
+                )}
+                <Card.Text>
+                  {postValue.username} {postValue.created}
+                </Card.Text>
+                <Card.Text>{postValue.text}</Card.Text>
               </div>
-            ) : (
-              ""
-            )}
-
-            <article>{postValue.text}</article>
-          </section>
+            </Row>
+          </>
         ))}
       </InfiniteScroll>
     );
@@ -247,6 +279,11 @@ const NewsPage = () => {
                 accept="image/*"
                 onChange={handleChangeImage}
               />
+            </Form.Group>
+
+            <Form.Group>
+              <Form.Label>Title</Form.Label>
+              <Form.Control type="text" name="title" />
             </Form.Group>
 
             <Form.Group>

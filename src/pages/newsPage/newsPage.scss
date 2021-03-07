@@ -8,5 +8,30 @@
   min-height: 100vh;
   max-width: 900px;
   margin: auto;
-  background-color: rgba(127, 255, 212, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cx-card {
+  display: flex;
+  margin: 0 0 40px;
+  background-color: rgba(255, 217, 0, 0.5);
+
+  @media only screen and (max-width: 840px) {
+    width: 400px;
+  }
+}
+
+.cx-card-image {
+  order: 1;
+}
+
+.cx-card-body {
+  order: 2;
+  margin: 10px;
+
+  // @media only screen and (min-width: 600px) {
+  //   order: 0;
+  // }
 }

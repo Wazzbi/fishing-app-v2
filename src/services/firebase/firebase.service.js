@@ -132,14 +132,17 @@ class firebaseService {
 
   // *** CREATE ***
   // TODO data upravit na konečnou podobu prázdného formuláře
-  static createPost = (text, image, type) => {
+  static createPost = (text, image, type, username, created, title) => {
     const timeStamp = Date.now();
     return postsRef.push(
       {
+        title,
         text,
         image,
         type,
         timeStamp,
+        username,
+        created,
       },
       (err) => console.log(err ? "error while pushing" : "successful push")
     );
@@ -150,17 +153,14 @@ class firebaseService {
       await postImageRef(images.max.name, images.max.size, images.max.type).put(
         images.max.blob
       );
-      console.log("Uploaded Max.");
 
       await postImageRef(images.med.name, images.med.size, images.med.type).put(
         images.med.blob
       );
-      console.log("Uploaded Med.");
 
       await postImageRef(images.min.name, images.min.size, images.min.type).put(
         images.min.blob
       );
-      console.log("Uploaded Min.");
     }
   };
 
