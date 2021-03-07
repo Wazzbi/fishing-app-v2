@@ -4,6 +4,7 @@ import firebaseService from "../../services/firebase/firebase.service";
 import imageCompression from "browser-image-compression";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -21,6 +22,7 @@ const NewsPage = () => {
   const [uploadImages, setUploadImages] = useState(null);
   const [posts, setPosts] = useState(null);
   const [images, setImages] = useState([]);
+  const [postCards, setPostCards] = useState(null);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -142,48 +144,88 @@ const NewsPage = () => {
         Object.entries(ee).map(([postKey, postValue]) => {
           getImagesPromise(postKey, postValue);
         });
+
+        setPostCards({
+          posts: { ...posts, ...ee },
+          images: { ...images, ...e },
+        });
       }
     });
   };
 
-  // https://www.npmjs.com/package/react-lazy-load-image-component
-  // TODO lazy load celý komponenty s textem
-  const renderPosts = () => {
-    return Object.entries(posts).map(([postKey, postValue]) => {
-      return (
-        <section>
-          {images[postKey] ? (
-            <div
-              style={{ width: "100%", maxWidth: "400px", minHeight: "237px" }}
-            >
-              <LazyLoadImage
-                alt={""}
-                effect="blur"
-                src={images[postKey]}
-                width={"100%"}
-                height={"auto"}
-              />
-            </div>
-          ) : (
-            ""
-          )}
+  const fetchMorePosts = async (timeStamp) => {
+    let ww = {};
+    firebaseService
+      .getPostsLimited(timeStamp)
+      .on("child_added", function (data) {
+        ww = { ...ww, [data.key]: data.val() };
 
-          <article>{postValue.text}</article>
-        </section>
-      );
-    });
+        let e = {};
+        const getImagesPromise = async (postKey, postValue) => {
+          if (postValue.image) {
+            let promise = firebaseService.getImageUrl(
+              postValue.image,
+              400,
+              postValue.type
+            );
+            let response = await promise;
+            e = { ...e, [postKey]: response };
+            setImages({ ...images, ...e });
+            setPosts({ ...posts, ...ww });
+          } else {
+            setPosts({ ...posts, ...ww });
+          }
+        };
+
+        Object.entries(ww).map(([postKey, postValue], index) => {
+          getImagesPromise(postKey, postValue);
+        });
+      });
+  };
+
+  // https://www.npmjs.com/package/react-lazy-load-image-component
+  // https://www.npmjs.com/package/react-infinite-scroll-component
+  const renderPosts = () => {
+    let t = Object.entries(posts); // [[postKey,postValue], ...]
+    let postsRender = t.sort().reverse();
+
+    let lastPost = postsRender[postsRender.length - 1];
+    let lastPostTimeStamp = lastPost[1].timeStamp;
+
+    return (
+      <InfiniteScroll
+        dataLength={postsRender.length}
+        next={() => fetchMorePosts(lastPostTimeStamp)}
+        hasMore={true}
+        // loader={<h4>Loading...</h4>}
+      >
+        {postsRender.map(([postKey, postValue]) => (
+          <section>
+            {images[postKey] ? (
+              <div
+                style={{ width: "100%", maxWidth: "400px", minHeight: "237px" }}
+              >
+                <LazyLoadImage
+                  alt={""}
+                  effect="blur"
+                  src={images[postKey]}
+                  width={"100%"}
+                  height={"auto"}
+                />
+              </div>
+            ) : (
+              ""
+            )}
+
+            <article>{postValue.text}</article>
+          </section>
+        ))}
+      </InfiniteScroll>
+    );
   };
 
   useEffect(() => {
     init();
-    let ee = {};
-    firebaseService.getPostsInit().on("child_added", function (data) {
-      ee = { ...ee, [data.key]: data.val() };
-      console.log("init: ", ee);
-    });
-    // firebaseService.getPostsLimited().on("child_added", function (data) {
-    //   console.log(data.val().text);
-    // });
   }, []);
 
   return (

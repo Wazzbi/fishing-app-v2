@@ -87,8 +87,8 @@ class firebaseService {
     return postsRef.orderByChild("timeStamp").limitToLast(5);
   };
 
-  static getPostsLimited = () => {
-    return postsRef.orderByChild("timeStamp").startAt(1615107680875);
+  static getPostsLimited = (timeStamp) => {
+    return postsRef.orderByChild("timeStamp").endAt(timeStamp).limitToLast(5);
   };
 
   static getUserData = async (uid) => {
