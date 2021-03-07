@@ -18,9 +18,10 @@ const shortid = require("shortid");
 // TODO emoji, odkazy
 // TODO main kontajner udělat squeeze a nakonec s flex-base nebo min-width
 // TODO funkce init bude chtít vychitat pro infinite scroll + nejaký loading anime než se načte init
-// TODO pořadí posts od nejnovejšího
 // TODO při submit nahoře proužek s nahráváním
-// TODO ukládat/zobrazovat jméno uzivatele + datum/čas kdy vytvořeno
+// TODO router na rozkliknutý článek
+// TODO vytvořit 'moje zeď' s příspěvky kde budu mít odebírat
+// TODO možnost dávat si příspěvky do oblíbených
 
 const NewsPage = () => {
   const { currentUserData } = useContext(AuthContext);
@@ -199,6 +200,7 @@ const NewsPage = () => {
         dataLength={postsRender.length}
         next={() => fetchMorePosts(lastPostTimeStamp)}
         hasMore={true}
+        style={{ padding: "10px" }}
       >
         {postsRender.map(([postKey, postValue]) => (
           <>
@@ -228,6 +230,7 @@ const NewsPage = () => {
                   maxHeight: "200px",
                   overflowY: "hidden",
                   maxWidth: "380px",
+                  position: "relative",
                 }}
               >
                 {postValue.title ? (
@@ -238,7 +241,10 @@ const NewsPage = () => {
                 <Card.Text>
                   {postValue.username} {postValue.created}
                 </Card.Text>
-                <Card.Text>{postValue.text}</Card.Text>
+                <Card.Text style={{ textAlign: "justify" }}>
+                  {postValue.text}
+                </Card.Text>
+                <div className="overlay"></div>
               </div>
             </Row>
           </>
@@ -283,7 +289,7 @@ const NewsPage = () => {
 
             <Form.Group>
               <Form.Label>Title</Form.Label>
-              <Form.Control type="text" name="title" />
+              <Form.Control type="text" name="title" maxlength="30" />
             </Form.Group>
 
             <Form.Group>
