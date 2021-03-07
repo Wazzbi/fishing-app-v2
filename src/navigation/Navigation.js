@@ -36,22 +36,22 @@ const Navigation = () => {
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="ml-auto">
-                <Nav.Link as={Link} to={"/weather"} onSelect={closeNav}>
+                <Nav.Link as={Link} to={"/weather"} onClick={closeNav}>
                   Weather
                 </Nav.Link>
-                <Nav.Link as={Link} to={"/news"} onSelect={closeNav}>
+                <Nav.Link as={Link} to={"/news"} onClick={closeNav}>
                   News
                 </Nav.Link>
-                <Nav.Link as={Link} to={"/record"} onSelect={closeNav}>
+                <Nav.Link as={Link} to={"/record"} onClick={closeNav}>
                   Record
                 </Nav.Link>
-                <Nav.Link as={Link} to={"/summary"} onSelect={closeNav}>
+                <Nav.Link as={Link} to={"/summary"} onClick={closeNav}>
                   Summary
                 </Nav.Link>
-                <Nav.Link as={Link} to={"/home"} onSelect={closeNav}>
+                <Nav.Link as={Link} to={"/home"} onClick={closeNav}>
                   Home
                 </Nav.Link>
-                <Nav.Link as={Link} to={"/user"} onSelect={closeNav}>
+                <Nav.Link as={Link} to={"/user"} onClick={closeNav}>
                   User
                 </Nav.Link>
               </Nav>

@@ -16,13 +16,12 @@ const shortid = require("shortid");
 // TODO main kontajner udělat squeeze a nakonec s flex-base nebo min-width
 // TODO funkce init bude chtít vychitat pro infinite scroll + nejaký loading anime než se načte init
 // TODO pořadí posts od nejnovejšího
+// TODO při submit nahoře proužek s nahráváním
 
 const NewsPage = () => {
   const [show, setShow] = useState(false);
   const [uploadImages, setUploadImages] = useState(null);
   const [posts, setPosts] = useState(null);
-  const [images, setImages] = useState([]);
-  const [postCards, setPostCards] = useState(null);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -41,6 +40,7 @@ const NewsPage = () => {
     firebaseService.createPost(text.value, imgName, imgType).then(() =>
       firebaseService.createImage(uploadImages).then(() => {
         setUploadImages(null);
+
         init();
       })
     );
@@ -125,10 +125,8 @@ const NewsPage = () => {
 
       // init load je nastavený na pět posts
       if (loaded === 5) {
-        setPosts({ ...posts, ...ee });
-
         let e = {};
-        const getImagesPromise = async (postKey, postValue) => {
+        const addImagetoPost = async (postKey, postValue) => {
           if (postValue.image) {
             let promise = firebaseService.getImageUrl(
               postValue.image,
@@ -136,18 +134,13 @@ const NewsPage = () => {
               postValue.type
             );
             let response = await promise;
-            e = { ...e, [postKey]: response };
-            setImages({ ...images, ...e });
+            ee = { ...ee, [postKey]: { ...ee[postKey], imageUrl: response } };
           }
+          setPosts({ ...posts, ...ee });
         };
 
         Object.entries(ee).map(([postKey, postValue]) => {
-          getImagesPromise(postKey, postValue);
-        });
-
-        setPostCards({
-          posts: { ...posts, ...ee },
-          images: { ...images, ...e },
+          addImagetoPost(postKey, postValue);
         });
       }
     });
@@ -169,15 +162,13 @@ const NewsPage = () => {
               postValue.type
             );
             let response = await promise;
-            e = { ...e, [postKey]: response };
-            setImages({ ...images, ...e });
-            setPosts({ ...posts, ...ww });
-          } else {
-            setPosts({ ...posts, ...ww });
+            console.warn(!!response);
+            ww = { ...ww, [postKey]: { ...ww[postKey], imageUrl: response } };
           }
+          setPosts({ ...posts, ...ww });
         };
 
-        Object.entries(ww).map(([postKey, postValue], index) => {
+        Object.entries(ww).map(([postKey, postValue]) => {
           getImagesPromise(postKey, postValue);
         });
       });
@@ -201,14 +192,14 @@ const NewsPage = () => {
       >
         {postsRender.map(([postKey, postValue]) => (
           <section>
-            {images[postKey] ? (
+            {posts[postKey] ? (
               <div
                 style={{ width: "100%", maxWidth: "400px", minHeight: "237px" }}
               >
                 <LazyLoadImage
                   alt={""}
                   effect="blur"
-                  src={images[postKey]}
+                  src={posts[postKey].imageUrl}
                   width={"100%"}
                   height={"auto"}
                 />
@@ -231,7 +222,7 @@ const NewsPage = () => {
   return (
     <>
       <h1>NewsPage</h1>
-      <div className="main">{!!posts && !!images && renderPosts()}</div>
+      <div className="main">{!!posts && renderPosts()}</div>
       <Button variant="success" className="float-btn" onClick={handleShow}>
         ADD POST
       </Button>
