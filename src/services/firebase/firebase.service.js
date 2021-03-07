@@ -83,6 +83,14 @@ class firebaseService {
     }
   };
 
+  static getPostsInit = () => {
+    return postsRef.orderByChild("timeStamp").limitToLast(5);
+  };
+
+  static getPostsLimited = () => {
+    return postsRef.orderByChild("timeStamp").startAt(1615107680875);
+  };
+
   static getUserData = async (uid) => {
     try {
       const snapshot = await user(uid).get();
@@ -125,11 +133,13 @@ class firebaseService {
   // *** CREATE ***
   // TODO data upravit na konečnou podobu prázdného formuláře
   static createPost = (text, image, type) => {
+    const timeStamp = Date.now();
     return postsRef.push(
       {
         text,
         image,
         type,
+        timeStamp,
       },
       (err) => console.log(err ? "error while pushing" : "successful push")
     );

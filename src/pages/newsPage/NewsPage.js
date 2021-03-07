@@ -2,6 +2,8 @@ import React, { useState, useCallback, useEffect } from "react";
 import "./newsPage.scss";
 import firebaseService from "../../services/firebase/firebase.service";
 import imageCompression from "browser-image-compression";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
 
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -11,7 +13,7 @@ const shortid = require("shortid");
 
 // TODO emoji, odkazy
 // TODO main kontajner udělat squeeze a nakonec s flex-base nebo min-width
-// TODO funkce update bude chtít vychitat pro infinite scroll + nejaký loading anime než se načte update
+// TODO funkce init bude chtít vychitat pro infinite scroll + nejaký loading anime než se načte init
 // TODO pořadí posts od nejnovejšího
 
 const NewsPage = () => {
@@ -37,7 +39,7 @@ const NewsPage = () => {
     firebaseService.createPost(text.value, imgName, imgType).then(() =>
       firebaseService.createImage(uploadImages).then(() => {
         setUploadImages(null);
-        update();
+        init();
       })
     );
   };
@@ -112,10 +114,16 @@ const NewsPage = () => {
     return new File([u8arr], filename, { type: mime });
   };
 
-  const update = () => {
-    firebaseService.getPosts().then((r) => {
-      if (!!r) {
-        setPosts({ ...posts, ...r });
+  const init = () => {
+    let ee = {};
+    let loaded = 0;
+    firebaseService.getPostsInit().on("child_added", function (data) {
+      ee = { ...ee, [data.key]: data.val() };
+      ++loaded;
+
+      // init load je nastavený na pět posts
+      if (loaded === 5) {
+        setPosts({ ...posts, ...ee });
 
         let e = {};
         const getImagesPromise = async (postKey, postValue) => {
@@ -131,40 +139,57 @@ const NewsPage = () => {
           }
         };
 
-        Object.entries(r).map(([postKey, postValue]) => {
+        Object.entries(ee).map(([postKey, postValue]) => {
           getImagesPromise(postKey, postValue);
         });
       }
     });
   };
 
+  // https://www.npmjs.com/package/react-lazy-load-image-component
+  // TODO lazy load celý komponenty s textem
+  const renderPosts = () => {
+    return Object.entries(posts).map(([postKey, postValue]) => {
+      return (
+        <section>
+          {images[postKey] ? (
+            <div
+              style={{ width: "100%", maxWidth: "400px", minHeight: "237px" }}
+            >
+              <LazyLoadImage
+                alt={""}
+                effect="blur"
+                src={images[postKey]}
+                width={"100%"}
+                height={"auto"}
+              />
+            </div>
+          ) : (
+            ""
+          )}
+
+          <article>{postValue.text}</article>
+        </section>
+      );
+    });
+  };
+
   useEffect(() => {
-    update();
+    init();
+    let ee = {};
+    firebaseService.getPostsInit().on("child_added", function (data) {
+      ee = { ...ee, [data.key]: data.val() };
+      console.log("init: ", ee);
+    });
+    // firebaseService.getPostsLimited().on("child_added", function (data) {
+    //   console.log(data.val().text);
+    // });
   }, []);
 
   return (
     <>
       <h1>NewsPage</h1>
-      <div className="main">
-        {!!posts &&
-          !!images &&
-          Object.entries(posts).map(([postKey, postValue]) => {
-            return (
-              <section>
-                {images[postKey] ? (
-                  <img
-                    src={images[postKey]}
-                    style={{ width: "100%", maxWidth: "400px", height: "auto" }}
-                  ></img>
-                ) : (
-                  ""
-                )}
-
-                <article>{postValue.text}</article>
-              </section>
-            );
-          })}
-      </div>
+      <div className="main">{!!posts && !!images && renderPosts()}</div>
       <Button variant="success" className="float-btn" onClick={handleShow}>
         ADD POST
       </Button>
