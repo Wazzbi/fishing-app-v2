@@ -209,19 +209,13 @@ const NewsPage = () => {
         dataLength={postsRender.length}
         next={() => fetchMorePosts(lastPostTimeStamp)}
         hasMore={true}
-        style={{ padding: "10px" }}
+        style={{ margin: "10px" }}
       >
         {postsRender.map(([postKey, postValue]) => (
           <>
             <Row className="news-page_card">
               {posts[postKey] ? (
-                <div
-                  className="news-page_card-image"
-                  style={{
-                    maxWidth: "400px",
-                    minHeight: "237px",
-                  }}
-                >
+                <div className="news-page_card-image">
                   <LazyLoadImage
                     alt={""}
                     effect="blur"
@@ -235,7 +229,9 @@ const NewsPage = () => {
               )}
               <div className="news-page_card-body">
                 {postValue.title ? (
-                  <Card.Title>{postValue.title}</Card.Title>
+                  <Card.Title className="news-page_card-text-title">
+                    {postValue.title}
+                  </Card.Title>
                 ) : (
                   ""
                 )}
