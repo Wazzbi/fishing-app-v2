@@ -39,6 +39,7 @@ const NewsPage = () => {
     event.preventDefault();
     const { title, text } = event.target.elements;
     const usrname = currentUserData && currentUserData.username;
+    const usrId = currentUserData && currentUserData.id;
 
     let currentdate = new Date();
     let datetime =
@@ -61,7 +62,15 @@ const NewsPage = () => {
     const imgType =
       (uploadImages && uploadImages.max && uploadImages.max.type) || "";
     firebaseService
-      .createPost(text.value, imgName, imgType, usrname, created, title.value)
+      .createPost(
+        text.value,
+        imgName,
+        imgType,
+        usrname,
+        created,
+        title.value,
+        usrId
+      )
       .then(() =>
         firebaseService.createImage(uploadImages).then(() => {
           setUploadImages(null);
@@ -204,10 +213,10 @@ const NewsPage = () => {
       >
         {postsRender.map(([postKey, postValue]) => (
           <>
-            <Row className="cx-card">
+            <Row className="news-page_card">
               {posts[postKey] ? (
                 <div
-                  className="cx-card-image"
+                  className="news-page_card-image"
                   style={{
                     maxWidth: "400px",
                     minHeight: "237px",
@@ -224,27 +233,19 @@ const NewsPage = () => {
               ) : (
                 ""
               )}
-              <div
-                className="cx-card-body"
-                style={{
-                  maxHeight: "200px",
-                  overflowY: "hidden",
-                  maxWidth: "380px",
-                  position: "relative",
-                }}
-              >
+              <div className="news-page_card-body">
                 {postValue.title ? (
                   <Card.Title>{postValue.title}</Card.Title>
                 ) : (
                   ""
                 )}
-                <Card.Text>
+                <Card.Text className="news-page_card-text-sub-title">
                   {postValue.username} {postValue.created}
                 </Card.Text>
                 <Card.Text style={{ textAlign: "justify" }}>
                   {postValue.text}
                 </Card.Text>
-                <div className="overlay"></div>
+                <div className="news-page_overlay"></div>
               </div>
             </Row>
           </>
@@ -260,8 +261,12 @@ const NewsPage = () => {
   return (
     <>
       <h1>NewsPage</h1>
-      <div className="main">{!!posts && renderPosts()}</div>
-      <Button variant="success" className="float-btn" onClick={handleShow}>
+      <div className="news-page_main">{!!posts && renderPosts()}</div>
+      <Button
+        variant="success"
+        className="news-page_float-btn"
+        onClick={handleShow}
+      >
         ADD POST
       </Button>
 

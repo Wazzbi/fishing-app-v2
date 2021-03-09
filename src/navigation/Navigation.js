@@ -26,7 +26,7 @@ const Navigation = () => {
           <Navbar
             bg="light"
             expand="lg"
-            className="cx-nav"
+            className="navigation_nav"
             onToggle={(state) => setNavExpanded(state)}
             expanded={navExpanded}
           >

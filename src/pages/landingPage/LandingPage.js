@@ -1,5 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { AuthContext } from "../../Auth";
+import "./landingPage.scss";
 
 import Button from "react-bootstrap/Button";
 
@@ -27,12 +28,14 @@ const LandingPage = ({ history }) => {
       );
     } else {
       return (
-        <>
+        <div className="landing-page_main">
           <h1>LandingPage</h1>
+          <br />
+          <br />
           <Button variant="primary" onClick={handleClick}>
             Sign In
           </Button>
-        </>
+        </div>
       );
     }
   };

@@ -1,92 +1,156 @@
 import React, { useCallback, useState } from "react";
 import firebaseService from "../../services/firebase/firebase.service";
+import "./signUpPage.scss";
+import { Link } from "react-router-dom";
 
-//TODO btn back to landingPage
+import Toast from "react-bootstrap/Toast";
+import Col from "react-bootstrap/Col";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
+
+const shortid = require("shortid");
+
+//TODO toast jen jeden
+// TODO styly zde a log in jsou stejné -> sloučit aby se nenačítali dvakrát
 
 const SignUpPage = ({ history }) => {
-  const [username, setUsername] = useState(null);
-  const [email, setEmail] = useState(null);
-  const [password, setPassword] = useState(null);
   const [error, setError] = useState(null);
-  const [isDisabled, setIsDisabled] = useState(true);
 
-  // TODO refactoring... aby to byla jedna fce
-  const onChangeUsername = (event) => {
-    setUsername(event.target.value);
-    setIsDisabled(!username || !email || !password);
-  };
-  const onChangeEmail = (event) => {
-    setEmail(event.target.value);
-    setIsDisabled(!username || !email || !password);
-  };
-  const onChangePassword = (event) => {
-    setPassword(event.target.value);
-    setIsDisabled(!username || !email || !password);
-  };
+  const [showB, setShowB] = useState(false);
+  const [show, setShow] = useState(false);
 
   const handleSignUp = useCallback(
     async (event) => {
       event.preventDefault();
       const { username, email, password } = event.target.elements;
-      const role = "user";
-      try {
-        // create account
-        await firebaseService
-          .auth()
-          .createUserWithEmailAndPassword(email.value, password.value)
-          .then((authUser) => {
-            // create user in db
-            firebaseService.firebaseUser(authUser.user.uid).set({
-              username: username.value,
-              email: email.value,
-              role,
+
+      let checkUsersArray = [];
+      let promise = new Promise((resolve, reject) => {
+        resolve(
+          firebaseService
+            .checkUserExists(username.value)
+            .once("value", (snapshot) => {
+              snapshot.forEach((childSnapshot) => {
+                checkUsersArray.push(childSnapshot.key);
+              });
+            })
+        );
+      });
+
+      // !! needed :-D
+      let triggerPromise = await promise;
+
+      if (!checkUsersArray.length) {
+        const role = "user";
+        const id = shortid.generate();
+        try {
+          // create account
+          await firebaseService
+            .auth()
+            .createUserWithEmailAndPassword(email.value, password.value)
+            .then((authUser) => {
+              // create user in db
+              firebaseService.firebaseUser(authUser.user.uid).set({
+                username: username.value,
+                email: email.value,
+                role,
+                id,
+              });
             });
-          });
-        history.push("/");
-      } catch (error) {
-        console.log(error);
-        setError(error);
+          history.push("/");
+        } catch (error) {
+          setError(error);
+          setShowB(true);
+        }
+      } else {
+        setShow(true);
+        checkUsersArray = [];
       }
     },
     [history]
   );
 
   return (
-    <div>
-      <h1>Sign up</h1>
-      <form onSubmit={handleSignUp}>
-        <label>
-          Username
-          <input
-            name="username"
-            type="username"
-            placeholder="Username"
-            onChange={onChangeUsername}
-          />
-        </label>
-        <label>
-          Email
-          <input
-            name="email"
-            type="email"
-            placeholder="Email"
-            onChange={onChangeEmail}
-          />
-        </label>
-        <label>
-          Password
-          <input
-            name="password"
-            type="password"
-            placeholder="Password"
-            onChange={onChangePassword}
-          />
-        </label>
-        <button type="submit" disabled={isDisabled}>
-          Sign Up
-        </button>
-        {error && <p>{error.message}</p>}
-      </form>
+    <div className="sign-up_main">
+      <div className="sign-up_form">
+        <h1 className="sign-up_title">Sign up</h1>
+
+        <Form onSubmit={handleSignUp}>
+          <Form.Group controlId="formBasicUsername">
+            <Form.Label>Username</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Username"
+              name="username"
+              required
+            />
+          </Form.Group>
+
+          <Form.Group controlId="formBasicEmail">
+            <Form.Label>Email</Form.Label>
+            <Form.Control
+              type="email"
+              placeholder="Email"
+              name="email"
+              required
+            />
+          </Form.Group>
+
+          <Form.Group controlId="formBasicPassword">
+            <Form.Label>Password</Form.Label>
+            <Form.Control
+              type="password"
+              placeholder="Password"
+              minlength="8"
+              name="password"
+              required
+            />
+            <Form.Text className="text-muted">Atleast 8 characters</Form.Text>
+          </Form.Group>
+
+          <div className="sign-up_btn-group">
+            <Button variant="outline-primary" as={Link} to={"/"}>
+              Back
+            </Button>
+            <Button variant="primary" type="submit">
+              Submit
+            </Button>
+          </div>
+        </Form>
+      </div>
+      <div className="sign-up_notification">
+        {error && (
+          <Col style={{ width: "100%" }}>
+            <Toast
+              style={{ backgroundColor: "lightpink" }}
+              onClose={() => setShowB(false)}
+              show={showB}
+              delay={5000}
+              autohide
+            >
+              <Toast.Header>
+                <strong className="mr-auto">Upozornění</strong>
+              </Toast.Header>
+              <Toast.Body>Tento email je již zabraný</Toast.Body>
+            </Toast>
+          </Col>
+        )}
+
+        <Col style={{ width: "100%" }}>
+          <Toast
+            style={{ backgroundColor: "lightpink" }}
+            onClose={() => setShow(false)}
+            show={show}
+            delay={5000}
+            autohide
+          >
+            <Toast.Header>
+              <strong className="mr-auto">Upozornění</strong>
+            </Toast.Header>
+            <Toast.Body>Uživatelské jméno je zabrané</Toast.Body>
+          </Toast>
+        </Col>
+      </div>
     </div>
   );
 };

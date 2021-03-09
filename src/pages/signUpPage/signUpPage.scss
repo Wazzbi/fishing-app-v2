@@ -1,0 +1,38 @@
+.sign-up_main {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.sign-up_form {
+  min-width: 300px;
+}
+
+.sign-up_title {
+  text-align: center;
+  margin-bottom: 1em;
+}
+
+.sign-up_btn-group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 40px;
+
+  button {
+    width: 120px;
+  }
+
+  a {
+    width: 120px;
+  }
+}
+
+.sign-up_notification {
+  position: absolute;
+  margin: auto;
+  top: 50px;
+  width: 300px;
+}

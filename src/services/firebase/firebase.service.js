@@ -18,7 +18,7 @@ const appl = app.initializeApp(config);
 //TODO duplicitní reference
 // *** User API ***
 const user = (uid) => appl.database().ref(`users/${uid}`);
-// const users = () => appl.database().ref("users");
+const usersRef = appl.database().ref("users/");
 
 // *** Record API ***
 const records = (uid) => appl.database().ref(`records/${uid}`);
@@ -83,6 +83,10 @@ class firebaseService {
     }
   };
 
+  static checkUserExists = (username) => {
+    return usersRef.orderByChild("username").equalTo(username);
+  };
+
   static getPostsInit = () => {
     return postsRef.orderByChild("timeStamp").limitToLast(5);
   };
@@ -132,7 +136,7 @@ class firebaseService {
 
   // *** CREATE ***
   // TODO data upravit na konečnou podobu prázdného formuláře
-  static createPost = (text, image, type, username, created, title) => {
+  static createPost = (text, image, type, username, created, title, userId) => {
     const timeStamp = Date.now();
     return postsRef.push(
       {
@@ -143,6 +147,7 @@ class firebaseService {
         timeStamp,
         username,
         created,
+        userId,
       },
       (err) => console.log(err ? "error while pushing" : "successful push")
     );
