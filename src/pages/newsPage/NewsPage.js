@@ -229,14 +229,13 @@ const NewsPage = () => {
               )}
               <div className="news-page_card-body">
                 {postValue.title ? (
-                  <Card.Title className="news-page_card-text-title">
-                    {postValue.title}
-                  </Card.Title>
+                  <Card.Title>{postValue.title}</Card.Title>
                 ) : (
                   ""
                 )}
                 <Card.Text className="news-page_card-text-sub-title">
-                  {postValue.username} {postValue.created}
+                  {postValue.username}
+                  {" | "} {postValue.created}
                 </Card.Text>
                 <Card.Text style={{ textAlign: "justify" }}>
                   {postValue.text}

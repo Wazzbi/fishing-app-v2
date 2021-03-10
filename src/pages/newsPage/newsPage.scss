@@ -27,7 +27,7 @@
 
 .news-page_overlay {
   position: absolute;
-  bottom: 0;
+  bottom: -8px;
   left: 0;
   right: 0;
   height: 30px;
@@ -44,7 +44,7 @@
 .news-page_card-image {
   order: 1;
   max-width: 400px;
-  min-height: 237px;
+  // min-height: 237px;
 
   @media only screen and (min-width: 900px) {
     width: 400px;
@@ -64,11 +64,9 @@
   }
 }
 
-.news-page_card-text-title {
-  letter-spacing: 2px;
-}
-
 .news-page_card-text-sub-title {
   color: gray;
   font-size: smaller;
+  border-bottom: 1px solid #bfbfbf;
+  padding-bottom: 9px;
 }
