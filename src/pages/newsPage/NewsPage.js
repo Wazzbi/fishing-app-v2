@@ -22,6 +22,7 @@ const shortid = require("shortid");
 // TODO router na rozkliknutý článek
 // TODO vytvořit 'moje zeď' s příspěvky kde budu mít odebírat
 // TODO možnost dávat si příspěvky do oblíbených
+// !! nezapomenout na LazyLoad componentu <LazyLoadImage/>
 
 const NewsPage = () => {
   const { currentUserData } = useContext(AuthContext);
@@ -37,7 +38,7 @@ const NewsPage = () => {
     // !! udělat disable na submit než se vytvoří objekt v useState
     handleClose();
     event.preventDefault();
-    const { title, text } = event.target.elements;
+    const { title, text, category } = event.target.elements;
     const usrname = currentUserData && currentUserData.username;
     const usrId = currentUserData && currentUserData.id;
 
@@ -58,9 +59,9 @@ const NewsPage = () => {
     const created = datetime;
 
     const imgName =
-      (uploadImages && uploadImages.max && uploadImages.max.name) || "";
+      (uploadImages && uploadImages.med && uploadImages.med.name) || "";
     const imgType =
-      (uploadImages && uploadImages.max && uploadImages.max.type) || "";
+      (uploadImages && uploadImages.med && uploadImages.med.type) || "";
     firebaseService
       .createPost(
         text.value,
@@ -69,7 +70,8 @@ const NewsPage = () => {
         usrname,
         created,
         title.value,
-        usrId
+        usrId,
+        category.value
       )
       .then(() =>
         firebaseService.createImage(uploadImages).then(() => {
@@ -94,29 +96,29 @@ const NewsPage = () => {
           : f.type;
 
       // TODO options vyvést do souboru konstant
-      const optionsMax = {
-        maxSizeMB: 1,
-        maxWidthOrHeight: 800,
-        useWebWorker: true,
-      };
+      // const optionsMax = {
+      //   maxSizeMB: 1,
+      //   maxWidthOrHeight: 800,
+      //   useWebWorker: true,
+      // };
 
       const optionsMed = {
-        maxSizeMB: 1,
-        maxWidthOrHeight: 400,
+        maxSizeMB: 0.3,
+        maxWidthOrHeight: 800,
         useWebWorker: true,
       };
 
       const optionsMin = {
         maxSizeMB: 1,
-        maxWidthOrHeight: 200,
+        maxWidthOrHeight: 100,
         useWebWorker: true,
       };
 
       try {
         let o;
-        await imageCompression(file, optionsMax).then((blob) => {
-          o = { ...o, max: { blob, name, type, size: 800 } };
-        });
+        // await imageCompression(file, optionsMax).then((blob) => {
+        //   o = { ...o, max: { blob, name, type, size: 800 } };
+        // });
         await imageCompression(file, optionsMed).then((blob) => {
           o = { ...o, med: { blob, name, type, size: 400 } };
         });
@@ -153,21 +155,24 @@ const NewsPage = () => {
     firebaseService.getPostsInit().once("value", (snapshot) => {
       snapshot.forEach((childSnapshot) => {
         ww = { ...ww, [childSnapshot.key]: childSnapshot.val() };
+        // toto vyjmuto ze zakomentovanýho bloku dole
+        setPosts({ ...posts, ...ww });
 
         // TODO toto refaktorovat je to zdvojený v fetchMorePosts
-        const addImagetoPost = async (postKey, postValue) => {
-          if (postValue.image) {
-            let promise = firebaseService.getImageUrl(
-              postValue.image,
-              400,
-              postValue.type
-            );
-            let response = await promise;
-            ww = { ...ww, [postKey]: { ...ww[postKey], imageUrl: response } };
-          }
-          setPosts({ ...posts, ...ww });
-        };
-        addImagetoPost(childSnapshot.key, childSnapshot.val());
+        // !! tato logika se bude hodit pro načítání v obrázků po otevření článku
+        // const addImagetoPost = async (postKey, postValue) => {
+        //   if (postValue.image) {
+        //     let promise = firebaseService.getImageUrl(
+        //       postValue.image,
+        //       400,
+        //       postValue.type
+        //     );
+        //     let response = await promise;
+        //     ww = { ...ww, [postKey]: { ...ww[postKey], imageUrl: response } };
+        //   }
+        //   setPosts({ ...posts, ...ww });
+        // };
+        // addImagetoPost(childSnapshot.key, childSnapshot.val());
       });
     });
   };
@@ -177,20 +182,23 @@ const NewsPage = () => {
     firebaseService.getPostsLimited(timeStamp).once("value", (snapshot) => {
       snapshot.forEach((childSnapshot) => {
         ww = { ...ww, [childSnapshot.key]: childSnapshot.val() };
+        // toto vyjmuto ze zakomentovanýho bloku dole
+        setPosts({ ...posts, ...ww });
 
-        const addImagetoPost = async (postKey, postValue) => {
-          if (postValue.image) {
-            let promise = firebaseService.getImageUrl(
-              postValue.image,
-              400,
-              postValue.type
-            );
-            let response = await promise;
-            ww = { ...ww, [postKey]: { ...ww[postKey], imageUrl: response } };
-          }
-          setPosts({ ...posts, ...ww });
-        };
-        addImagetoPost(childSnapshot.key, childSnapshot.val());
+        // TODO toto refaktorovat je to zdvojený v init
+        // const addImagetoPost = async (postKey, postValue) => {
+        //   if (postValue.image) {
+        //     let promise = firebaseService.getImageUrl(
+        //       postValue.image,
+        //       400,
+        //       postValue.type
+        //     );
+        //     let response = await promise;
+        //     ww = { ...ww, [postKey]: { ...ww[postKey], imageUrl: response } };
+        //   }
+        //   setPosts({ ...posts, ...ww });
+        // };
+        // addImagetoPost(childSnapshot.key, childSnapshot.val());
       });
     });
   };
@@ -209,40 +217,32 @@ const NewsPage = () => {
         dataLength={postsRender.length}
         next={() => fetchMorePosts(lastPostTimeStamp)}
         hasMore={true}
-        style={{ margin: "10px" }}
+        style={{ padding: "10px" }}
       >
         {postsRender.map(([postKey, postValue]) => (
           <>
-            <Row className="news-page_card">
-              {posts[postKey] ? (
-                <div className="news-page_card-image">
-                  <LazyLoadImage
-                    alt={""}
-                    effect="blur"
-                    src={posts[postKey].imageUrl}
-                    width={"100%"}
-                    height={"auto"}
-                  />
+            <div className="news-page_post">
+              <div className="news-page_header">
+                <div className="news-page_post-icon">
+                  <img
+                    src={`/${postValue.category}.svg`}
+                    height="30px"
+                    width="30px"
+                    alt={`${postValue.category} icon`}
+                  ></img>
                 </div>
-              ) : (
-                ""
-              )}
-              <div className="news-page_card-body">
-                {postValue.title ? (
-                  <Card.Title>{postValue.title}</Card.Title>
-                ) : (
-                  ""
-                )}
-                <Card.Text className="news-page_card-text-sub-title">
-                  {postValue.username}
-                  {" | "} {postValue.created}
-                </Card.Text>
-                <Card.Text style={{ textAlign: "justify" }}>
-                  {postValue.text}
-                </Card.Text>
-                <div className="news-page_overlay"></div>
+                <div className="news-page_header-title">
+                  <span>{postValue.title}</span>
+                  <br />
+                  <small>
+                    {postValue.username} {" | "} {postValue.created}
+                  </small>
+                </div>
               </div>
-            </Row>
+              <div className="news-page_post-text">
+                <span>{postValue.text}</span>
+              </div>
+            </div>
           </>
         ))}
       </InfiniteScroll>
@@ -288,13 +288,21 @@ const NewsPage = () => {
             </Form.Group>
 
             <Form.Group>
+              <Form.Label>Category</Form.Label>
+              <Form.Control as="select" name="category" required>
+                <option>Law</option>
+                <option>Post</option>
+              </Form.Control>
+            </Form.Group>
+
+            <Form.Group>
               <Form.Label>Title</Form.Label>
-              <Form.Control type="text" name="title" maxlength="30" />
+              <Form.Control type="text" name="title" maxlength="60" required />
             </Form.Group>
 
             <Form.Group>
               <Form.Label>Example textarea</Form.Label>
-              <Form.Control as="textarea" rows={3} name="text" />
+              <Form.Control as="textarea" rows={3} name="text" required />
             </Form.Group>
 
             <Button variant="primary" type="submit">

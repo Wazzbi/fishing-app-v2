@@ -136,7 +136,16 @@ class firebaseService {
 
   // *** CREATE ***
   // TODO data upravit na konečnou podobu prázdného formuláře
-  static createPost = (text, image, type, username, created, title, userId) => {
+  static createPost = (
+    text,
+    image,
+    type,
+    username,
+    created,
+    title,
+    userId,
+    category
+  ) => {
     const timeStamp = Date.now();
     return postsRef.push(
       {
@@ -148,6 +157,7 @@ class firebaseService {
         username,
         created,
         userId,
+        category,
       },
       (err) => console.log(err ? "error while pushing" : "successful push")
     );
@@ -155,9 +165,9 @@ class firebaseService {
 
   static createImage = async (images) => {
     if (images) {
-      await postImageRef(images.max.name, images.max.size, images.max.type).put(
-        images.max.blob
-      );
+      // await postImageRef(images.max.name, images.max.size, images.max.type).put(
+      //   images.max.blob
+      // );
 
       await postImageRef(images.med.name, images.med.size, images.med.type).put(
         images.med.blob
