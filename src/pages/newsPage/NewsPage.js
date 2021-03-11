@@ -6,6 +6,7 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { AuthContext } from "../../Auth";
+import CKEditor from "ckeditor4-react";
 
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -15,6 +16,37 @@ import Card from "react-bootstrap/Card";
 
 const shortid = require("shortid");
 
+const ckEditorConfig = {
+  toolbarGroups: [
+    {
+      name: "document",
+      groups: ["mode", "document", "doctools"],
+    },
+    { name: "clipboard", groups: ["clipboard", "undo"] },
+    {
+      name: "editing",
+      groups: ["find", "selection", "spellchecker", "editing"],
+    },
+    { name: "forms", groups: ["forms"] },
+
+    { name: "basicstyles", groups: ["basicstyles", "cleanup"] },
+    {
+      name: "paragraph",
+      groups: ["list", "indent", "blocks", "align", "bidi", "paragraph"],
+    },
+    { name: "links", groups: ["links"] },
+    { name: "insert", groups: ["insert"] },
+
+    { name: "styles", groups: ["styles"] },
+    { name: "colors", groups: ["colors"] },
+    { name: "tools", groups: ["tools"] },
+    { name: "others", groups: ["others"] },
+    { name: "about", groups: ["about"] },
+  ],
+  removeButtons:
+    "Subscript,Superscript,Save,NewPage,ExportPdf,Preview,Print,Templates,Paste,PasteText,PasteFromWord,Find,Replace,SelectAll,Scayt,Checkbox,Radio,TextField,Textarea,Select,Button,ImageButton,HiddenField,CopyFormatting,Outdent,Indent,CreateDiv,BidiLtr,BidiRtl,Language,Anchor,Image,Flash,Table,HorizontalRule,PageBreak,Iframe,ShowBlocks",
+};
+
 // TODO emoji, odkazy
 // TODO main kontajner udělat squeeze a nakonec s flex-base nebo min-width
 // TODO funkce init bude chtít vychitat pro infinite scroll + nejaký loading anime než se načte init
@@ -22,13 +54,15 @@ const shortid = require("shortid");
 // TODO router na rozkliknutý článek
 // TODO vytvořit 'moje zeď' s příspěvky kde budu mít odebírat
 // TODO možnost dávat si příspěvky do oblíbených
-// !! nezapomenout na LazyLoad componentu <LazyLoadImage/>
+// !! nezapomenout na LazyLoad componentu <LazyLoadImage/> umí i lazyload component
+// TODO přechod na článek a zobrazení obrázků
 
 const NewsPage = () => {
   const { currentUserData } = useContext(AuthContext);
   const [show, setShow] = useState(false);
   const [uploadImages, setUploadImages] = useState(null);
   const [posts, setPosts] = useState(null);
+  const [text, setText] = useState("<p>React is really <em>nice</em>!</p>");
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -38,7 +72,7 @@ const NewsPage = () => {
     // !! udělat disable na submit než se vytvoří objekt v useState
     handleClose();
     event.preventDefault();
-    const { title, text, category } = event.target.elements;
+    const { title, category } = event.target.elements;
     const usrname = currentUserData && currentUserData.username;
     const usrId = currentUserData && currentUserData.id;
 
@@ -64,7 +98,7 @@ const NewsPage = () => {
       (uploadImages && uploadImages.med && uploadImages.med.type) || "";
     firebaseService
       .createPost(
-        text.value,
+        text,
         imgName,
         imgType,
         usrname,
@@ -76,10 +110,18 @@ const NewsPage = () => {
       .then(() =>
         firebaseService.createImage(uploadImages).then(() => {
           setUploadImages(null);
-
+          setText(null);
           init();
         })
       );
+  };
+
+  const onEditorChange = (evt) => {
+    setText(evt.editor.getData());
+  };
+
+  const handleChange = (changeEvent) => {
+    setText(changeEvent.target.value);
   };
 
   const handleChangeImage = (e) => {
@@ -239,8 +281,14 @@ const NewsPage = () => {
                   </small>
                 </div>
               </div>
-              <div className="news-page_post-text">
-                <span>{postValue.text}</span>
+              <div
+                id={`{postKey}-post-text`}
+                className="news-page_post-text"
+                dangerouslySetInnerHTML={{ __html: postValue.text }}
+              ></div>
+              <div className="news-page_post-text-overlay">
+                <img src="/comment.svg" height="15px" width="15px"></img>
+                <img src="/right.svg" height="15px" width="15px"></img>
               </div>
             </div>
           </>
@@ -297,12 +345,16 @@ const NewsPage = () => {
 
             <Form.Group>
               <Form.Label>Title</Form.Label>
-              <Form.Control type="text" name="title" maxlength="60" required />
+              <Form.Control type="text" name="title" maxLength="60" required />
             </Form.Group>
 
             <Form.Group>
               <Form.Label>Example textarea</Form.Label>
-              <Form.Control as="textarea" rows={3} name="text" required />
+              <CKEditor
+                data={text}
+                onChange={onEditorChange}
+                config={ckEditorConfig}
+              />
             </Form.Group>
 
             <Button variant="primary" type="submit">
