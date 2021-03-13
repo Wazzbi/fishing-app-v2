@@ -7,6 +7,8 @@ import "react-lazy-load-image-component/src/effects/blur.css";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { AuthContext } from "../../Auth";
 import CKEditor from "ckeditor4-react";
+import { addPost } from "../../redux/actions";
+import { connect } from "react-redux";
 
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -57,7 +59,7 @@ const ckEditorConfig = {
 // !! nezapomenout na LazyLoad componentu <LazyLoadImage/> umí i lazyload component
 // TODO přechod na článek a zobrazení obrázků
 
-const NewsPage = ({ history }) => {
+const NewsPage = ({ history, addPost }) => {
   const { currentUserData } = useContext(AuthContext);
   const [show, setShow] = useState(false);
   const [uploadImages, setUploadImages] = useState(null);
@@ -118,10 +120,6 @@ const NewsPage = ({ history }) => {
 
   const onEditorChange = (evt) => {
     setText(evt.editor.getData());
-  };
-
-  const handleChange = (changeEvent) => {
-    setText(changeEvent.target.value);
   };
 
   const handleChangeImage = (e) => {
@@ -197,24 +195,7 @@ const NewsPage = ({ history }) => {
     firebaseService.getPostsInit().once("value", (snapshot) => {
       snapshot.forEach((childSnapshot) => {
         ww = { ...ww, [childSnapshot.key]: childSnapshot.val() };
-        // toto vyjmuto ze zakomentovanýho bloku dole
         setPosts({ ...posts, ...ww });
-
-        // TODO toto refaktorovat je to zdvojený v fetchMorePosts
-        // !! tato logika se bude hodit pro načítání v obrázků po otevření článku
-        // const addImagetoPost = async (postKey, postValue) => {
-        //   if (postValue.image) {
-        //     let promise = firebaseService.getImageUrl(
-        //       postValue.image,
-        //       400,
-        //       postValue.type
-        //     );
-        //     let response = await promise;
-        //     ww = { ...ww, [postKey]: { ...ww[postKey], imageUrl: response } };
-        //   }
-        //   setPosts({ ...posts, ...ww });
-        // };
-        // addImagetoPost(childSnapshot.key, childSnapshot.val());
       });
     });
   };
@@ -224,23 +205,7 @@ const NewsPage = ({ history }) => {
     firebaseService.getPostsLimited(timeStamp).once("value", (snapshot) => {
       snapshot.forEach((childSnapshot) => {
         ww = { ...ww, [childSnapshot.key]: childSnapshot.val() };
-        // toto vyjmuto ze zakomentovanýho bloku dole
         setPosts({ ...posts, ...ww });
-
-        // TODO toto refaktorovat je to zdvojený v init
-        // const addImagetoPost = async (postKey, postValue) => {
-        //   if (postValue.image) {
-        //     let promise = firebaseService.getImageUrl(
-        //       postValue.image,
-        //       400,
-        //       postValue.type
-        //     );
-        //     let response = await promise;
-        //     ww = { ...ww, [postKey]: { ...ww[postKey], imageUrl: response } };
-        //   }
-        //   setPosts({ ...posts, ...ww });
-        // };
-        // addImagetoPost(childSnapshot.key, childSnapshot.val());
       });
     });
   };
@@ -291,6 +256,7 @@ const NewsPage = ({ history }) => {
               ></div>
               <div className="news-page_post-text-overlay">
                 <img src="/comment.svg" height="15px" width="15px"></img>
+                <img src="/heart.svg" height="15px" width="15px"></img>
                 <img src="/right.svg" height="15px" width="15px"></img>
               </div>
             </div>
@@ -301,6 +267,7 @@ const NewsPage = ({ history }) => {
   };
 
   const changeRoute = (postKey) => {
+    addPost(posts[postKey]);
     history.push(`/post/${postKey}`);
   };
 
@@ -374,4 +341,12 @@ const NewsPage = ({ history }) => {
   );
 };
 
-export default NewsPage;
+// const mapStateToProps = (state) => ({
+//   ...state,
+// });
+
+// const mapDispatchToProps = (dispatch) => ({
+//   addPost: () => dispatch(addPost({ a: 1 })),
+// });
+
+export default connect(null, { addPost })(NewsPage);

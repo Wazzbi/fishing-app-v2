@@ -15,6 +15,8 @@ import UserPage from "./pages/userPage/UserPage";
 import WeatherPage from "./pages/weatherPage/WeatherPage";
 import PostPage from "./pages/postPage/PostPage";
 
+
+
 // TODO redirect na landingpage kdyz zadané špatná cesta viz stará verze app v gitu
 
 const App = () => {
