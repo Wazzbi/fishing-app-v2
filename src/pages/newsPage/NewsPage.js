@@ -9,6 +9,7 @@ import { AuthContext } from "../../Auth";
 import CKEditor from "ckeditor4-react";
 import { addPost } from "../../redux/actions";
 import { connect } from "react-redux";
+import { ckEditorConfig, optionsMed, optionsMin } from "./constants";
 
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -17,37 +18,6 @@ import Row from "react-bootstrap/Row";
 import Card from "react-bootstrap/Card";
 
 const shortid = require("shortid");
-
-const ckEditorConfig = {
-  toolbarGroups: [
-    {
-      name: "document",
-      groups: ["mode", "document", "doctools"],
-    },
-    { name: "clipboard", groups: ["clipboard", "undo"] },
-    {
-      name: "editing",
-      groups: ["find", "selection", "spellchecker", "editing"],
-    },
-    { name: "forms", groups: ["forms"] },
-
-    { name: "basicstyles", groups: ["basicstyles", "cleanup"] },
-    {
-      name: "paragraph",
-      groups: ["list", "indent", "blocks", "align", "bidi", "paragraph"],
-    },
-    { name: "links", groups: ["links"] },
-    { name: "insert", groups: ["insert"] },
-
-    { name: "styles", groups: ["styles"] },
-    { name: "colors", groups: ["colors"] },
-    { name: "tools", groups: ["tools"] },
-    { name: "others", groups: ["others"] },
-    { name: "about", groups: ["about"] },
-  ],
-  removeButtons:
-    "Subscript,Superscript,Save,NewPage,ExportPdf,Preview,Print,Templates,Paste,PasteText,PasteFromWord,Find,Replace,SelectAll,Scayt,Checkbox,Radio,TextField,Textarea,Select,Button,ImageButton,HiddenField,CopyFormatting,Outdent,Indent,CreateDiv,BidiLtr,BidiRtl,Language,Anchor,Image,Flash,Table,HorizontalRule,PageBreak,Iframe,ShowBlocks",
-};
 
 // TODO emoji, odkazy
 // TODO main kontajner udělat squeeze a nakonec s flex-base nebo min-width
@@ -135,30 +105,8 @@ const NewsPage = ({ history, addPost }) => {
           ? f.type.slice(f.type.indexOf("/") + 1)
           : f.type;
 
-      // TODO options vyvést do souboru konstant
-      // const optionsMax = {
-      //   maxSizeMB: 1,
-      //   maxWidthOrHeight: 800,
-      //   useWebWorker: true,
-      // };
-
-      const optionsMed = {
-        maxSizeMB: 0.3,
-        maxWidthOrHeight: 800,
-        useWebWorker: true,
-      };
-
-      const optionsMin = {
-        maxSizeMB: 1,
-        maxWidthOrHeight: 100,
-        useWebWorker: true,
-      };
-
       try {
         let o;
-        // await imageCompression(file, optionsMax).then((blob) => {
-        //   o = { ...o, max: { blob, name, type, size: 800 } };
-        // });
         await imageCompression(file, optionsMed).then((blob) => {
           o = { ...o, med: { blob, name, type, size: 400 } };
         });
