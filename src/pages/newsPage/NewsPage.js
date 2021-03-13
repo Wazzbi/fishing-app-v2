@@ -57,7 +57,7 @@ const ckEditorConfig = {
 // !! nezapomenout na LazyLoad componentu <LazyLoadImage/> umí i lazyload component
 // TODO přechod na článek a zobrazení obrázků
 
-const NewsPage = () => {
+const NewsPage = ({ history }) => {
   const { currentUserData } = useContext(AuthContext);
   const [show, setShow] = useState(false);
   const [uploadImages, setUploadImages] = useState(null);
@@ -263,7 +263,10 @@ const NewsPage = () => {
       >
         {postsRender.map(([postKey, postValue]) => (
           <>
-            <div className="news-page_post">
+            <div
+              className="news-page_post"
+              onClick={() => changeRoute(postKey)}
+            >
               <div className="news-page_header">
                 <div className="news-page_post-icon">
                   <img
@@ -295,6 +298,10 @@ const NewsPage = () => {
         ))}
       </InfiniteScroll>
     );
+  };
+
+  const changeRoute = (postKey) => {
+    history.push(`/post/${postKey}`);
   };
 
   useEffect(() => {
