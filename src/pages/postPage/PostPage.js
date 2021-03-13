@@ -100,7 +100,7 @@ const PostPage = (props) => {
           <Modal.Header closeButton></Modal.Header>
           <Modal.Body>
             {!!imagesLarge.length && (
-              <Carousel>
+              <Carousel controls={imagesLarge.length > 1 ? true : false}>
                 {imagesLarge.map((imageUrl) => (
                   <Carousel.Item>
                     <img
