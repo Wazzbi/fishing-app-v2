@@ -32,17 +32,23 @@ const shortid = require("shortid");
 const NewsPage = ({ history, addPost }) => {
   const { currentUserData } = useContext(AuthContext);
   const [show, setShow] = useState(false);
-  const [uploadImages, setUploadImages] = useState(null);
+  const [uploadImages, setUploadImages] = useState([]);
+  const [inputImageFieldCounter, setInputImageFieldCounter] = useState(1);
   const [posts, setPosts] = useState(null);
   const [text, setText] = useState("<p>React is really <em>nice</em>!</p>");
 
-  const handleClose = () => setShow(false);
+  const handleClose = () => {
+    setUploadImages([]);
+    setShow(false);
+    setInputImageFieldCounter(1);
+  };
   const handleShow = () => setShow(true);
 
   const handleSubmit = (event) => {
     // !! když se přiloží obr a rychle klikne submit tak jestě není reference v useState
     // !! udělat disable na submit než se vytvoří objekt v useState
     handleClose();
+    setInputImageFieldCounter(1);
     event.preventDefault();
     const { title, category } = event.target.elements;
     const usrname = currentUserData && currentUserData.username;
@@ -64,15 +70,20 @@ const NewsPage = ({ history, addPost }) => {
 
     const created = datetime;
 
-    const imgName =
-      (uploadImages && uploadImages.med && uploadImages.med.name) || "";
-    const imgType =
-      (uploadImages && uploadImages.med && uploadImages.med.type) || "";
+    // TODO filtrování na med nechtěl object.entries fungovat...
+    const imageArray = uploadImages.filter((e) => !!e.med);
+    console.log(imageArray);
+    const imageArrayMetaData = imageArray.map((t) => {
+      return {
+        imageName: t.med.name,
+        imageType: t.med.type,
+      };
+    });
+
     firebaseService
       .createPost(
         text,
-        imgName,
-        imgType,
+        imageArrayMetaData,
         usrname,
         created,
         title.value,
@@ -80,8 +91,8 @@ const NewsPage = ({ history, addPost }) => {
         category.value
       )
       .then(() =>
-        firebaseService.createImage(uploadImages).then(() => {
-          setUploadImages(null);
+        firebaseService.createImage(imageArray).then(() => {
+          setUploadImages([]);
           setText(null);
           init();
         })
@@ -92,35 +103,42 @@ const NewsPage = ({ history, addPost }) => {
     setText(evt.editor.getData());
   };
 
-  const handleChangeImage = (e) => {
+  // TODO podle id inputu upravovat index v poli uploadedImages
+  const handleChangeImage = (e, i) => {
     // TODO nahrávání více fotek (přidat další input)
     const f = e.target.files[0];
     const fr = new FileReader();
 
-    fr.onload = async (ev2) => {
-      const name = shortid.generate();
-      const file = dataURLtoFile(ev2.target.result, name);
-      const type =
-        f.type.indexOf("/") !== -1
-          ? f.type.slice(f.type.indexOf("/") + 1)
-          : f.type;
-
-      try {
-        let o;
-        await imageCompression(file, optionsMed).then((blob) => {
-          o = { ...o, med: { blob, name, type, size: 400 } };
-        });
-        await imageCompression(file, optionsMin).then((blob) => {
-          o = { ...o, min: { blob, name, type, size: 200 } };
-        });
-        setUploadImages(o);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
     if (f) {
+      fr.onload = async (ev2) => {
+        const name = shortid.generate();
+        const file = dataURLtoFile(ev2.target.result, name);
+        const type =
+          f.type.indexOf("/") !== -1
+            ? f.type.slice(f.type.indexOf("/") + 1)
+            : f.type;
+
+        try {
+          let o;
+          await imageCompression(file, optionsMed).then((blob) => {
+            o = { ...o, med: { blob, name, type, size: 400 } };
+          });
+          await imageCompression(file, optionsMin).then((blob) => {
+            o = { ...o, min: { blob, name, type, size: 200 } };
+          });
+          // nahrát fotku na pozici dle indexu input pole
+          uploadImages[i] = o;
+          setUploadImages([...uploadImages]);
+        } catch (err) {
+          console.error(err);
+        }
+      };
+
       fr.readAsDataURL(f);
+    } else {
+      // držet pozici kvůli indexu kdyby uživatel chtěl přehrát fotku
+      uploadImages[i] = {};
+      setUploadImages([...uploadImages]);
     }
   };
 
@@ -219,6 +237,23 @@ const NewsPage = ({ history, addPost }) => {
     history.push(`/post/${postKey}`);
   };
 
+  const renderInputImageFields = () => {
+    const element = [];
+    for (let index = 0; index < inputImageFieldCounter; index++) {
+      const x = (
+        <Form.File
+          id={`input-image-${index}`}
+          name="file"
+          label="Example file input"
+          accept="image/*"
+          onChange={(event) => handleChangeImage(event, index)}
+        />
+      );
+      element.push(x);
+    }
+    return element;
+  };
+
   useEffect(() => {
     init();
   }, []);
@@ -248,14 +283,21 @@ const NewsPage = ({ history, addPost }) => {
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
-            <Form.Group>
-              <Form.File
-                name="file"
-                label="Example file input"
-                accept="image/*"
-                onChange={handleChangeImage}
-              />
-            </Form.Group>
+            <Form.Group id="inputImages">{renderInputImageFields()}</Form.Group>
+            <Button
+              variant="primary"
+              onClick={() => {
+                setInputImageFieldCounter(inputImageFieldCounter + 1);
+                uploadImages[inputImageFieldCounter] = {};
+                setUploadImages([...uploadImages]);
+              }}
+              disabled={
+                uploadImages.length === 0 ||
+                uploadImages.some((i) => Object.entries(i).length === 0)
+              }
+            >
+              +
+            </Button>
 
             <Form.Group>
               <Form.Label>Category</Form.Label>

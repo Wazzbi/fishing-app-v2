@@ -39,7 +39,8 @@ const newSummaryRef = (summaryUid) =>
   appl.database().ref(`summaries/${summaryUid}`);
 
 // *** Post API ***
-const postsRef = appl.database().ref(`post/`);
+const postsRef = appl.database().ref(`posts/`);
+const postRef = (id) => appl.database().ref(`posts/${id}`);
 
 // *** Images API
 const postImageRef = (name, size, type) =>
@@ -73,6 +74,19 @@ class firebaseService {
   static getPosts = async () => {
     try {
       const snapshot = await postsRef.get();
+      if (snapshot.exists()) {
+        return snapshot.val();
+      } else {
+        console.log("No data available");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  static getPost = async (id) => {
+    try {
+      const snapshot = await postRef(id).get();
       if (snapshot.exists()) {
         return snapshot.val();
       } else {
@@ -138,8 +152,7 @@ class firebaseService {
   // TODO data upravit na konečnou podobu prázdného formuláře
   static createPost = (
     text,
-    image,
-    type,
+    images,
     username,
     created,
     title,
@@ -151,8 +164,7 @@ class firebaseService {
       {
         title,
         text,
-        image,
-        type,
+        images,
         timeStamp,
         username,
         created,
@@ -163,19 +175,17 @@ class firebaseService {
     );
   };
 
-  static createImage = async (images) => {
+  static createImage = async (images = []) => {
     if (images) {
-      // await postImageRef(images.max.name, images.max.size, images.max.type).put(
-      //   images.max.blob
-      // );
+      for (const image of images) {
+        await postImageRef(image.med.name, image.med.size, image.med.type).put(
+          image.med.blob
+        );
 
-      await postImageRef(images.med.name, images.med.size, images.med.type).put(
-        images.med.blob
-      );
-
-      await postImageRef(images.min.name, images.min.size, images.min.type).put(
-        images.min.blob
-      );
+        await postImageRef(image.min.name, image.min.size, image.min.type).put(
+          image.min.blob
+        );
+      }
     }
   };
 

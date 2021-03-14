@@ -10,7 +10,6 @@ import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 
 // TODO když není nic ve storu tak si post a image stáhnout (např když proběhne refrash stránky)
-// TODO carusel aby startoval od fotky na kterou kliknu
 // TODO placeholdry při mačítání obrázku
 
 const PostPage = (props) => {
@@ -19,32 +18,63 @@ const PostPage = (props) => {
   const [images, setImages] = useState([]);
   const [imagesLarge, setImagesLarge] = useState([]);
   const [show, setShow] = useState(false);
+  const [activeImageCarousel, setActiveImageCarousel] = useState(false);
 
   const handleClose = () => setShow(false);
-  const handleShow = () => {
+  const handleShow = (index) => {
+    setActiveImageCarousel(index);
     fetchImagesLarge();
     setShow(true);
   };
 
   const fetchImages = async () => {
-    if (post && post.image) {
-      let promise = firebaseService.getImageUrl(post.image, 200, post.type);
-      let response = await promise;
-      setImages([response]);
+    if (post && post.images) {
+      let w = [];
+      for (const image of post.images) {
+        console.log(post.images);
+        let promise = firebaseService.getImageUrl(
+          image.imageName,
+          200,
+          image.imageType
+        );
+        let response = await promise;
+        w.push(response);
+      }
+      setImages(w);
     }
   };
 
   const fetchImagesLarge = async () => {
-    if (post && post.image && imagesLarge.length < 1) {
-      let promise = firebaseService.getImageUrl(post.image, 400, post.type);
-      let response = await promise;
-      setImagesLarge([response]);
+    if (post && post.images) {
+      let w = [];
+      for (const image of post.images) {
+        let promise = firebaseService.getImageUrl(
+          image.imageName,
+          400,
+          image.imageType
+        );
+        let response = await promise;
+        w.push(response);
+      }
+      setImagesLarge(w);
     }
+  };
+
+  const getPost = async () => {
+    let promise = firebaseService.getPost(params.id);
+    let response = await promise;
+    setPost(response);
   };
 
   useEffect(() => {
     if (!post) {
-      setPost(store.getState().posts.selectedPost);
+      const u = store.getState().posts.selectedPost;
+      if (u) {
+        setPost(u);
+      } else {
+        // TODO když se post nestáhne ze storu (např refresh stránky) tak si stáhnout post z firebase
+        getPost();
+      }
     }
 
     if (post && !images.length) {
@@ -79,13 +109,14 @@ const PostPage = (props) => {
             <div dangerouslySetInnerHTML={{ __html: post.text }}></div>
 
             <div className="post-page_images-container">
-              {!!images.length && (
-                <img
-                  src={images[0]}
-                  className="post-page_image"
-                  onClick={handleShow}
-                ></img>
-              )}
+              {!!images.length &&
+                images.map((image, index) => (
+                  <img
+                    src={images[index]}
+                    className="post-page_image"
+                    onClick={() => handleShow(index)}
+                  ></img>
+                ))}
             </div>
           </div>
         )}
@@ -100,7 +131,10 @@ const PostPage = (props) => {
           <Modal.Header closeButton></Modal.Header>
           <Modal.Body>
             {!!imagesLarge.length && (
-              <Carousel controls={imagesLarge.length > 1 ? true : false}>
+              <Carousel
+                controls={imagesLarge.length > 1 ? true : false}
+                defaultActiveIndex={activeImageCarousel}
+              >
                 {imagesLarge.map((imageUrl) => (
                   <Carousel.Item>
                     <img
