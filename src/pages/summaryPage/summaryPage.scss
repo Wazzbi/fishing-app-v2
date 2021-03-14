@@ -1,28 +1,23 @@
-.record-page_main {
+.summary-page_main {
   max-width: 1200px;
   margin: 20px auto;
   padding: 0 10px;
 }
-
-.record-page-add-btn {
+.summary-page-add-btn {
   box-shadow: 3px 3px 5px 0px #c1c1c1;
 }
 
-.record-page_record-name {
-  max-width: 500px;
-  margin-bottom: 5px;
-}
-
-.record-page_records {
+.summary-page_summaries {
   display: flex;
   flex-direction: column-reverse;
 }
 
-.record-page_row-btn {
-  margin: 1px;
+.summary-page_record-name {
+  max-width: 500px;
+  margin-bottom: 5px;
 }
 
-.record-page_table {
+.summary-page_table {
   background-color: white;
   padding: 3px;
   margin-bottom: 20px;
@@ -30,15 +25,10 @@
   box-shadow: 3px 3px 5px 0px #c1c1c1;
 }
 
-.record-page_delete-text {
+.summary-page_delete-text {
   color: red;
 
   &:hover {
     color: red;
   }
-}
-
-// autocomplete potřeboval dostat nahoru aby byl vydět
-.autocomplete {
-  z-index: 10000;
 }

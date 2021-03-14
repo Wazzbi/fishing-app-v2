@@ -260,7 +260,6 @@ const NewsPage = ({ history, addPost }) => {
 
   return (
     <>
-      <h1>NewsPage</h1>
       <div className="news-page_main">{!!posts && renderPosts()}</div>
       <Button
         variant="success"

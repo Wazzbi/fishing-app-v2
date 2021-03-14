@@ -31,7 +31,6 @@ const PostPage = (props) => {
     if (post && post.images) {
       let w = [];
       for (const image of post.images) {
-        console.log(post.images);
         let promise = firebaseService.getImageUrl(
           image.imageName,
           200,

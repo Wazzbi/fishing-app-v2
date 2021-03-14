@@ -1,11 +1,16 @@
 import React, { useEffect, useState, useContext, useCallback } from "react";
 import firebaseService from "../../services/firebase/firebase.service";
 import { AuthContext } from "../../Auth";
+import "./summaryPage.scss";
 
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
+import FormControl from "react-bootstrap/FormControl";
+import DropdownButton from "react-bootstrap/DropdownButton";
+import Dropdown from "react-bootstrap/Dropdown";
 
 // TODO zobrazovat seznam summary
 // TODO poslat vybraný summary do mailu
@@ -14,6 +19,7 @@ import Form from "react-bootstrap/Form";
 // TODO records, summaries zabraný -> přejmenovat
 // TODO zablokovat SEND když budou nějaká nevalidní data
 // TODO sloupce s rybama přes loop
+// !! řazení je ve stylech od nejnovějšího k nejstaršího
 
 const SummaryPage = () => {
   const { currentUser } = useContext(AuthContext);
@@ -273,201 +279,228 @@ const SummaryPage = () => {
 
   return (
     <>
-      <h1>SummaryPage</h1>
-      <button onClick={doCreateSummaryAndRefresh}>Add summary card</button>
-      <br />
-      <br />
+      <div className="summary-page_main">
+        <Button
+          variant="primary"
+          className="summary-page-add-btn"
+          onClick={doCreateSummaryAndRefresh}
+        >
+          Add summary card
+        </Button>
 
-      {!summaries && <p>Add some summarry dude!</p>}
+        <br />
+        <br />
 
-      {!!summaries &&
-        Object.entries(summaries).map(([summaryKey, value]) => (
-          <div key={summaryKey}>
-            <input
-              id={`${summaryKey}-summaryName`}
-              name="summaryName"
-              type="text"
-              placeholder="Summary Name"
-              onChange={(e) =>
-                handleChangeSummaryName(
-                  currentUser.uid,
-                  summaryKey,
-                  e.target.value
-                )
-              }
-              value={value && value.name ? value.name : ""}
-              disabled
-            />{" "}
-            <button onClick={() => editSummaryName(summaryKey)}>rename</button>{" "}
-            <button onClick={() => handleShowModalChangeSummary(summaryKey)}>
-              records
-            </button>{" "}
-            <button onClick={() => handleDelete({ summaryUid: summaryKey })}>
-              delete
-            </button>{" "}
-            <button>send</button>
-            <Table responsive striped bordered hover>
-              <thead>
-                <tr>
-                  <th colSpan="2">Revír</th>
-                  <th rowSpan="2">Číslo podrevíru</th>
-                  <th colSpan="2">1 Kapr</th>
-                  <th colSpan="2">2 Okoun</th>
-                  <th colSpan="2">3 Candát</th>
-                  <th rowSpan="2">Počet docházek</th>
-                </tr>
-                <tr>
-                  <th>Číslo</th>
-                  <th>Název</th>
-                  <th>Ks</th>
-                  <th>Kg</th>
-                  <th>Ks</th>
-                  <th>Kg</th>
-                  <th>Ks</th>
-                  <th>Kg</th>
-                </tr>
-              </thead>
-              <tbody>
-                {!!recordsTogether &&
-                  !!recordsTogether[summaryKey] &&
-                  Object.entries(recordsTogether[summaryKey]).map(
-                    ([rowDataKey, rowDataValue]) => (
-                      <tr>
-                        <td>
-                          {rowDataValue.districtNumber}{" "}
-                          <span
-                            title="chybějící povinná data: druh ryby, váha nebo počet kusů"
-                            style={{
-                              color: "red",
-                              fontWeight: "bold",
-                              cursor: "pointer",
-                            }}
-                          >
-                            {rowDataValue.alertMissingData.some(
-                              (a) => a === true
-                            )
-                              ? "(!)"
-                              : ""}
-                          </span>
-                        </td>
-                        <td> </td>
-                        <td>
-                          {rowDataValue.subdistrictNumber
-                            ? rowDataValue.subdistrictNumber
-                            : "-"}
-                        </td>
-                        <td>
-                          {rowDataValue &&
-                          rowDataValue.fishes &&
-                          rowDataValue.fishes.kapr &&
-                          rowDataValue.fishes.kapr.pieces
-                            ? rowDataValue.fishes.kapr.pieces
-                            : "-"}
-                        </td>
-                        <td>
-                          {rowDataValue &&
-                          rowDataValue.fishes &&
-                          rowDataValue.fishes.kapr &&
-                          rowDataValue.fishes.kapr.kilograms
-                            ? rowDataValue.fishes.kapr.kilograms
-                            : "-"}
-                        </td>
-                        <td>
-                          {rowDataValue &&
-                          rowDataValue.fishes &&
-                          rowDataValue.fishes.okoun &&
-                          rowDataValue.fishes.okoun.pieces
-                            ? rowDataValue.fishes.okoun.pieces
-                            : "-"}
-                        </td>
-                        <td>
-                          {rowDataValue &&
-                          rowDataValue.fishes &&
-                          rowDataValue.fishes.okoun &&
-                          rowDataValue.fishes.okoun.kilograms
-                            ? rowDataValue.fishes.okoun.kilograms
-                            : "-"}
-                        </td>
-                        <td>
-                          {rowDataValue &&
-                          rowDataValue.fishes &&
-                          rowDataValue.fishes.candat &&
-                          rowDataValue.fishes.candat.pieces
-                            ? rowDataValue.fishes.candat.pieces
-                            : "-"}
-                        </td>
-                        <td>
-                          {rowDataValue &&
-                          rowDataValue.fishes &&
-                          rowDataValue.fishes.candat &&
-                          rowDataValue.fishes.candat.kilograms
-                            ? rowDataValue.fishes.candat.kilograms
-                            : "-"}
-                        </td>
-                        <td>{rowDataValue.visited}</td>
-                      </tr>
-                    )
-                  )}
-              </tbody>
-            </Table>
-            <br />
-            <br />
-          </div>
-        ))}
+        {!summaries && <p>Add some summary dude!</p>}
 
-      <Modal
-        show={showModalDelete}
-        onHide={handleDeleteClose}
-        animation={false}
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Potvrdit akci</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>{onDelete && onDelete.text}</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleDeleteClose}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleCloseAndDelete}>
-            DELETE
-          </Button>
-        </Modal.Footer>
-      </Modal>
+        <div className="summary-page_summaries">
+          {!!summaries &&
+            Object.entries(summaries).map(([summaryKey, value]) => (
+              <div key={summaryKey} className="summary-page_table">
+                <InputGroup className="summary-page_record-name">
+                  <FormControl
+                    id={`${summaryKey}-summaryName`}
+                    name="summaryName"
+                    type="text"
+                    placeholder="Summary Name"
+                    onChange={(e) =>
+                      handleChangeSummaryName(
+                        currentUser.uid,
+                        summaryKey,
+                        e.target.value
+                      )
+                    }
+                    value={value && value.name ? value.name : ""}
+                    disabled
+                  />
 
-      <Modal
-        show={showModalAddSummary}
-        onHide={handleCloseModalAddSummary}
-        backdrop="static"
-        keyboard={false}
-        animation={false}
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Vyberte zápisy</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={handleSubmitChange}>
-            {!!records &&
-              Object.entries(records).map(([recordKey, value]) => (
-                <Form.Check
-                  type="checkbox"
-                  id={recordKey}
-                  label={value && value.name ? value.name : "No name!"}
-                  defaultChecked={isChecked(recordKey)}
-                  onChange={() => changeRecordInSummary(recordKey)}
-                />
-              ))}
-            <Button
-              variant="primary"
-              type="submit"
-              disabled={selectedRecords && selectedRecords.length === 0}
-            >
-              Submit
+                  <DropdownButton
+                    as={InputGroup.Append}
+                    variant="outline-secondary"
+                    title="Menu"
+                    id="input-group-dropdown-2"
+                  >
+                    <Dropdown.Item onClick={() => editSummaryName(summaryKey)}>
+                      rename
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      onClick={() => handleShowModalChangeSummary(summaryKey)}
+                    >
+                      add records
+                    </Dropdown.Item>
+                    <Dropdown.Item>send</Dropdown.Item>
+                    <Dropdown.Divider />
+                    <Dropdown.Item
+                      className="summary-page_delete-text"
+                      onClick={() => handleDelete({ summaryUid: summaryKey })}
+                    >
+                      delete
+                    </Dropdown.Item>
+                  </DropdownButton>
+                </InputGroup>
+
+                <Table responsive bordered hover size="sm">
+                  <thead>
+                    <tr>
+                      <th colSpan="2">Revír</th>
+                      <th rowSpan="2">Číslo podrevíru</th>
+                      <th colSpan="2">1 Kapr</th>
+                      <th colSpan="2">2 Okoun</th>
+                      <th colSpan="2">3 Candát</th>
+                      <th rowSpan="2">Počet docházek</th>
+                    </tr>
+                    <tr>
+                      <th>Číslo</th>
+                      <th>Název</th>
+                      <th>Ks</th>
+                      <th>Kg</th>
+                      <th>Ks</th>
+                      <th>Kg</th>
+                      <th>Ks</th>
+                      <th>Kg</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {!!recordsTogether &&
+                      !!recordsTogether[summaryKey] &&
+                      Object.entries(recordsTogether[summaryKey]).map(
+                        ([rowDataKey, rowDataValue]) => (
+                          <tr>
+                            <td>
+                              {rowDataValue.districtNumber}{" "}
+                              <span
+                                title="chybějící povinná data: druh ryby, váha nebo počet kusů"
+                                style={{
+                                  color: "red",
+                                  fontWeight: "bold",
+                                  cursor: "pointer",
+                                }}
+                              >
+                                {rowDataValue.alertMissingData.some(
+                                  (a) => a === true
+                                )
+                                  ? "(!)"
+                                  : ""}
+                              </span>
+                            </td>
+                            <td> </td>
+                            <td>
+                              {rowDataValue.subdistrictNumber
+                                ? rowDataValue.subdistrictNumber
+                                : "-"}
+                            </td>
+                            <td>
+                              {rowDataValue &&
+                              rowDataValue.fishes &&
+                              rowDataValue.fishes.kapr &&
+                              rowDataValue.fishes.kapr.pieces
+                                ? rowDataValue.fishes.kapr.pieces
+                                : "-"}
+                            </td>
+                            <td>
+                              {rowDataValue &&
+                              rowDataValue.fishes &&
+                              rowDataValue.fishes.kapr &&
+                              rowDataValue.fishes.kapr.kilograms
+                                ? rowDataValue.fishes.kapr.kilograms
+                                : "-"}
+                            </td>
+                            <td>
+                              {rowDataValue &&
+                              rowDataValue.fishes &&
+                              rowDataValue.fishes.okoun &&
+                              rowDataValue.fishes.okoun.pieces
+                                ? rowDataValue.fishes.okoun.pieces
+                                : "-"}
+                            </td>
+                            <td>
+                              {rowDataValue &&
+                              rowDataValue.fishes &&
+                              rowDataValue.fishes.okoun &&
+                              rowDataValue.fishes.okoun.kilograms
+                                ? rowDataValue.fishes.okoun.kilograms
+                                : "-"}
+                            </td>
+                            <td>
+                              {rowDataValue &&
+                              rowDataValue.fishes &&
+                              rowDataValue.fishes.candat &&
+                              rowDataValue.fishes.candat.pieces
+                                ? rowDataValue.fishes.candat.pieces
+                                : "-"}
+                            </td>
+                            <td>
+                              {rowDataValue &&
+                              rowDataValue.fishes &&
+                              rowDataValue.fishes.candat &&
+                              rowDataValue.fishes.candat.kilograms
+                                ? rowDataValue.fishes.candat.kilograms
+                                : "-"}
+                            </td>
+                            <td>{rowDataValue.visited}</td>
+                          </tr>
+                        )
+                      )}
+                  </tbody>
+                </Table>
+              </div>
+            ))}
+        </div>
+
+        <Modal
+          show={showModalDelete}
+          onHide={handleDeleteClose}
+          animation={false}
+          centered
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Potvrdit akci</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>{onDelete && onDelete.text}</Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleDeleteClose}>
+              Close
             </Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
+            <Button variant="primary" onClick={handleCloseAndDelete}>
+              DELETE
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        <Modal
+          show={showModalAddSummary}
+          onHide={handleCloseModalAddSummary}
+          backdrop="static"
+          keyboard={false}
+          animation={false}
+          centered
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Vyberte zápisy</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form onSubmit={handleSubmitChange}>
+              {!!records &&
+                Object.entries(records).map(([recordKey, value]) => (
+                  <Form.Check
+                    type="checkbox"
+                    id={recordKey}
+                    label={value && value.name ? value.name : "No name!"}
+                    defaultChecked={isChecked(recordKey)}
+                    onChange={() => changeRecordInSummary(recordKey)}
+                  />
+                ))}
+              <Button
+                variant="primary"
+                type="submit"
+                disabled={selectedRecords && selectedRecords.length === 0}
+              >
+                Submit
+              </Button>
+            </Form>
+          </Modal.Body>
+        </Modal>
+      </div>
     </>
   );
 };
