@@ -9,8 +9,7 @@ import Carousel from "react-bootstrap/Carousel";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 
-// TODO když není nic ve storu tak si post a image stáhnout (např když proběhne refrash stránky)
-// TODO placeholdry při mačítání obrázku
+// TODO like btn + komentaře
 
 const PostPage = (props) => {
   const params = props.match.params; // id postu
@@ -71,9 +70,11 @@ const PostPage = (props) => {
       if (u) {
         setPost(u);
       } else {
-        // TODO když se post nestáhne ze storu (např refresh stránky) tak si stáhnout post z firebase
         getPost();
       }
+      // nasty react...
+      // https://stackoverflow.com/questions/58431946/why-does-my-react-router-link-bring-me-to-the-middle-of-a-page
+      window.scrollTo(0, 0);
     }
 
     if (post && !images.length) {
@@ -90,72 +91,81 @@ const PostPage = (props) => {
   return (
     <>
       <div className="post-page_main">
-        <Button
-          variant="outline-primary"
-          as={Link}
-          to={"/news"}
-          className="post-page_back-btn-icon"
-        >
-          <img src="/back-arrow.png" width="15px" height="15px"></img> Back
-        </Button>
-        {post && (
-          <div>
-            <h1>{post.title}</h1>
-            <p>
-              <small>
-                {post.username} {" | "} {post.created}
-              </small>
-            </p>
-            <p>
-              <Badge variant="primary">{post.category}</Badge>
-            </p>
+        <div className="post-page-post">
+          <Button
+            variant="outline-primary"
+            as={Link}
+            to={"/news"}
+            className="post-page_back-btn-icon"
+          >
+            <img src="/back-arrow.png" width="15px" height="15px"></img> Back
+          </Button>
+          {post && (
+            <div>
+              <h1>{post.title}</h1>
+              <p>
+                <small>
+                  {post.username} {" | "} {post.created}
+                </small>
+              </p>
+              <p className="post-page_icons-group">
+                <Badge variant="primary">{post.category}</Badge>
+                <img src="/comment.svg" height="15px" width="15px"></img>
+                <small>1526</small>
+                <img src="/heart.svg" height="15px" width="15px"></img>
+                <small>99.1k</small>
+              </p>
 
-            <div dangerouslySetInnerHTML={{ __html: post.text }}></div>
+              <div
+                className="post-page_text"
+                dangerouslySetInnerHTML={{ __html: post.text }}
+              ></div>
 
-            {!!post.images && (
-              <div className="post-page_images-container">
-                {post.images.map((image, index) => (
-                  <div className="post-page_animated-background">
-                    <img
-                      src={images[index]}
-                      className="post-page_image"
-                      onClick={() => handleShow(index)}
-                    ></img>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        <Modal
-          show={show}
-          onHide={handleClose}
-          animation={false}
-          contentClassName="post-page_modal-images-modal"
-          centered
-        >
-          <Modal.Header closeButton></Modal.Header>
-          <Modal.Body>
-            {!!imagesLarge.length && (
-              <Carousel
-                controls={imagesLarge.length > 1 ? true : false}
-                defaultActiveIndex={activeImageCarousel}
-              >
-                {imagesLarge.map((imageUrl) => (
-                  <Carousel.Item>
+              {!!post.images && (
+                <div className="post-page_images-container">
+                  {post.images.map((image, index) => (
                     <div className="post-page_animated-background">
                       <img
-                        src={imageUrl}
-                        className="post-page_modal-images"
+                        src={images[index]}
+                        className="post-page_image"
+                        onClick={() => handleShow(index)}
                       ></img>
                     </div>
-                  </Carousel.Item>
-                ))}
-              </Carousel>
-            )}
-          </Modal.Body>
-        </Modal>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          <Modal
+            show={show}
+            onHide={handleClose}
+            animation={false}
+            contentClassName="post-page_modal-images-modal"
+            centered
+          >
+            <Modal.Header closeButton></Modal.Header>
+            <Modal.Body>
+              {!!imagesLarge.length && (
+                <Carousel
+                  controls={imagesLarge.length > 1 ? true : false}
+                  defaultActiveIndex={activeImageCarousel}
+                >
+                  {imagesLarge.map((imageUrl) => (
+                    <Carousel.Item>
+                      <div className="post-page_animated-background">
+                        <img
+                          src={imageUrl}
+                          className="post-page_modal-images"
+                        ></img>
+                      </div>
+                    </Carousel.Item>
+                  ))}
+                </Carousel>
+              )}
+            </Modal.Body>
+          </Modal>
+        </div>
       </div>
     </>
   );

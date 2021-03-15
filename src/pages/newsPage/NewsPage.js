@@ -190,7 +190,7 @@ const NewsPage = ({ history, addPost }) => {
         dataLength={postsRender.length}
         next={() => fetchMorePosts(lastPostTimeStamp)}
         hasMore={true}
-        style={{ padding: "10px" }}
+        style={{ padding: "5px" }}
       >
         {postsRender.map(([postKey, postValue]) => (
           <>

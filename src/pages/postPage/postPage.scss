@@ -1,7 +1,14 @@
 .post-page_main {
   max-width: 800px;
   margin: 20px auto;
-  padding: 0 10px;
+}
+
+.post-page-post {
+  padding: 10px;
+  margin: 0 5px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 1px 1px 5px 0px #c1c1c1;
 }
 
 .post-page_image {
@@ -66,6 +73,18 @@
   background-size: 800px 104px;
   min-height: 100px;
   position: relative;
+}
+
+.post-page_icons-group {
+  display: flex;
+  align-items: center;
+  img {
+    margin: 0 5px 0 10px;
+  }
+}
+
+.post-page_text {
+  overflow: hidden;
 }
 
 @keyframes placeHolderShimmer {
