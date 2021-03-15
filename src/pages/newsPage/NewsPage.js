@@ -221,8 +221,13 @@ const NewsPage = ({ history, addPost }) => {
                 dangerouslySetInnerHTML={{ __html: postValue.text }}
               ></div>
               <div className="news-page_post-text-overlay">
-                <img src="/comment.svg" height="15px" width="15px"></img>
-                <img src="/heart.svg" height="15px" width="15px"></img>
+                <div className="news-page_post-text-overlay-icon-group-left">
+                  <img src="/comment.svg" height="15px" width="15px"></img>
+                  <small>1526</small>
+                  <img src="/heart.svg" height="15px" width="15px"></img>
+                  <small>99.1k</small>
+                </div>
+
                 <img src="/right.svg" height="15px" width="15px"></img>
               </div>
             </div>
