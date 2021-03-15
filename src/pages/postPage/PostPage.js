@@ -90,8 +90,13 @@ const PostPage = (props) => {
   return (
     <>
       <div className="post-page_main">
-        <Button variant="outline-primary" as={Link} to={"/news"}>
-          Back
+        <Button
+          variant="outline-primary"
+          as={Link}
+          to={"/news"}
+          className="post-page_back-btn-icon"
+        >
+          <img src="/back-arrow.png" width="15px" height="15px"></img> Back
         </Button>
         {post && (
           <div>
@@ -107,16 +112,19 @@ const PostPage = (props) => {
 
             <div dangerouslySetInnerHTML={{ __html: post.text }}></div>
 
-            <div className="post-page_images-container">
-              {!!images.length &&
-                images.map((image, index) => (
-                  <img
-                    src={images[index]}
-                    className="post-page_image"
-                    onClick={() => handleShow(index)}
-                  ></img>
+            {!!post.images && (
+              <div className="post-page_images-container">
+                {post.images.map((image, index) => (
+                  <div className="post-page_animated-background">
+                    <img
+                      src={images[index]}
+                      className="post-page_image"
+                      onClick={() => handleShow(index)}
+                    ></img>
+                  </div>
                 ))}
-            </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -136,10 +144,12 @@ const PostPage = (props) => {
               >
                 {imagesLarge.map((imageUrl) => (
                   <Carousel.Item>
-                    <img
-                      src={imageUrl}
-                      className="post-page_modal-images"
-                    ></img>
+                    <div className="post-page_animated-background">
+                      <img
+                        src={imageUrl}
+                        className="post-page_modal-images"
+                      ></img>
+                    </div>
                   </Carousel.Item>
                 ))}
               </Carousel>

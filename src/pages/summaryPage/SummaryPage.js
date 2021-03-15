@@ -318,7 +318,7 @@ const SummaryPage = () => {
                     as={InputGroup.Append}
                     variant="outline-secondary"
                     title="Menu"
-                    id="input-group-dropdown-2"
+                    id={`input-group-dropdown-${summaryKey}`}
                   >
                     <Dropdown.Item onClick={() => editSummaryName(summaryKey)}>
                       rename

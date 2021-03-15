@@ -292,7 +292,7 @@ const RecordPage = () => {
                       as={InputGroup.Append}
                       variant="outline-secondary"
                       title="Menu"
-                      id="input-group-dropdown-2"
+                      id={`input-group-dropdown-${recordKey}`}
                     >
                       <Dropdown.Item onClick={() => editRecordName(recordKey)}>
                         rename
@@ -343,6 +343,7 @@ const RecordPage = () => {
                                 >
                                   <img
                                     src="/edit.svg"
+                                    alt="edit"
                                     width="15px"
                                     height="15px"
                                   ></img>
@@ -360,6 +361,7 @@ const RecordPage = () => {
                                 >
                                   <img
                                     src="/delete.svg"
+                                    alt="delete"
                                     width="15px"
                                     height="15px"
                                   ></img>

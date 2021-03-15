@@ -262,11 +262,11 @@ const NewsPage = ({ history, addPost }) => {
     <>
       <div className="news-page_main">{!!posts && renderPosts()}</div>
       <Button
-        variant="success"
+        variant="primary"
         className="news-page_float-btn"
         onClick={handleShow}
       >
-        ADD POST
+        <img src="/plus.svg" width="30px" height="30px"></img>
       </Button>
 
       <Modal

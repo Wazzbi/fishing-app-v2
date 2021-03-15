@@ -25,6 +25,7 @@ const Navigation = () => {
         <>
           <Navbar
             expand="lg"
+            variant="dark"
             className="navigation_nav"
             onToggle={(state) => setNavExpanded(state)}
             expanded={navExpanded}
@@ -56,7 +57,7 @@ const Navigation = () => {
               </Nav>
 
               <Button
-                variant="outline-dark"
+                variant="outline-light"
                 onClick={() => firebaseService.auth().signOut()}
               >
                 Sign out

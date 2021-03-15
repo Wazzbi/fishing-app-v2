@@ -8,16 +8,17 @@
   width: 100px;
   height: 100px;
   object-fit: cover;
+  cursor: pointer;
 }
 
 .post-page_images-container {
   width: 100%;
-  height: 120px;
+  min-height: 120px;
   display: flex;
   flex-wrap: wrap;
   justify-content: start;
   align-items: center;
-  border-top: 1px solid black;
+  border-top: 2px solid black;
 }
 
 .post-page_modal-images {
@@ -32,5 +33,46 @@
   .close {
     color: white;
     opacity: 1;
+  }
+}
+
+.post-page_back-btn-icon {
+  transition: all 250ms;
+
+  img {
+    vertical-align: baseline;
+
+    filter: invert(32%) sepia(83%) saturate(3434%) hue-rotate(200deg)
+      brightness(103%) contrast(106%);
+  }
+
+  &:hover {
+    img {
+      filter: invert(100%) sepia(0%) saturate(2%) hue-rotate(67deg)
+        brightness(108%) contrast(101%);
+    }
+  }
+}
+
+.post-page_animated-background {
+  margin: 1px;
+  animation-duration: 1.25s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-name: placeHolderShimmer;
+  animation-timing-function: linear;
+  background: darkgray;
+  background: linear-gradient(135deg, #eeeeee 10%, #dddddd 18%, #eeeeee 33%);
+  background-size: 800px 104px;
+  min-height: 100px;
+  position: relative;
+}
+
+@keyframes placeHolderShimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
   }
 }
