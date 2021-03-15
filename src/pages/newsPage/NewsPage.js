@@ -6,7 +6,7 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { AuthContext } from "../../Auth";
-import { CKEditor } from "ckeditor4-react";
+import CKEditor from "ckeditor4-react";
 import { addPost } from "../../redux/actions";
 import { connect } from "react-redux";
 import { ckEditorConfig, optionsMed, optionsMin } from "./constants";
