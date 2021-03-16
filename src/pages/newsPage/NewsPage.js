@@ -203,12 +203,6 @@ const NewsPage = ({ history, addPost }) => {
               <div className="news-page_header">
                 <div className="news-page_post-icon">
                   <Jdenticon size="30" value={postValue.username} />
-                  {/* <img
-                    src={`/${postValue.category}.svg`}
-                    height="30px"
-                    width="30px"
-                    alt={`${postValue.category} icon`}
-                  ></img> */}
                 </div>
                 <div className="news-page_header-title">
                   <span>{postValue.title}</span>
