@@ -22,6 +22,7 @@ import Spinner from "react-bootstrap/Spinner";
 // TODO validace jen přes modal (vyčistí to kód) udělat edit row v stejným modalu
 // TODO modaly mít taky samostatných souborech
 // TODO nešel by today získat i jinak než ho mít ve state
+// TODO při přechodu na jiné stránky dochází k opětovnému načítání dat -> redux
 // !! řazení je ve stylech od nejnovějšího k nejstaršího
 
 const RecordPage = () => {

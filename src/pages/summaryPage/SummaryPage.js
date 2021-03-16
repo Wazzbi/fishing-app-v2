@@ -20,6 +20,7 @@ import Spinner from "react-bootstrap/Spinner";
 // TODO records, summaries zabraný -> přejmenovat
 // TODO zablokovat SEND když budou nějaká nevalidní data
 // TODO sloupce s rybama přes loop
+// TODO při přechodu na jiné stránky dochází k opětovnému načítání dat -> redux
 // !! řazení je ve stylech od nejnovějšího k nejstaršího
 
 const SummaryPage = () => {
