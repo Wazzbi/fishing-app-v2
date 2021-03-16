@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import "./newsPage.scss";
 import firebaseService from "../../services/firebase/firebase.service";
 import imageCompression from "browser-image-compression";
@@ -6,7 +6,7 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { AuthContext } from "../../Auth";
-import CKEditor from "ckeditor4-react";
+import JoditEditor from "jodit-react";
 import { addPost } from "../../redux/actions";
 import { connect } from "react-redux";
 import { ckEditorConfig, optionsMed, optionsMin } from "./constants";
@@ -35,7 +35,36 @@ const NewsPage = ({ history, addPost }) => {
   const [uploadImages, setUploadImages] = useState([]);
   const [inputImageFieldCounter, setInputImageFieldCounter] = useState(1);
   const [posts, setPosts] = useState(null);
-  const [text, setText] = useState("<p>React is really <em>nice</em>!</p>");
+  const [text, setText] = useState("");
+
+  const editor = useRef(null);
+  const config = {
+    readonly: false, // all options from https://xdsoft.net/jodit/doc/
+    toolbarAdaptive: false,
+    buttons: [
+      "source",
+      "|",
+      "bold",
+      "italic",
+      "|",
+      "ul",
+      "ol",
+      "eraser",
+      "|",
+      "font",
+      "fontsize",
+      "brush",
+      "paragraph",
+      "|",
+      "align",
+      "|",
+      "undo",
+      "redo",
+      "|",
+      "hr",
+      "fullsize",
+    ],
+  };
 
   const handleClose = () => {
     setUploadImages([]);
@@ -72,7 +101,6 @@ const NewsPage = ({ history, addPost }) => {
 
     // TODO filtrování na med nechtěl object.entries fungovat...
     const imageArray = uploadImages.filter((e) => !!e.med);
-    console.log(imageArray);
     const imageArrayMetaData = imageArray.map((t) => {
       return {
         imageName: t.med.name,
@@ -100,7 +128,7 @@ const NewsPage = ({ history, addPost }) => {
   };
 
   const onEditorChange = (evt) => {
-    setText(evt.editor.getData());
+    setText(evt.srcElement.innerHTML);
   };
 
   // TODO podle id inputu upravovat index v poli uploadedImages
@@ -318,10 +346,13 @@ const NewsPage = ({ history, addPost }) => {
 
             <Form.Group>
               <Form.Label>Example textarea</Form.Label>
-              <CKEditor
-                data={text}
-                onChange={onEditorChange}
-                config={ckEditorConfig}
+              <JoditEditor
+                ref={editor}
+                value={text}
+                config={config}
+                tabIndex={1} // tabIndex of textarea
+                onBlur={(newContent) => onEditorChange(newContent)} // preferred to use only this option to update the content for performance reasons
+                onChange={(newContent) => {}}
               />
             </Form.Group>
 

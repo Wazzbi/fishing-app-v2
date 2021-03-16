@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useCallback } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import firebaseService from "../../services/firebase/firebase.service";
 import validatorService from "../../services/validators/validator.service";
 import autocompleterService from "../../services/utils/autocompleter.service";
@@ -212,32 +212,29 @@ const RecordPage = () => {
     });
   };
 
-  const handleSubmitAdd = useCallback(
-    async (event) => {
-      setEditRowData(null);
-      handleAddClose();
-      event.preventDefault();
-      const {
-        date,
-        districtNumber,
-        subdistrictNumber,
-        kind,
-        pieces,
-        kilograms,
-        centimeters,
-      } = event.target.elements;
-      addRowAndRefresh(onAdd, {
-        date: date.value,
-        districtNumber: districtNumber.value,
-        subdistrictNumber: subdistrictNumber.value,
-        kind: kind.value,
-        pieces: pieces.value,
-        kilograms: kilograms.value,
-        centimeters: centimeters.value,
-      });
-    },
-    [addRowAndRefresh, onAdd]
-  );
+  const handleSubmitAdd = async (event) => {
+    setEditRowData(null);
+    handleAddClose();
+    event.preventDefault();
+    const {
+      date,
+      districtNumber,
+      subdistrictNumber,
+      kind,
+      pieces,
+      kilograms,
+      centimeters,
+    } = event.target.elements;
+    addRowAndRefresh(onAdd, {
+      date: date.value,
+      districtNumber: districtNumber.value,
+      subdistrictNumber: subdistrictNumber.value,
+      kind: kind.value,
+      pieces: pieces.value,
+      kilograms: kilograms.value,
+      centimeters: centimeters.value,
+    });
+  };
   const handleAddClose = () => {
     setEditRowData(null);
     setShowModalAdd(false);
