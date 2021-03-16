@@ -57,8 +57,9 @@ $post-color-bg: rgb(220, 220, 220);
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0 10px; // inline with post-text
-  background-color: #007bff12;
+  margin: 0 10px 0 5px; // inline with post-text
+  // background-color: #007bff12;
+  border: 3px solid #007bff12;
   border-radius: 50%;
   width: 50px;
   height: 50px;
@@ -81,7 +82,7 @@ $post-color-bg: rgb(220, 220, 220);
   left: 0;
   right: 0;
   z-index: 10;
-  height: 20px;
+  height: 23px;
   background-color: white;
   padding: 0 20px;
   display: flex;
@@ -100,8 +101,8 @@ $post-color-bg: rgb(220, 220, 220);
     margin-right: 5px;
   }
 
-  small {
-    margin-right: 20px;
+  span {
+    margin-right: 15px;
   }
 }
 

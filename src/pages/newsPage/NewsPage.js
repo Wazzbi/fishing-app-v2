@@ -224,9 +224,9 @@ const NewsPage = ({ history, addPost }) => {
               <div className="news-page_post-text-overlay">
                 <div className="news-page_post-text-overlay-icon-group-left">
                   <img src="/comment.svg" height="15px" width="15px"></img>
-                  <small>1526</small>
+                  <span>1526</span>
                   <img src="/heart.svg" height="15px" width="15px"></img>
-                  <small>99.1k</small>
+                  <span>99.1k</span>
                 </div>
 
                 <img src="/right.svg" height="15px" width="15px"></img>
