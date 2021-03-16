@@ -6,8 +6,6 @@ import Spinner from "react-bootstrap/Spinner";
 
 export const AuthContext = React.createContext();
 
-//TODO loading spiner do prostred obrazovky
-
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [currentUserData, setCurrentUserData] = useState(null);

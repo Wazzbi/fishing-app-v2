@@ -5,8 +5,6 @@ import "./landingPage.scss";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 
-//TODO na místo "Logged user - redirect" dát ještě nějakou animačku nebo nějaký obrázek přidat
-
 const LandingPage = ({ history }) => {
   const { currentUser } = useContext(AuthContext);
 
