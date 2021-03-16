@@ -10,6 +10,7 @@ import JoditEditor from "jodit-react";
 import { addPost } from "../../redux/actions";
 import { connect } from "react-redux";
 import { configEditor, optionsMed, optionsMin } from "./constants";
+import Jdenticon from "react-jdenticon";
 
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -201,12 +202,13 @@ const NewsPage = ({ history, addPost }) => {
             >
               <div className="news-page_header">
                 <div className="news-page_post-icon">
-                  <img
+                  <Jdenticon size="30" value={postValue.username} />
+                  {/* <img
                     src={`/${postValue.category}.svg`}
                     height="30px"
                     width="30px"
                     alt={`${postValue.category} icon`}
-                  ></img>
+                  ></img> */}
                 </div>
                 <div className="news-page_header-title">
                   <span>{postValue.title}</span>

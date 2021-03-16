@@ -13,6 +13,7 @@
     "react-bootstrap": "^1.5.0",
     "react-dom": "^16.8.6",
     "react-infinite-scroll-component": "^6.0.0",
+    "react-jdenticon": "^0.0.9",
     "react-lazy-load-image-component": "^1.5.1",
     "react-redux": "^7.2.2",
     "react-router": "^5.0.0",
