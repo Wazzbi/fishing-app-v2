@@ -24,6 +24,7 @@ import Spinner from "react-bootstrap/Spinner";
 // TODO nešel by today získat i jinak než ho mít ve state
 // TODO při přechodu na jiné stránky dochází k opětovnému načítání dat -> redux
 // TODO vyřešit vykřičkníky v poli actions když chybí nějaké data
+// TODO když se vrátím zpět tak na nascrollovanou pozici
 // !! řazení je ve stylech od nejnovějšího k nejstaršího
 
 const RecordPage = () => {
