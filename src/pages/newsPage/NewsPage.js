@@ -9,7 +9,7 @@ import { AuthContext } from "../../Auth";
 import JoditEditor from "jodit-react";
 import { addPost } from "../../redux/actions";
 import { connect } from "react-redux";
-import { ckEditorConfig, optionsMed, optionsMin } from "./constants";
+import { configEditor, optionsMed, optionsMin } from "./constants";
 
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -38,33 +38,6 @@ const NewsPage = ({ history, addPost }) => {
   const [text, setText] = useState("");
 
   const editor = useRef(null);
-  const config = {
-    readonly: false, // all options from https://xdsoft.net/jodit/doc/
-    toolbarAdaptive: false,
-    buttons: [
-      "source",
-      "|",
-      "bold",
-      "italic",
-      "|",
-      "ul",
-      "ol",
-      "eraser",
-      "|",
-      "font",
-      "fontsize",
-      "brush",
-      "paragraph",
-      "|",
-      "align",
-      "|",
-      "undo",
-      "redo",
-      "|",
-      "hr",
-      "fullsize",
-    ],
-  };
 
   const handleClose = () => {
     setUploadImages([]);
@@ -349,7 +322,7 @@ const NewsPage = ({ history, addPost }) => {
               <JoditEditor
                 ref={editor}
                 value={text}
-                config={config}
+                config={configEditor}
                 tabIndex={1} // tabIndex of textarea
                 onBlur={(newContent) => onEditorChange(newContent)} // preferred to use only this option to update the content for performance reasons
                 onChange={(newContent) => {}}

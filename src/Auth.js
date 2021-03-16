@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import firebaseService from "./services/firebase/firebase.service";
+import "./App.scss";
+
+import Spinner from "react-bootstrap/Spinner";
 
 export const AuthContext = React.createContext();
 
@@ -24,7 +27,12 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   if (pending) {
-    return <>Loading...</>;
+    return (
+      <div className="auth_main">
+        <h3>Loading</h3>
+        <Spinner animation="border" variant="primary" />
+      </div>
+    );
   }
 
   return (

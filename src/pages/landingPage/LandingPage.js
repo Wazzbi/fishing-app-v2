@@ -3,6 +3,7 @@ import { AuthContext } from "../../Auth";
 import "./landingPage.scss";
 
 import Button from "react-bootstrap/Button";
+import Spinner from "react-bootstrap/Spinner";
 
 //TODO na místo "Logged user - redirect" dát ještě nějakou animačku nebo nějaký obrázek přidat
 
@@ -24,9 +25,10 @@ const LandingPage = ({ history }) => {
   const Content = () => {
     if (currentUser) {
       return (
-        <>
-          <h1>Logged user - redirect</h1>
-        </>
+        <div className="landing-page_main">
+          <h3>Logged user - redirect</h3>
+          <Spinner animation="border" variant="primary" />
+        </div>
       );
     } else {
       return (
