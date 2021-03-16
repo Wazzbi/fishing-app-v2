@@ -11,6 +11,7 @@ import InputGroup from "react-bootstrap/InputGroup";
 import FormControl from "react-bootstrap/FormControl";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import Dropdown from "react-bootstrap/Dropdown";
+import Spinner from "react-bootstrap/Spinner";
 
 // TODO zobrazovat seznam summary
 // TODO poslat vybraný summary do mailu
@@ -291,7 +292,8 @@ const SummaryPage = () => {
         <br />
         <br />
 
-        {!summaries && <p>Add some summary dude!</p>}
+        {summaries === null && <Spinner animation="border" variant="primary" />}
+        {summaries !== null && !summaries && <p>Add some summary dude!</p>}
 
         <div className="summary-page_summaries">
           {!!summaries &&

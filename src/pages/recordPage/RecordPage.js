@@ -13,6 +13,7 @@ import InputGroup from "react-bootstrap/InputGroup";
 import FormControl from "react-bootstrap/FormControl";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import Dropdown from "react-bootstrap/Dropdown";
+import Spinner from "react-bootstrap/Spinner";
 
 // TODO funkce zabalit do usecallback
 // TODO init download jen seznam záznamů (např jen prvních 5) a po rozkliknutí donačíst data
@@ -262,7 +263,8 @@ const RecordPage = () => {
         </Button>
         <br />
         <br />
-        {!records && <p>No records... Add some :-)</p>}
+        {records === null && <Spinner animation="border" variant="primary" />}
+        {records !== null && !records && <p>No records... Add some :-)</p>}
         <div className="record-page_records">
           {!!records &&
             Object.entries(records).map(([recordKey, value]) => (

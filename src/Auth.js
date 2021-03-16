@@ -3,6 +3,8 @@ import firebaseService from "./services/firebase/firebase.service";
 
 export const AuthContext = React.createContext();
 
+//TODO loading spiner do prostred obrazovky
+
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [currentUserData, setCurrentUserData] = useState(null);
