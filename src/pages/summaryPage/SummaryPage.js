@@ -32,6 +32,7 @@ const SummaryPage = () => {
   const [selectedSummary, setSelectedSummary] = useState(null);
   const [onDelete, setOnDelete] = useState(null);
   const [recordsTogether, setRecordsTogether] = useState(null);
+  const [noSummaryYet, setNoSummaryYet] = useState(false);
 
   const prepareData = (records, summaries) => {
     let finalData = {};
@@ -164,7 +165,9 @@ const SummaryPage = () => {
         })
           .then((summaries) => {
             updateSummaries = summaries;
-            summaries ? setSummaries(summaries) : setSummaries(null);
+            return summaries
+              ? setSummaries(summaries)
+              : (setSummaries(null), setNoSummaryYet(true));
           })
           .then(() => {
             prepareData(updateRecords, updateSummaries);
@@ -187,6 +190,7 @@ const SummaryPage = () => {
   };
 
   const doCreateSummaryAndRefresh = () => {
+    setNoSummaryYet(false);
     new Promise((resolve, reject) => {
       resolve(firebaseService.createUserSummary(currentUser.uid));
       reject(new Error("Currently unavaiable create summary"));
@@ -195,7 +199,9 @@ const SummaryPage = () => {
         firebaseService
           .getUserSummaries(currentUser && currentUser.uid)
           .then((freshSummaries) =>
-            freshSummaries ? setSummaries(freshSummaries) : setSummaries(null)
+            freshSummaries
+              ? setSummaries(freshSummaries)
+              : (setSummaries(null), setNoSummaryYet(true))
           );
       })
       .catch(alert);
@@ -292,8 +298,10 @@ const SummaryPage = () => {
         <br />
         <br />
 
-        {summaries === null && <Spinner animation="border" variant="primary" />}
-        {summaries !== null && !summaries && <p>Add some summary dude!</p>}
+        {summaries === null && !noSummaryYet && (
+          <Spinner animation="border" variant="primary" />
+        )}
+        {noSummaryYet && <p>Add some summary dude!</p>}
 
         <div className="summary-page_summaries">
           {!!summaries &&

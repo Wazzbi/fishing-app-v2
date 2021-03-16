@@ -29,6 +29,7 @@ $post-color-bg: rgb(220, 220, 220);
   cursor: pointer;
   transition: all 300ms ease-in-out;
   background-color: white;
+  min-height: 130px;
 }
 
 .news-page_header {
@@ -65,12 +66,13 @@ $post-color-bg: rgb(220, 220, 220);
 
 .news-page_post-text {
   box-sizing: border-box;
-  padding: 10px 20px; // inline with post-icon
+  padding: 5px 20px 15px; // inline with post-icon
   background-color: #007bff12;
   max-height: 250px;
   overflow: hidden;
   margin: 0 5px;
   border-radius: 5px;
+  min-height: 35px;
 }
 
 .news-page_post-text-overlay {
@@ -79,7 +81,7 @@ $post-color-bg: rgb(220, 220, 220);
   left: 0;
   right: 0;
   z-index: 10;
-  height: 23px;
+  height: 30px;
   background-color: white;
   padding: 0 20px;
   display: flex;
@@ -106,4 +108,45 @@ $post-color-bg: rgb(220, 220, 220);
 // CKEditor 4 classes
 .marker {
   background-color: #ffff41;
+}
+
+// scrolldown animation
+.scroll-anime {
+  display: flex;
+  justify-content: center;
+}
+.arrows {
+  width: 60px;
+  height: 72px;
+}
+
+.arrows path {
+  stroke: #2994d1;
+  fill: transparent;
+  stroke-width: 1px;
+  animation: arrow 2s infinite;
+  -webkit-animation: arrow 2s infinite;
+}
+
+@keyframes arrow {
+  0% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.arrows path.a1 {
+  animation-delay: -1s;
+}
+
+.arrows path.a2 {
+  animation-delay: -0.5s;
 }

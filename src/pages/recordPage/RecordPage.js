@@ -33,6 +33,7 @@ const RecordPage = () => {
   const [onAdd, setOnAdd] = useState(null);
   const [today, setToday] = useState(null);
   const [editRowData, setEditRowData] = useState(null);
+  const [noRecordYet, setNoRecordYet] = useState(false);
 
   const todayDate = () => {
     const today = new Date();
@@ -93,6 +94,7 @@ const RecordPage = () => {
   };
 
   const doCreateRecordAndRefresh = () => {
+    setNoRecordYet(false);
     new Promise((resolve, reject) => {
       resolve(firebaseService.createUserRecord(currentUser.uid));
       reject(new Error("Currently unavaiable create record"));
@@ -101,7 +103,9 @@ const RecordPage = () => {
         firebaseService
           .getUserRecords(currentUser && currentUser.uid)
           .then((records) =>
-            records ? setRecords(records) : setRecords(null)
+            records
+              ? setRecords(records)
+              : (setRecords(null), setNoRecordYet(true))
           );
       })
       .catch(alert);
@@ -191,7 +195,9 @@ const RecordPage = () => {
   const updateData = () => {
     firebaseService
       .getUserRecords(currentUser && currentUser.uid)
-      .then((records) => (records ? setRecords(records) : setRecords(null)));
+      .then((records) =>
+        records ? setRecords(records) : (setRecords(null), setNoRecordYet(true))
+      );
   };
 
   const handleCloseAndDelete = () => {
@@ -263,8 +269,10 @@ const RecordPage = () => {
         </Button>
         <br />
         <br />
-        {records === null && <Spinner animation="border" variant="primary" />}
-        {records !== null && !records && <p>No records... Add some :-)</p>}
+        {records === null && !noRecordYet && (
+          <Spinner animation="border" variant="primary" />
+        )}
+        {noRecordYet && <p>No records... Add some :-)</p>}
         <div className="record-page_records">
           {!!records &&
             Object.entries(records).map(([recordKey, value]) => (
