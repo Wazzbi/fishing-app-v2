@@ -17,9 +17,7 @@ import Spinner from "react-bootstrap/Spinner";
 
 // TODO funkce zabalit do usecallback
 // TODO init download jen seznam záznamů (např jen prvních 5) a po rozkliknutí donačíst data
-// TODO řazení nejnovější nahoře
 // TODO oddělit view do vlastního souboru
-// TODO validace jen přes modal (vyčistí to kód) udělat edit row v stejným modalu
 // TODO modaly mít taky samostatných souborech
 // TODO nešel by today získat i jinak než ho mít ve state
 // TODO při přechodu na jiné stránky dochází k opětovnému načítání dat -> redux
