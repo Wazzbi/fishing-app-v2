@@ -21,6 +21,7 @@ import Spinner from "react-bootstrap/Spinner";
 // TODO zablokovat SEND když budou nějaká nevalidní data
 // TODO sloupce s rybama přes loop
 // TODO při přechodu na jiné stránky dochází k opětovnému načítání dat -> redux
+// TODO !! datově náročný - předělat aby se nově udělaná tabulka nemusela stahovat -> redux + zněma ukládání do DB https://stackoverflow.com/questions/37483406/setting-custom-key-when-pushing-new-data-to-firebase-database
 // !! řazení je ve stylech od nejnovějšího k nejstaršího
 
 const SummaryPage = () => {

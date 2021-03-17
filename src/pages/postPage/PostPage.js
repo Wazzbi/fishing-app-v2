@@ -10,6 +10,7 @@ import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 
 // TODO like btn + komentaře
+// TODO pořdná animace než se načtou obr a pak modal
 
 const PostPage = (props) => {
   const params = props.match.params; // id postu
