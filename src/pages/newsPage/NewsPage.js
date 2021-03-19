@@ -29,7 +29,8 @@ const shortid = require("shortid");
 // TODO možnost dávat si příspěvky do oblíbených
 // !! nezapomenout na LazyLoad componentu <LazyLoadImage/> umí i lazyload component
 // TODO přechod na článek a zobrazení obrázků
-
+// TODO *** redux -> contex https://codeburst.io/global-state-with-react-hooks-and-context-api-87019cc4f2cf
+// TODO *** pak odstranit redux-devtools https://medium.com/@samueldinesh/setting-up-redux-devtools-a-simple-guide-3b386a6254fa
 const NewsPage = ({ history, addPost }) => {
   const { currentUserData } = useContext(AuthContext);
   const [show, setShow] = useState(false);
