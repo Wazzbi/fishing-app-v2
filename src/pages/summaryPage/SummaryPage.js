@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import firebaseService from "../../services/firebase/firebase.service";
 import { AuthContext } from "../../Auth";
 import "./summaryPage.scss";
+import { StoreContext } from "../../store/Store";
 
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
@@ -16,25 +17,21 @@ import Spinner from "react-bootstrap/Spinner";
 // TODO zobrazovat seznam summary
 // TODO poslat vybraný summary do mailu
 // TODO rename udělat jako focus na input a zrušit tlačítko
-// TODO řazení nejnovější nahoře
 // TODO records, summaries zabraný -> přejmenovat
 // TODO zablokovat SEND když budou nějaká nevalidní data
 // TODO sloupce s rybama přes loop
-// TODO při přechodu na jiné stránky dochází k opětovnému načítání dat -> redux
-// TODO !! datově náročný - předělat aby se nově udělaná tabulka nemusela stahovat -> redux + zněma ukládání do DB https://stackoverflow.com/questions/37483406/setting-custom-key-when-pushing-new-data-to-firebase-database
 // !! řazení je ve stylech od nejnovějšího k nejstaršího
 
 const SummaryPage = () => {
   const { currentUser } = useContext(AuthContext);
-  const [records, setRecords] = useState(null);
-  const [summaries, setSummaries] = useState(null);
   const [showModalAddSummary, setShowModalAddSummary] = useState(false);
   const [showModalDelete, setShowModalDelete] = useState(false);
   const [selectedRecords, setSelectedRecords] = useState([]);
   const [selectedSummary, setSelectedSummary] = useState(null);
   const [onDelete, setOnDelete] = useState(null);
   const [recordsTogether, setRecordsTogether] = useState(null);
-  const [noSummaryYet, setNoSummaryYet] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [storeState, dispatch] = useContext(StoreContext);
 
   const prepareData = (records, summaries) => {
     let finalData = {};
@@ -140,8 +137,10 @@ const SummaryPage = () => {
   const handleShowModalChangeSummary = (summaryUid) => {
     setSelectedSummary(summaryUid);
     setSelectedRecords(
-      summaries && summaries[summaryUid] && summaries[summaryUid].records
-        ? summaries[summaryUid].records
+      storeState.summaries &&
+        storeState.summaries[summaryUid] &&
+        storeState.summaries[summaryUid].records
+        ? storeState.summaries[summaryUid].records
         : []
     );
     setShowModalAddSummary(true);
@@ -150,13 +149,14 @@ const SummaryPage = () => {
   const updateData = () => {
     // protože je useState async dotahuji data přes proměnné...
     let updateRecords, updateSummaries;
+    setLoading(true);
     new Promise((resolve, reject) => {
       resolve(firebaseService.getUserRecords(currentUser && currentUser.uid));
       reject(new Error("Nemohu načíst záznamy uživatele"));
     })
       .then((records) => {
         updateRecords = records;
-        records ? setRecords(records) : setRecords(null);
+        dispatch({ type: "ADD_RECORDS", payload: { ...records } });
       })
       .then(() => {
         new Promise((resolve, reject) => {
@@ -167,11 +167,10 @@ const SummaryPage = () => {
         })
           .then((summaries) => {
             updateSummaries = summaries;
-            return summaries
-              ? setSummaries(summaries)
-              : (setSummaries(null), setNoSummaryYet(true));
+            dispatch({ type: "ADD_SUMMARIES", payload: { ...summaries } });
           })
           .then(() => {
+            setLoading(false);
             prepareData(updateRecords, updateSummaries);
           });
       });
@@ -192,50 +191,53 @@ const SummaryPage = () => {
   };
 
   const doCreateSummaryAndRefresh = () => {
-    setNoSummaryYet(false);
+    const id = Date.now();
+    setLoading(false);
     new Promise((resolve, reject) => {
-      resolve(firebaseService.createUserSummary(currentUser.uid));
+      resolve(firebaseService.createUserSummary(currentUser.uid, id));
       reject(new Error("Currently unavaiable create summary"));
     })
       .then(() => {
-        firebaseService
-          .getUserSummaries(currentUser && currentUser.uid)
-          .then((freshSummaries) =>
-            freshSummaries
-              ? setSummaries(freshSummaries)
-              : (setSummaries(null), setNoSummaryYet(true))
-          );
+        dispatch({ type: "ADD_SUMMARY", payload: { id } });
+        // firebaseService
+        //   .getUserSummaries(currentUser && currentUser.uid)
+        //   .then((freshSummaries) =>
+        //     freshSummaries
+        //       ? setSummaries(freshSummaries)
+        //       : (setSummaries(null), setNoSummaryYet(true))
+        //   );
       })
       .catch(alert);
   };
 
   const handleChangeSummaryName = (userUid, summaryUid, newSummaryName) => {
-    setSummaries({
-      ...summaries,
-      [summaryUid]: { ...summaries[summaryUid], name: newSummaryName },
-    });
-
     const updatedSummary = {
-      ...summaries[summaryUid],
+      ...storeState.summaries[summaryUid],
       name: newSummaryName,
     };
+    dispatch({
+      type: "EDIT_SUMMARY",
+      payload: { summaryUid, updatedSummary },
+    });
     firebaseService.setUserSummary(userUid, summaryUid, updatedSummary);
   };
 
   const handleChangeRecords = (userUid, summaryUid, changeRecords) => {
-    setSummaries({
-      ...summaries,
-      [summaryUid]: { ...summaries[summaryUid], records: [...changeRecords] },
-    });
-
     const updatedSummary = {
-      ...summaries[summaryUid],
+      ...storeState.summaries[summaryUid],
       records: [...changeRecords],
     };
 
-    prepareData(records, {
-      ...summaries,
-      [summaryUid]: { ...summaries[summaryUid], records: [...changeRecords] },
+    prepareData(storeState.records, {
+      ...storeState.summaries,
+      [summaryUid]: {
+        ...storeState.summaries[summaryUid],
+        records: [...changeRecords],
+      },
+    });
+    dispatch({
+      type: "EDIT_SUMMARY",
+      payload: { summaryUid, updatedSummary },
     });
     firebaseService.setUserSummary(userUid, summaryUid, updatedSummary);
   };
@@ -263,20 +265,18 @@ const SummaryPage = () => {
   const doDelete = () => {
     const { summaryUid } = onDelete.params;
 
-    new Promise((resolve, reject) => {
-      resolve(firebaseService.deleteUserSummary(currentUser.uid, summaryUid));
-      reject(new Error("Nemohu nahrát záznamy uživatele"));
-    }).then(() => updateData());
+    firebaseService.deleteUserSummary(currentUser.uid, summaryUid);
+    dispatch({ type: "DELETE_SUMMARY", payload: { summaryUid } });
   };
 
   const isChecked = (recordKey) => {
     if (
-      !!summaries &&
-      summaries[selectedSummary] &&
-      summaries[selectedSummary].records &&
-      summaries[selectedSummary].records.length !== 0
+      !!storeState.summaries &&
+      storeState.summaries[selectedSummary] &&
+      storeState.summaries[selectedSummary].records &&
+      storeState.summaries[selectedSummary].records.length !== 0
     ) {
-      return summaries[selectedSummary].records.includes(recordKey);
+      return storeState.summaries[selectedSummary].records.includes(recordKey);
     } else {
       return false;
     }
@@ -284,7 +284,10 @@ const SummaryPage = () => {
 
   useEffect(() => {
     localStorage.setItem("lastLocation", "/summary");
-    updateData();
+
+    if (!storeState.summaries) {
+      updateData();
+    }
   }, []);
 
   return (
@@ -301,14 +304,16 @@ const SummaryPage = () => {
         <br />
         <br />
 
-        {summaries === null && !noSummaryYet && (
-          <Spinner animation="border" variant="primary" />
-        )}
-        {noSummaryYet && <p>Add some summary dude!</p>}
+        {loading && <Spinner animation="border" variant="primary" />}
+        {!!storeState.summaries &&
+          Object.entries(storeState.summaries).length === 0 && (
+            <p>Add some summary dude!</p>
+          )}
 
         <div className="summary-page_summaries">
-          {!!summaries &&
-            Object.entries(summaries).map(([summaryKey, value]) => (
+          {!!storeState.summaries &&
+            !!Object.entries(storeState.summaries).length &&
+            Object.entries(storeState.summaries).map(([summaryKey, value]) => (
               <div key={summaryKey} className="summary-page_table">
                 <InputGroup className="summary-page_record-name">
                   <FormControl
@@ -339,7 +344,7 @@ const SummaryPage = () => {
                     <Dropdown.Item
                       onClick={() => handleShowModalChangeSummary(summaryKey)}
                     >
-                      add records
+                      select records
                     </Dropdown.Item>
                     <Dropdown.Item>send</Dropdown.Item>
                     <Dropdown.Divider />
@@ -493,8 +498,8 @@ const SummaryPage = () => {
           </Modal.Header>
           <Modal.Body>
             <Form onSubmit={handleSubmitChange}>
-              {!!records &&
-                Object.entries(records).map(([recordKey, value]) => (
+              {!!storeState.records &&
+                Object.entries(storeState.records).map(([recordKey, value]) => (
                   <Form.Check
                     type="checkbox"
                     id={recordKey}

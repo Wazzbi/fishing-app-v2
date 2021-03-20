@@ -4,6 +4,7 @@ import validatorService from "../../services/validators/validator.service";
 import autocompleterService from "../../services/utils/autocompleter.service";
 import { AuthContext } from "../../Auth";
 import "./recordPage.scss";
+import { StoreContext } from "../../store/Store";
 
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
@@ -29,14 +30,14 @@ import Spinner from "react-bootstrap/Spinner";
 
 const RecordPage = () => {
   const { currentUser } = useContext(AuthContext);
-  const [records, setRecords] = useState(null);
   const [showModalDelete, setShowModalDelete] = useState(false);
   const [onDelete, setOnDelete] = useState(null);
   const [showModalAdd, setShowModalAdd] = useState(false);
   const [onAdd, setOnAdd] = useState(null);
   const [today, setToday] = useState(null);
   const [editRowData, setEditRowData] = useState(null);
-  const [noRecordYet, setNoRecordYet] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [storeState, dispatch] = useContext(StoreContext);
 
   const todayDate = () => {
     const today = new Date();
@@ -83,47 +84,46 @@ const RecordPage = () => {
   const doDelete = () => {
     if (onDelete.element === "record") {
       const { recordUid } = onDelete.params;
+      dispatch({ type: "DELETE_RECORD", payload: { recordUid } });
       firebaseService.deleteUserRecord(currentUser.uid, recordUid);
     }
     if (onDelete.element === "row") {
       const { recordUid, recordRowUid } = onDelete.params;
+      dispatch({
+        type: "DELETE_RECORD_ROW",
+        payload: { recordUid, recordRowUid },
+      });
       firebaseService.deleteUserRecordRow(
         currentUser.uid,
         recordUid,
         recordRowUid
       );
     }
-    updateData();
+    // updateData();
   };
 
   const doCreateRecordAndRefresh = () => {
-    setNoRecordYet(false);
+    const id = Date.now();
     new Promise((resolve, reject) => {
       resolve(firebaseService.createUserRecord(currentUser.uid));
       reject(new Error("Currently unavaiable create record"));
     })
       .then(() => {
-        firebaseService
-          .getUserRecords(currentUser && currentUser.uid)
-          .then((records) =>
-            records
-              ? setRecords(records)
-              : (setRecords(null), setNoRecordYet(true))
-          );
+        dispatch({ type: "ADD_RECORD", payload: { id } });
       })
       .catch(alert);
   };
 
   const handleChangeRecordName = (userUid, recordUid, newRecordName) => {
-    setRecords({
-      ...records,
-      [recordUid]: { ...records[recordUid], name: newRecordName },
-    });
-
     const updatedRecord = {
-      ...records[recordUid],
+      ...storeState.records[recordUid],
       name: newRecordName,
     };
+
+    dispatch({
+      type: "EDIT_RECORD_NAME",
+      payload: { recordUid, updatedRecord },
+    });
     firebaseService.setUserRecord(userUid, recordUid, updatedRecord);
   };
 
@@ -157,24 +157,18 @@ const RecordPage = () => {
       centimeters: centimeters.value,
     };
 
-    setRecords({
-      ...records,
-      [editRowData.recordUid]: {
-        ...records[editRowData.recordUid],
-        data: {
-          ...records[editRowData.recordUid].data,
-          [editRowData.rowUid]: updatedRow,
-        },
-      },
-    });
-
     let updatedRecord = {
-      ...records[editRowData.recordUid],
+      ...storeState.records[editRowData.recordUid],
       data: {
-        ...records[editRowData.recordUid].data,
+        ...storeState.records[editRowData.recordUid].data,
         [editRowData.rowUid]: updatedRow,
       },
     };
+
+    dispatch({
+      type: "EDIT_RECORD_ROW",
+      payload: { recordUid: editRowData.recordUid, updatedRecord },
+    });
 
     firebaseService.setUserRecord(
       currentUser.uid,
@@ -191,16 +185,24 @@ const RecordPage = () => {
   };
 
   const addRowAndRefresh = (recordUid, props) => {
-    firebaseService.createUserRecordRow(currentUser.uid, recordUid, props);
-    updateData();
+    const rowId = Date.now();
+    firebaseService.createUserRecordRow(
+      currentUser.uid,
+      recordUid,
+      props,
+      rowId
+    );
+    dispatch({ type: "ADD_RECORD_ROW", payload: { recordUid, rowId, props } });
   };
 
   const updateData = () => {
+    setLoading(true);
     firebaseService
       .getUserRecords(currentUser && currentUser.uid)
-      .then((records) =>
-        records ? setRecords(records) : (setRecords(null), setNoRecordYet(true))
-      );
+      .then((records) => {
+        dispatch({ type: "ADD_RECORDS", payload: { ...records } });
+        setLoading(false);
+      });
   };
 
   const handleCloseAndDelete = () => {
@@ -224,8 +226,11 @@ const RecordPage = () => {
 
   const handleSubmitAdd = async (event) => {
     setEditRowData(null);
+
     handleAddClose();
+
     event.preventDefault();
+
     const {
       date,
       districtNumber,
@@ -235,6 +240,7 @@ const RecordPage = () => {
       kilograms,
       centimeters,
     } = event.target.elements;
+
     addRowAndRefresh(onAdd, {
       date: date.value,
       districtNumber: districtNumber.value,
@@ -245,11 +251,14 @@ const RecordPage = () => {
       centimeters: centimeters.value,
     });
   };
+
   const handleAddClose = () => {
     setEditRowData(null);
     setShowModalAdd(false);
   };
+
   const handleAddShow = () => setShowModalAdd(true);
+
   const handleAdd = (recordKey) => {
     handleAddShow();
     setOnAdd(recordKey);
@@ -257,8 +266,11 @@ const RecordPage = () => {
 
   useEffect(() => {
     localStorage.setItem("lastLocation", "/record");
-    updateData();
     todayDate();
+
+    if (!storeState.records) {
+      updateData();
+    }
   }, []);
 
   return (
@@ -273,13 +285,15 @@ const RecordPage = () => {
         </Button>
         <br />
         <br />
-        {records === null && !noRecordYet && (
-          <Spinner animation="border" variant="primary" />
-        )}
-        {noRecordYet && <p>No records... Add some :-)</p>}
+        {loading && <Spinner animation="border" variant="primary" />}
+        {!!storeState.records &&
+          Object.entries(storeState.records).length === 0 && (
+            <p>No records... Add some :-)</p>
+          )}
         <div className="record-page_records">
-          {!!records &&
-            Object.entries(records).map(([recordKey, value]) => (
+          {!!storeState.records &&
+            !!Object.entries(storeState.records).length &&
+            Object.entries(storeState.records).map(([recordKey, value]) => (
               <>
                 <div key={recordKey} className="record-page_table">
                   <InputGroup className="record-page_record-name">
@@ -337,10 +351,10 @@ const RecordPage = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {records &&
-                        records[recordKey] &&
-                        records[recordKey].data &&
-                        Object.entries(records[recordKey].data).map(
+                      {storeState.records &&
+                        storeState.records[recordKey] &&
+                        storeState.records[recordKey].data &&
+                        Object.entries(storeState.records[recordKey].data).map(
                           ([rowKey, value]) => (
                             <tr>
                               <td>

@@ -16,13 +16,14 @@ const config = {
 const appl = app.initializeApp(config);
 
 //TODO duplicitní reference
+// TODO error handling zde
 // *** User API ***
 const user = (uid) => appl.database().ref(`users/${uid}`);
 const usersRef = appl.database().ref("users/");
 
 // *** Record API ***
 const records = (uid) => appl.database().ref(`records/${uid}`);
-const newRecordRef = (uid) => appl.database().ref(`records/${uid}`);
+const newRecordRef = (userUid) => appl.database().ref(`records/${userUid}`);
 
 const recordRef = (userUid, recordUid) =>
   appl.database().ref(`records/${userUid}/${recordUid}`);
@@ -84,6 +85,19 @@ class firebaseService {
     }
   };
 
+  static getPostsCount = async () => {
+    try {
+      const snapshot = await postsRef.get();
+      if (snapshot.exists()) {
+        return snapshot.numChildren();
+      } else {
+        console.log("No data available");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   static getPost = async (id) => {
     try {
       const snapshot = await postRef(id).get();
@@ -102,7 +116,7 @@ class firebaseService {
   };
 
   static getPostsInit = () => {
-    return postsRef.orderByChild("timeStamp").limitToLast(5);
+    return postsRef.orderByChild("timeStamp").limitToLast(10);
   };
 
   static getPostsLimited = (timeStamp) => {
@@ -157,10 +171,12 @@ class firebaseService {
     created,
     title,
     userId,
-    category
+    category,
+    postId
   ) => {
     const timeStamp = Date.now();
-    return postsRef.push(
+
+    return postsRef.child(postId).set(
       {
         title,
         text,
@@ -189,16 +205,20 @@ class firebaseService {
     }
   };
 
-  static createUserRecord = (uid) => {
-    return newRecordRef(uid).push(
-      {
-        name: "New Record",
-      },
-      (err) => console.log(err ? "error while pushing" : "successful push")
-    );
+  static createUserRecord = (userUid) => {
+    const id = Date.now();
+
+    return newRecordRef(userUid)
+      .child(id)
+      .set(
+        {
+          name: "New Record",
+        },
+        (err) => console.log(err ? "error while pushing" : "successful push")
+      );
   };
 
-  static createUserRecordRow = (userUid, recordUid, props) => {
+  static createUserRecordRow = (userUid, recordUid, props, rowId) => {
     const {
       date,
       districtNumber,
@@ -208,27 +228,31 @@ class firebaseService {
       kilograms,
       centimeters,
     } = props;
-    return recordNewRowRef(userUid, recordUid).push(
-      {
-        date,
-        districtNumber,
-        subdistrictNumber,
-        kind,
-        pieces,
-        kilograms,
-        centimeters,
-      },
-      (err) => console.log(err ? "error while pushing" : "successful push")
-    );
+    return recordNewRowRef(userUid, recordUid)
+      .child(rowId)
+      .set(
+        {
+          date,
+          districtNumber,
+          subdistrictNumber,
+          kind,
+          pieces,
+          kilograms,
+          centimeters,
+        },
+        (err) => console.log(err ? "error while pushing" : "successful push")
+      );
   };
 
-  static createUserSummary = (uid) => {
-    return newSummaryRef(uid).push(
-      {
-        name: "New Summary",
-      },
-      (err) => console.log(err ? "error while pushing" : "successful push")
-    );
+  static createUserSummary = (userUid, summaryId) => {
+    return newSummaryRef(userUid)
+      .child(summaryId)
+      .set(
+        {
+          name: "New Summary",
+        },
+        (err) => console.log(err ? "error while pushing" : "successful push")
+      );
   };
 
   // *** SET ***

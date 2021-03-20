@@ -16,12 +16,10 @@ import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Card from "react-bootstrap/Card";
+import Spinner from "react-bootstrap/Spinner";
 
 // TODO emoji, odkazy
 // TODO main kontajner udělat squeeze a nakonec s flex-base nebo min-width
-// TODO funkce init bude chtít vychytat pro infinite scroll + nejaký loading anime než se načte init
-// TODO při submit nahoře proužek s nahráváním
-// TODO router na rozkliknutý článek
 // TODO vytvořit 'moje zeď' s příspěvky kde budu mít odebírat
 // TODO možnost dávat si příspěvky do oblíbených
 // !! nezapomenout na LazyLoad componentu <LazyLoadImage/> umí i lazyload component
@@ -34,6 +32,8 @@ const NewsPage = ({ history }) => {
   const [posts, setPosts] = useState(null);
   const [text, setText] = useState("");
   const [storeState, dispatch] = useContext(StoreContext);
+  const [postCount, setPostCount] = useState(null);
+  const [uploadPostDone, setUploadPostDone] = useState(true);
 
   const editor = useRef(null);
 
@@ -45,15 +45,15 @@ const NewsPage = ({ history }) => {
   const handleShow = () => setShow(true);
 
   const handleSubmit = (event) => {
-    // !! když se přiloží obr a rychle klikne submit tak jestě není reference v useState
-    // !! udělat disable na submit než se vytvoří objekt v useState
     handleClose();
     setInputImageFieldCounter(1);
+    setUploadPostDone(false);
     event.preventDefault();
     const { title, category } = event.target.elements;
     const usrname = currentUserData && currentUserData.username;
     const usrId = currentUserData && currentUserData.id;
 
+    const postId = Date.now();
     let currentdate = new Date();
     let datetime =
       currentdate.getDate() +
@@ -87,13 +87,16 @@ const NewsPage = ({ history }) => {
         created,
         title.value,
         usrId,
-        category.value
+        category.value,
+        postId
       )
       .then(() =>
         firebaseService.createImage(imageArray).then(() => {
           setUploadImages([]);
           setText(null);
+          setUploadPostDone(true);
           init();
+          firebaseService.getPostsCount().then((r) => setPostCount(r));
         })
       );
   };
@@ -161,20 +164,9 @@ const NewsPage = ({ history }) => {
       snapshot.forEach((childSnapshot) => {
         ww = { ...ww, [childSnapshot.key]: childSnapshot.val() };
         setPosts({ ...posts, ...ww });
+        dispatch({ type: "ADD_POSTS", payload: { ...posts, ...ww } });
       });
     });
-  };
-
-  const fetchMorePosts = async (timeStamp) => {
-    let ww = {};
-    await firebaseService
-      .getPostsLimited(timeStamp)
-      .once("value", (snapshot) => {
-        snapshot.forEach((childSnapshot) => {
-          ww = { ...ww, [childSnapshot.key]: childSnapshot.val() };
-          setPosts({ ...posts, ...ww });
-        });
-      });
   };
 
   // https://www.npmjs.com/package/react-lazy-load-image-component
@@ -186,12 +178,35 @@ const NewsPage = ({ history }) => {
     let lastPost = postsRender[postsRender.length - 1];
     let lastPostTimeStamp = lastPost[1].timeStamp;
 
+    const fetchMorePosts = async () => {
+      let ww = {};
+      await firebaseService
+        .getPostsLimited(lastPostTimeStamp)
+        .once("value", (snapshot) => {
+          snapshot.forEach((childSnapshot) => {
+            ww = { ...ww, [childSnapshot.key]: childSnapshot.val() };
+            setPosts({ ...posts, ...ww });
+            dispatch({ type: "ADD_POSTS", payload: { ...posts, ...ww } });
+          });
+        });
+    };
+
     return (
       <InfiniteScroll
         dataLength={postsRender.length}
-        next={() => fetchMorePosts(lastPostTimeStamp)}
-        hasMore={true}
+        next={fetchMorePosts}
+        hasMore={postCount !== postsRender.length}
         style={{ padding: "5px" }}
+        loader={
+          <div style={{ textAlign: "center" }}>
+            <Spinner animation="border" variant="primary" />
+          </div>
+        }
+        endMessage={
+          <p style={{ textAlign: "center" }}>
+            <b>Yay! You have seen it all</b>
+          </p>
+        }
       >
         {postsRender.map(([postKey, postValue]) => (
           <>
@@ -201,7 +216,7 @@ const NewsPage = ({ history }) => {
             >
               <div className="news-page_header">
                 <div className="news-page_post-icon">
-                  <Jdenticon size="30" value={postValue.username} />
+                  <Jdenticon size="30" value={postValue.username || ""} />
                 </div>
                 <div className="news-page_header-title">
                   <span>{postValue.title}</span>
@@ -229,13 +244,6 @@ const NewsPage = ({ history }) => {
             </div>
           </>
         ))}
-
-        <div className="scroll-anime">
-          <svg className="arrows">
-            <path className="a1" d="M0 0 L30 32 L60 0"></path>
-            <path className="a2" d="M0 20 L30 52 L60 20"></path>
-          </svg>
-        </div>
       </InfiniteScroll>
     );
   };
@@ -263,20 +271,44 @@ const NewsPage = ({ history }) => {
   };
 
   useEffect(() => {
-    init();
     localStorage.setItem("lastLocation", "/news");
+    firebaseService.getPostsCount().then((r) => setPostCount(r));
+
+    if (!storeState.posts) {
+      init();
+    } else {
+      setPosts({ ...storeState.posts });
+    }
   }, []);
 
   return (
     <>
-      <div className="news-page_main">{!!posts && renderPosts()}</div>
+      <div className="news-page_main">
+        {!!posts ? (
+          renderPosts()
+        ) : (
+          <div style={{ textAlign: "center", marginTop: "30px" }}>
+            <Spinner animation="border" variant="primary" />
+          </div>
+        )}
+      </div>
 
       <Button
         variant="primary"
         className="news-page_float-btn"
         onClick={handleShow}
+        disabled={!uploadPostDone}
       >
-        <img src="/plus.svg" width="30px" height="30px"></img>
+        {uploadPostDone ? (
+          <img src="/plus.svg" width="30px" height="30px"></img>
+        ) : (
+          <Spinner
+            as="span"
+            animation="border"
+            role="status"
+            aria-hidden="true"
+          />
+        )}
       </Button>
 
       <Modal
