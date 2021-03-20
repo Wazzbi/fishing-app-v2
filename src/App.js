@@ -14,6 +14,7 @@ import NewsPage from "./pages/newsPage/NewsPage";
 import UserPage from "./pages/userPage/UserPage";
 import WeatherPage from "./pages/weatherPage/WeatherPage";
 import PostPage from "./pages/postPage/PostPage";
+import Store from "./store/Store";
 
 // TODO redirect na landingpage kdyz zadané špatná cesta viz stará verze app v gitu
 // TODO https://stackoverflow.com/questions/50266537/react-router-using-hash-url
@@ -22,7 +23,7 @@ const App = () => {
   return (
     <AuthProvider>
       <Router>
-        <div>
+        <Store>
           <Navigation />
 
           <Route exact path="/" component={LandingPage} />
@@ -35,7 +36,7 @@ const App = () => {
           <PrivateRoute exact path="/post/:id" component={PostPage} />
           <PrivateRoute exact path="/user" component={UserPage} />
           <PrivateRoute exact path="/weather" component={WeatherPage} />
-        </div>
+        </Store>
       </Router>
     </AuthProvider>
   );

@@ -7,18 +7,15 @@ import "react-lazy-load-image-component/src/effects/blur.css";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { AuthContext } from "../../Auth";
 import JoditEditor from "jodit-react";
-import { addPost } from "../../redux/actions";
-import { connect } from "react-redux";
 import { configEditor, optionsMed, optionsMin } from "./constants";
 import Jdenticon from "react-jdenticon";
+import { StoreContext } from "../../store/Store";
 
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Card from "react-bootstrap/Card";
-
-const shortid = require("shortid");
 
 // TODO emoji, odkazy
 // TODO main kontajner udělat squeeze a nakonec s flex-base nebo min-width
@@ -28,16 +25,15 @@ const shortid = require("shortid");
 // TODO vytvořit 'moje zeď' s příspěvky kde budu mít odebírat
 // TODO možnost dávat si příspěvky do oblíbených
 // !! nezapomenout na LazyLoad componentu <LazyLoadImage/> umí i lazyload component
-// TODO přechod na článek a zobrazení obrázků
-// TODO *** redux -> contex https://codeburst.io/global-state-with-react-hooks-and-context-api-87019cc4f2cf
-// TODO *** pak odstranit redux-devtools https://medium.com/@samueldinesh/setting-up-redux-devtools-a-simple-guide-3b386a6254fa
-const NewsPage = ({ history, addPost }) => {
+
+const NewsPage = ({ history }) => {
   const { currentUserData } = useContext(AuthContext);
   const [show, setShow] = useState(false);
   const [uploadImages, setUploadImages] = useState([]);
   const [inputImageFieldCounter, setInputImageFieldCounter] = useState(1);
   const [posts, setPosts] = useState(null);
   const [text, setText] = useState("");
+  const [storeState, dispatch] = useContext(StoreContext);
 
   const editor = useRef(null);
 
@@ -114,7 +110,7 @@ const NewsPage = ({ history, addPost }) => {
 
     if (f) {
       fr.onload = async (ev2) => {
-        const name = shortid.generate();
+        const name = Date.now();
         const file = dataURLtoFile(ev2.target.result, name);
         const type =
           f.type.indexOf("/") !== -1
@@ -243,7 +239,7 @@ const NewsPage = ({ history, addPost }) => {
   };
 
   const changeRoute = (postKey) => {
-    addPost(posts[postKey]);
+    dispatch({ type: "ADD_SELECTED_POST", payload: posts[postKey] });
     history.push(`/post/${postKey}`);
   };
 
@@ -344,12 +340,4 @@ const NewsPage = ({ history, addPost }) => {
   );
 };
 
-// const mapStateToProps = (state) => ({
-//   ...state,
-// });
-
-// const mapDispatchToProps = (dispatch) => ({
-//   addPost: () => dispatch(addPost({ a: 1 })),
-// });
-
-export default connect(null, { addPost })(NewsPage);
+export default NewsPage;

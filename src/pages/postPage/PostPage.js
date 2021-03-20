@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import store from "../../redux/store";
+import React, { useEffect, useState, useContext } from "react";
 import firebaseService from "../../services/firebase/firebase.service";
 import "./postPage.scss";
 import { Link } from "react-router-dom";
+import { StoreContext } from "../../store/Store";
 
 import Modal from "react-bootstrap/Modal";
 import Carousel from "react-bootstrap/Carousel";
@@ -19,6 +19,7 @@ const PostPage = (props) => {
   const [imagesLarge, setImagesLarge] = useState([]);
   const [show, setShow] = useState(false);
   const [activeImageCarousel, setActiveImageCarousel] = useState(false);
+  const [storeState, dispatch] = useContext(StoreContext);
 
   const handleClose = () => setShow(false);
   const handleShow = (index) => {
@@ -67,9 +68,8 @@ const PostPage = (props) => {
 
   useEffect(() => {
     if (!post) {
-      const u = store.getState().posts.selectedPost;
-      if (u) {
-        setPost(u);
+      if (storeState.selectedPost) {
+        setPost(storeState.selectedPost);
       } else {
         getPost();
       }
@@ -81,12 +81,6 @@ const PostPage = (props) => {
     if (post && !images.length) {
       fetchImages();
     }
-
-    const unsubscribe = store.subscribe(() => {
-      setPost(store.getState().posts.selectedPost);
-    });
-
-    return unsubscribe;
   }, [post]);
 
   return (

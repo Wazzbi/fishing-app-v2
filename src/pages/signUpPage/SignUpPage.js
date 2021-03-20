@@ -8,8 +8,6 @@ import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
-const shortid = require("shortid");
-
 //TODO toast jen jeden
 // TODO styly zde a log in jsou stejné -> sloučit aby se nenačítali dvakrát
 
@@ -42,7 +40,7 @@ const SignUpPage = ({ history }) => {
 
       if (!checkUsersArray.length) {
         const role = "user";
-        const id = shortid.generate();
+        const id = Date.now();
         try {
           // create account
           await firebaseService
