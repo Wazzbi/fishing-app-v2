@@ -5,10 +5,15 @@ import "./landingPage.scss";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 
-const LandingPage = ({ history }) => {
+const LandingPage = ({ history, location }) => {
   const { currentUser } = useContext(AuthContext);
+  const lastLocation = localStorage.getItem("lastLocation");
 
   const redirect = () => {
+    if (lastLocation && lastLocation !== "/") {
+      return history.push(lastLocation);
+    }
+
     if (currentUser) {
       setTimeout(() => {
         history.push("/home");
@@ -21,7 +26,14 @@ const LandingPage = ({ history }) => {
   };
 
   const Content = () => {
-    if (currentUser) {
+    if (lastLocation && lastLocation !== "/") {
+      return (
+        <div className="landing-page_main">
+          <h3>Loading...</h3>
+          <Spinner animation="border" variant="primary" />
+        </div>
+      );
+    } else if (currentUser) {
       return (
         <div className="landing-page_main">
           <h3>Logged user - redirect</h3>

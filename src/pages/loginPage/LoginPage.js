@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useState, useEffect } from "react";
 import { Redirect } from "react-router-dom";
 import { AuthContext } from "../../Auth.js";
 import firebaseService from "../../services/firebase/firebase.service";
@@ -31,11 +31,13 @@ const LoginPage = ({ history }) => {
 
   const { currentUser } = useContext(AuthContext);
 
-  if (currentUser) {
-    return <Redirect to="/home" />;
-  }
+  useEffect(() => {
+    localStorage.setItem("lastLocation", "/login");
+  }, []);
 
-  return (
+  return currentUser ? (
+    <Redirect to="/home" />
+  ) : (
     <div className="login-page_main">
       <div className="login-page_form">
         <h1 className="login-page_title">Log in</h1>

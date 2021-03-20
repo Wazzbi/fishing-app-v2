@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { AuthContext } from "../../Auth";
 
 // TODO change password z předešlé verze v gitu
@@ -6,6 +6,10 @@ import { AuthContext } from "../../Auth";
 
 const UserPage = () => {
   const { currentUserData } = useContext(AuthContext);
+
+  useEffect(() => {
+    localStorage.setItem("lastLocation", "/user");
+  }, []);
 
   return (
     <>

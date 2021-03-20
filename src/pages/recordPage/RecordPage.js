@@ -256,6 +256,7 @@ const RecordPage = () => {
   };
 
   useEffect(() => {
+    localStorage.setItem("lastLocation", "/record");
     updateData();
     todayDate();
   }, []);

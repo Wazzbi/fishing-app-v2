@@ -67,6 +67,7 @@ const PostPage = (props) => {
   };
 
   useEffect(() => {
+    localStorage.setItem("lastLocation", `/post/${params.id}`);
     if (!post) {
       if (storeState.selectedPost) {
         setPost(storeState.selectedPost);

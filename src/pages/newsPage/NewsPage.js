@@ -19,7 +19,7 @@ import Card from "react-bootstrap/Card";
 
 // TODO emoji, odkazy
 // TODO main kontajner udělat squeeze a nakonec s flex-base nebo min-width
-// TODO funkce init bude chtít vychitat pro infinite scroll + nejaký loading anime než se načte init
+// TODO funkce init bude chtít vychytat pro infinite scroll + nejaký loading anime než se načte init
 // TODO při submit nahoře proužek s nahráváním
 // TODO router na rozkliknutý článek
 // TODO vytvořit 'moje zeď' s příspěvky kde budu mít odebírat
@@ -167,12 +167,14 @@ const NewsPage = ({ history }) => {
 
   const fetchMorePosts = async (timeStamp) => {
     let ww = {};
-    firebaseService.getPostsLimited(timeStamp).once("value", (snapshot) => {
-      snapshot.forEach((childSnapshot) => {
-        ww = { ...ww, [childSnapshot.key]: childSnapshot.val() };
-        setPosts({ ...posts, ...ww });
+    await firebaseService
+      .getPostsLimited(timeStamp)
+      .once("value", (snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+          ww = { ...ww, [childSnapshot.key]: childSnapshot.val() };
+          setPosts({ ...posts, ...ww });
+        });
       });
-    });
   };
 
   // https://www.npmjs.com/package/react-lazy-load-image-component
@@ -262,6 +264,7 @@ const NewsPage = ({ history }) => {
 
   useEffect(() => {
     init();
+    localStorage.setItem("lastLocation", "/news");
   }, []);
 
   return (

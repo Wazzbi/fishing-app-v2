@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import firebaseService from "../../services/firebase/firebase.service";
 import "./signUpPage.scss";
 import { Link } from "react-router-dom";
@@ -67,6 +67,10 @@ const SignUpPage = ({ history }) => {
     },
     [history]
   );
+
+  useEffect(() => {
+    localStorage.setItem("lastLocation", "/signup");
+  }, []);
 
   return (
     <div className="sign-up_main">

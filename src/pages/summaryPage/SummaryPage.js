@@ -283,6 +283,7 @@ const SummaryPage = () => {
   };
 
   useEffect(() => {
+    localStorage.setItem("lastLocation", "/summary");
     updateData();
   }, []);
 
