@@ -17,7 +17,7 @@ const Navigation = () => {
     setNavExpanded(false);
   };
 
-  // TODO vyřešit chybové hlášky - zanořené <a></a>
+  // TODO místo user -> zobrazit jméno zkráceně
 
   const AppNavbar = () => {
     if (currentUser) {

@@ -127,7 +127,7 @@ const SummaryPage = () => {
 
     if (!!finalData) {
       setRecordsTogether({
-        // ...recordsTogether,
+        ...recordsTogether,
         ...finalData,
       });
     }
@@ -285,8 +285,10 @@ const SummaryPage = () => {
   useEffect(() => {
     localStorage.setItem("lastLocation", "/summary");
 
-    if (!storeState.summaries) {
+    if (!storeState.summaries && !storeState.records) {
       updateData();
+    } else {
+      prepareData(storeState.records, storeState.summaries);
     }
   }, []);
 
