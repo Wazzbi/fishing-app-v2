@@ -285,7 +285,7 @@ const SummaryPage = () => {
   useEffect(() => {
     localStorage.setItem("lastLocation", "/summary");
 
-    if (!storeState.summaries && !storeState.records) {
+    if (!storeState.summaries || !storeState.records) {
       updateData();
     } else {
       prepareData(storeState.records, storeState.summaries);

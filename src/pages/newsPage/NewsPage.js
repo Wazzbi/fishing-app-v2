@@ -29,7 +29,6 @@ const NewsPage = ({ history }) => {
   const [show, setShow] = useState(false);
   const [uploadImages, setUploadImages] = useState([]);
   const [inputImageFieldCounter, setInputImageFieldCounter] = useState(1);
-  const [posts, setPosts] = useState(null);
   const [text, setText] = useState("");
   const [storeState, dispatch] = useContext(StoreContext);
   const [postCount, setPostCount] = useState(null);
@@ -163,8 +162,10 @@ const NewsPage = ({ history }) => {
     firebaseService.getPostsInit().once("value", (snapshot) => {
       snapshot.forEach((childSnapshot) => {
         ww = { ...ww, [childSnapshot.key]: childSnapshot.val() };
-        setPosts({ ...posts, ...ww });
-        dispatch({ type: "ADD_POSTS", payload: { ...posts, ...ww } });
+        dispatch({
+          type: "ADD_POSTS",
+          payload: { ...storeState.posts, ...ww },
+        });
       });
     });
   };
@@ -172,7 +173,7 @@ const NewsPage = ({ history }) => {
   // https://www.npmjs.com/package/react-lazy-load-image-component
   // https://www.npmjs.com/package/react-infinite-scroll-component
   const renderPosts = () => {
-    let t = Object.entries(posts); // [[postKey,postValue], ...]
+    let t = Object.entries(storeState.posts); // [[postKey,postValue], ...]
     let postsRender = t.sort().reverse();
 
     let lastPost = postsRender[postsRender.length - 1];
@@ -185,8 +186,10 @@ const NewsPage = ({ history }) => {
         .once("value", (snapshot) => {
           snapshot.forEach((childSnapshot) => {
             ww = { ...ww, [childSnapshot.key]: childSnapshot.val() };
-            setPosts({ ...posts, ...ww });
-            dispatch({ type: "ADD_POSTS", payload: { ...posts, ...ww } });
+            dispatch({
+              type: "ADD_POSTS",
+              payload: { ...storeState.posts, ...ww },
+            });
           });
         });
     };
@@ -249,7 +252,7 @@ const NewsPage = ({ history }) => {
   };
 
   const changeRoute = (postKey) => {
-    dispatch({ type: "ADD_SELECTED_POST", payload: posts[postKey] });
+    dispatch({ type: "ADD_SELECTED_POST", payload: storeState.posts[postKey] });
     history.push(`/post/${postKey}`);
   };
 
@@ -276,15 +279,13 @@ const NewsPage = ({ history }) => {
 
     if (!storeState.posts) {
       init();
-    } else {
-      setPosts({ ...storeState.posts });
     }
   }, []);
 
   return (
     <>
       <div className="news-page_main">
-        {!!posts ? (
+        {!!storeState.posts ? (
           renderPosts()
         ) : (
           <div style={{ textAlign: "center", marginTop: "30px" }}>
