@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import firebaseService from "../../services/firebase/firebase.service";
 import { AuthContext } from "../../Auth";
 import "./summaryPage.scss";
@@ -33,105 +33,108 @@ const SummaryPage = () => {
   const [loading, setLoading] = useState(false);
   const [storeState, dispatch] = useContext(StoreContext);
 
-  const prepareData = (records, summaries) => {
-    let finalData = {};
+  const prepareData = useCallback(
+    (records, summaries) => {
+      let finalData = {};
 
-    if (!!records && !!summaries) {
-      Object.entries(summaries).map(([summaryKey, summaryValue], index) => {
-        // získej pole records z summary
-        const { records: summaryRecords } = summaryValue;
+      if (!!records && !!summaries) {
+        Object.entries(summaries).map(([summaryKey, summaryValue], index) => {
+          // získej pole records z summary
+          const { records: summaryRecords } = summaryValue;
 
-        if (!!summaryRecords) {
-          let recordsArray = [];
-          // získej dané records pro každý summary
-          Object.entries(records)
-            .filter(([recordKey, recordValue]) =>
-              summaryRecords.includes(recordKey)
-            )
-            .map(([recordKey, recoredValue]) => {
-              // získej čistá data rows
-              Object.entries(recoredValue.data).map(([rowKey, rowValue]) =>
-                recordsArray.push(rowValue)
+          if (!!summaryRecords) {
+            let recordsArray = [];
+            // získej dané records pro každý summary
+            Object.entries(records)
+              .filter(([recordKey, recordValue]) =>
+                summaryRecords.includes(recordKey)
+              )
+              .map(([recordKey, recoredValue]) =>
+                // získej čistá data rows
+                Object.entries(recoredValue.data).map(([rowKey, rowValue]) =>
+                  recordsArray.push(rowValue)
+                )
               );
-            });
 
-          recordsArray.map((row, index) => {
-            let alertMissingData = false;
+            recordsArray.map((row, index) => {
+              let alertMissingData = false;
 
-            const visitedCounter =
-              finalData &&
-              finalData[summaryKey] &&
-              finalData[summaryKey][
-                `${row.districtNumber}-${row.subdistrictNumber || 0}`
-              ] &&
-              finalData[summaryKey][
-                `${row.districtNumber}-${row.subdistrictNumber || 0}`
-              ].visited
-                ? finalData[summaryKey][
-                    `${row.districtNumber}-${row.subdistrictNumber || 0}`
-                  ].visited + 1
-                : 1;
+              const visitedCounter =
+                finalData &&
+                finalData[summaryKey] &&
+                finalData[summaryKey][
+                  `${row.districtNumber}-${row.subdistrictNumber || 0}`
+                ] &&
+                finalData[summaryKey][
+                  `${row.districtNumber}-${row.subdistrictNumber || 0}`
+                ].visited
+                  ? finalData[summaryKey][
+                      `${row.districtNumber}-${row.subdistrictNumber || 0}`
+                    ].visited + 1
+                  : 1;
 
-            const previousData = finalData && finalData[summaryKey];
-            const previousDistrict =
-              previousData &&
-              previousData[
-                `${row.districtNumber}-${row.subdistrictNumber || 0}`
-              ];
-            const previousDistrictAlert =
-              previousDistrict && previousDistrict.alertMissingData
-                ? previousDistrict.alertMissingData
-                : [];
-            const previousFishes = previousDistrict && previousDistrict.fishes;
-            const previousKind = previousFishes && previousFishes[row.kind];
-            const previousPieces = previousKind && previousKind.pieces;
-            const previousKilograms = previousKind && previousKind.kilograms;
+              const previousData = finalData && finalData[summaryKey];
+              const previousDistrict =
+                previousData &&
+                previousData[
+                  `${row.districtNumber}-${row.subdistrictNumber || 0}`
+                ];
+              const previousDistrictAlert =
+                previousDistrict && previousDistrict.alertMissingData
+                  ? previousDistrict.alertMissingData
+                  : [];
+              const previousFishes =
+                previousDistrict && previousDistrict.fishes;
+              const previousKind = previousFishes && previousFishes[row.kind];
+              const previousPieces = previousKind && previousKind.pieces;
+              const previousKilograms = previousKind && previousKind.kilograms;
 
-            if (!!!row.kind && !!!row.kilograms && !!!row.pieces) {
-              alertMissingData = false;
-            } else if (!!!row.kind || !!!row.kilograms || !!!row.pieces) {
-              alertMissingData = true;
-            }
+              if (!!!row.kind && !!!row.kilograms && !!!row.pieces) {
+                alertMissingData = false;
+              } else if (!!!row.kind || !!!row.kilograms || !!!row.pieces) {
+                alertMissingData = true;
+              }
 
-            finalData = {
-              ...finalData,
-              [summaryKey]: {
-                ...previousData,
-                [`${row.districtNumber}-${row.subdistrictNumber || 0}`]: {
-                  ...previousDistrict,
-                  districtNumber: row.districtNumber,
-                  subdistrictNumber: row.subdistrictNumber || 0,
-                  visited: visitedCounter,
-                  alertMissingData: [
-                    ...previousDistrictAlert,
-                    alertMissingData,
-                  ],
-                  fishes: {
-                    ...previousFishes,
-                    [row.kind.toLowerCase() || "none"]: {
-                      ...previousKind,
-                      pieces: (previousPieces || 0) + +row.pieces,
-                      kilograms: (previousKilograms || 0) + +row.kilograms,
+              finalData = {
+                ...finalData,
+                [summaryKey]: {
+                  ...previousData,
+                  [`${row.districtNumber}-${row.subdistrictNumber || 0}`]: {
+                    ...previousDistrict,
+                    districtNumber: row.districtNumber,
+                    subdistrictNumber: row.subdistrictNumber || 0,
+                    visited: visitedCounter,
+                    alertMissingData: [
+                      ...previousDistrictAlert,
+                      alertMissingData,
+                    ],
+                    fishes: {
+                      ...previousFishes,
+                      [row.kind.toLowerCase() || "none"]: {
+                        ...previousKind,
+                        pieces: (previousPieces || 0) + +row.pieces,
+                        kilograms: (previousKilograms || 0) + +row.kilograms,
+                      },
                     },
                   },
                 },
-              },
-            };
-          });
-        } else {
-          // setovat k summary prázdný pole records pokud nejsou data
-          console.log(`${index}: `, "summary nemá records");
-        }
-      });
-    }
-
-    if (!!finalData) {
-      setRecordsTogether({
-        ...recordsTogether,
-        ...finalData,
-      });
-    }
-  };
+              };
+              return setRecordsTogether({
+                ...recordsTogether,
+                ...finalData,
+              });
+            });
+          } else {
+            // setovat k summary prázdný pole records pokud nejsou data
+            console.log(`${index}: `, "summary nemá records");
+            return null;
+          }
+          return null;
+        });
+      }
+    },
+    [recordsTogether]
+  );
 
   const handleCloseModalAddSummary = () => setShowModalAddSummary(false);
   const handleShowModalChangeSummary = (summaryUid) => {
@@ -146,7 +149,7 @@ const SummaryPage = () => {
     setShowModalAddSummary(true);
   };
 
-  const updateData = () => {
+  const updateData = useCallback(() => {
     // protože je useState async dotahuji data přes proměnné...
     let updateRecords, updateSummaries;
     setLoading(true);
@@ -174,7 +177,7 @@ const SummaryPage = () => {
             prepareData(updateRecords, updateSummaries);
           });
       });
-  };
+  }, [currentUser, dispatch, prepareData]);
 
   const handleSubmitChange = () => {
     handleChangeRecords(currentUser.uid, selectedSummary, selectedRecords);
@@ -290,7 +293,7 @@ const SummaryPage = () => {
     } else {
       prepareData(storeState.records, storeState.summaries);
     }
-  }, []);
+  }, [prepareData, storeState.records, storeState.summaries, updateData]);
 
   return (
     <>
@@ -385,7 +388,7 @@ const SummaryPage = () => {
                       !!recordsTogether[summaryKey] &&
                       Object.entries(recordsTogether[summaryKey]).map(
                         ([rowDataKey, rowDataValue]) => (
-                          <tr>
+                          <tr key={rowDataKey}>
                             <td>
                               {rowDataValue.districtNumber}{" "}
                               <span
@@ -503,6 +506,7 @@ const SummaryPage = () => {
               {!!storeState.records &&
                 Object.entries(storeState.records).map(([recordKey, value]) => (
                   <Form.Check
+                    key={recordKey}
                     type="checkbox"
                     id={recordKey}
                     label={value && value.name ? value.name : "No name!"}

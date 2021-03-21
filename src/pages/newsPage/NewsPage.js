@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+  useCallback,
+} from "react";
 import "./newsPage.scss";
 import firebaseService from "../../services/firebase/firebase.service";
 import imageCompression from "browser-image-compression";
@@ -14,8 +20,6 @@ import { StoreContext } from "../../store/Store";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
-import Row from "react-bootstrap/Row";
-import Card from "react-bootstrap/Card";
 import Spinner from "react-bootstrap/Spinner";
 
 // TODO emoji, odkazy
@@ -157,7 +161,7 @@ const NewsPage = ({ history }) => {
     return new File([u8arr], filename, { type: mime });
   };
 
-  const init = () => {
+  const init = useCallback(() => {
     let ww = {};
     firebaseService.getPostsInit().once("value", (snapshot) => {
       snapshot.forEach((childSnapshot) => {
@@ -168,7 +172,7 @@ const NewsPage = ({ history }) => {
         });
       });
     });
-  };
+  }, [dispatch, storeState.posts]);
 
   // https://www.npmjs.com/package/react-lazy-load-image-component
   // https://www.npmjs.com/package/react-infinite-scroll-component
@@ -212,40 +216,39 @@ const NewsPage = ({ history }) => {
         }
       >
         {postsRender.map(([postKey, postValue]) => (
-          <>
-            <div
-              className="news-page_post"
-              onClick={() => changeRoute(postKey)}
-            >
-              <div className="news-page_header">
-                <div className="news-page_post-icon">
-                  <Jdenticon size="30" value={postValue.username || ""} />
-                </div>
-                <div className="news-page_header-title">
-                  <span>{postValue.title}</span>
-                  <br />
-                  <small>
-                    {postValue.username} {" | "} {postValue.created}
-                  </small>
-                </div>
+          <div
+            key={postKey}
+            className="news-page_post"
+            onClick={() => changeRoute(postKey)}
+          >
+            <div className="news-page_header">
+              <div className="news-page_post-icon">
+                <Jdenticon size="30" value={postValue.username || ""} />
               </div>
-              <div
-                id={`${postKey}-post-text`}
-                className="news-page_post-text"
-                dangerouslySetInnerHTML={{ __html: postValue.text }}
-              ></div>
-              <div className="news-page_post-text-overlay">
-                <div className="news-page_post-text-overlay-icon-group-left">
-                  <img src="/comment.svg" height="15px" width="15px"></img>
-                  <span>1526</span>
-                  <img src="/heart.svg" height="15px" width="15px"></img>
-                  <span>99.1k</span>
-                </div>
-
-                <img src="/right.svg" height="15px" width="15px"></img>
+              <div className="news-page_header-title">
+                <span>{postValue.title}</span>
+                <br />
+                <small>
+                  {postValue.username} {" | "} {postValue.created}
+                </small>
               </div>
             </div>
-          </>
+            <div
+              id={`${postKey}-post-text`}
+              className="news-page_post-text"
+              dangerouslySetInnerHTML={{ __html: postValue.text }}
+            ></div>
+            <div className="news-page_post-text-overlay">
+              <div className="news-page_post-text-overlay-icon-group-left">
+                <img src="/comment.svg" alt="" height="15px" width="15px"></img>
+                <span>1526</span>
+                <img src="/heart.svg" alt="" height="15px" width="15px"></img>
+                <span>99.1k</span>
+              </div>
+
+              <img src="/right.svg" alt="" height="15px" width="15px"></img>
+            </div>
+          </div>
         ))}
       </InfiniteScroll>
     );
@@ -261,6 +264,7 @@ const NewsPage = ({ history }) => {
     for (let index = 0; index < inputImageFieldCounter; index++) {
       const x = (
         <Form.File
+          key={`form-file-${index}`}
           id={`input-image-${index}`}
           name="file"
           label="Example file input"
@@ -280,7 +284,7 @@ const NewsPage = ({ history }) => {
     if (!storeState.posts) {
       init();
     }
-  }, []);
+  }, [init, storeState.posts]);
 
   return (
     <>
@@ -306,7 +310,7 @@ const NewsPage = ({ history }) => {
         }}
       >
         {uploadPostDone ? (
-          <img src="/plus.svg" width="30px" height="30px"></img>
+          <img src="/plus.svg" alt="" width="30px" height="30px"></img>
         ) : (
           <Spinner
             as="span"
@@ -352,7 +356,7 @@ const NewsPage = ({ history }) => {
                 marginBottom: "10px",
               }}
             >
-              <img src="/plus.svg" width="15px" height="15px"></img>
+              <img src="/plus.svg" alt="" width="15px" height="15px"></img>
             </Button>
 
             <Form.Group>

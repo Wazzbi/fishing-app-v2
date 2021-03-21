@@ -10,7 +10,7 @@ const LandingPage = ({ history, location }) => {
   const lastLocation = localStorage.getItem("lastLocation");
 
   const redirect = () => {
-    if (lastLocation && lastLocation !== "/") {
+    if (lastLocation && lastLocation !== "/" && lastLocation !== "/signup") {
       return history.push(lastLocation);
     }
 
@@ -55,6 +55,7 @@ const LandingPage = ({ history, location }) => {
   };
 
   useEffect(() => {
+    localStorage.setItem("lastLocation", "/");
     redirect();
   });
 

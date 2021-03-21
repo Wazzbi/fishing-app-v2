@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import firebaseService from "../../services/firebase/firebase.service";
 import validatorService from "../../services/validators/validator.service";
 import autocompleterService from "../../services/utils/autocompleter.service";
@@ -195,7 +195,7 @@ const RecordPage = () => {
     dispatch({ type: "ADD_RECORD_ROW", payload: { recordUid, rowId, props } });
   };
 
-  const updateData = () => {
+  const updateData = useCallback(() => {
     setLoading(true);
     firebaseService
       .getUserRecords(currentUser && currentUser.uid)
@@ -203,7 +203,7 @@ const RecordPage = () => {
         dispatch({ type: "ADD_RECORDS", payload: { ...records } });
         setLoading(false);
       });
-  };
+  }, [currentUser, dispatch]);
 
   const handleCloseAndDelete = () => {
     setShowModalDelete(false);
@@ -271,7 +271,7 @@ const RecordPage = () => {
     if (!storeState.records) {
       updateData();
     }
-  }, []);
+  }, [storeState.records, updateData]);
 
   return (
     <>
@@ -294,392 +294,388 @@ const RecordPage = () => {
           {!!storeState.records &&
             !!Object.entries(storeState.records).length &&
             Object.entries(storeState.records).map(([recordKey, value]) => (
-              <>
-                <div key={recordKey} className="record-page_table">
-                  <InputGroup className="record-page_record-name">
-                    <FormControl
-                      id={`${recordKey}-recordName`}
-                      name="recordName"
-                      type="recordName"
-                      placeholder="Record Name"
-                      onChange={(e) =>
-                        handleChangeRecordName(
-                          currentUser.uid,
-                          recordKey,
-                          e.target.value
-                        )
+              <div key={recordKey} className="record-page_table">
+                <InputGroup className="record-page_record-name">
+                  <FormControl
+                    id={`${recordKey}-recordName`}
+                    name="recordName"
+                    type="recordName"
+                    placeholder="Record Name"
+                    onChange={(e) =>
+                      handleChangeRecordName(
+                        currentUser.uid,
+                        recordKey,
+                        e.target.value
+                      )
+                    }
+                    value={value && value.name ? value.name : ""}
+                    disabled
+                  />
+
+                  <DropdownButton
+                    as={InputGroup.Append}
+                    variant="outline-secondary"
+                    title="Menu"
+                    id={`input-group-dropdown-${recordKey}`}
+                  >
+                    <Dropdown.Item onClick={() => editRecordName(recordKey)}>
+                      rename
+                    </Dropdown.Item>
+                    <Dropdown.Item onClick={() => handleAdd(recordKey)}>
+                      add row
+                    </Dropdown.Item>
+                    <Dropdown.Divider />
+                    <Dropdown.Item
+                      className="record-page_delete-text"
+                      onClick={() =>
+                        handleDelete("record", { recordUid: recordKey })
                       }
-                      value={value && value.name ? value.name : ""}
-                      disabled
-                    />
-
-                    <DropdownButton
-                      as={InputGroup.Append}
-                      variant="outline-secondary"
-                      title="Menu"
-                      id={`input-group-dropdown-${recordKey}`}
                     >
-                      <Dropdown.Item onClick={() => editRecordName(recordKey)}>
-                        rename
-                      </Dropdown.Item>
-                      <Dropdown.Item onClick={() => handleAdd(recordKey)}>
-                        add row
-                      </Dropdown.Item>
-                      <Dropdown.Divider />
-                      <Dropdown.Item
-                        className="record-page_delete-text"
-                        onClick={() =>
-                          handleDelete("record", { recordUid: recordKey })
-                        }
-                      >
-                        delete
-                      </Dropdown.Item>
-                    </DropdownButton>
-                  </InputGroup>
+                      delete
+                    </Dropdown.Item>
+                  </DropdownButton>
+                </InputGroup>
 
-                  <Table responsive bordered hover size="sm">
-                    <thead>
-                      <tr>
-                        <th>Actions</th>
-                        <th>Date</th>
-                        <th>District Number</th>
-                        <th>Subdistrict Number</th>
-                        <th>Kind</th>
-                        <th>Pieces</th>
-                        <th>Kilograms</th>
-                        <th>Centimeters</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {storeState.records &&
-                        storeState.records[recordKey] &&
-                        storeState.records[recordKey].data &&
-                        Object.entries(storeState.records[recordKey].data).map(
-                          ([rowKey, value]) => (
-                            <tr>
-                              <td>
-                                <Button
-                                  variant="primary"
-                                  size="sm"
-                                  className="record-page_row-btn"
-                                  onClick={() =>
-                                    editRow(recordKey, rowKey, value)
-                                  }
-                                >
-                                  <img
-                                    src="/edit.svg"
-                                    alt="edit"
-                                    width="15px"
-                                    height="15px"
-                                  ></img>
-                                </Button>
-                                <Button
-                                  variant="primary"
-                                  size="sm"
-                                  className="record-page_row-btn"
-                                  onClick={() =>
-                                    handleDelete("row", {
-                                      recordUid: recordKey,
-                                      recordRowUid: rowKey,
-                                    })
-                                  }
-                                >
-                                  <img
-                                    src="/delete.svg"
-                                    alt="delete"
-                                    width="15px"
-                                    height="15px"
-                                  ></img>
-                                </Button>
-                                {!!!value.kind ||
-                                !!!value.pieces ||
-                                !!!value.kilograms ? (
-                                  <span
-                                    title="chybějící povinná data: druh ryby, váha nebo počet kusů"
-                                    style={{
-                                      color: "red",
-                                      fontWeight: "bold",
-                                      cursor: "pointer",
-                                    }}
-                                  >
-                                    (!)
-                                  </span>
-                                ) : (
-                                  ""
-                                )}
-                                {!!!value.centimeters ? (
-                                  <span
-                                    title="chybějící data: centimetry"
-                                    style={{
-                                      color: "blue",
-                                      fontWeight: "bold",
-                                      cursor: "pointer",
-                                    }}
-                                  >
-                                    (!)
-                                  </span>
-                                ) : (
-                                  ""
-                                )}
-                              </td>
-
-                              <td>
+                <Table responsive bordered hover size="sm">
+                  <thead>
+                    <tr>
+                      <th>Actions</th>
+                      <th>Date</th>
+                      <th>District Number</th>
+                      <th>Subdistrict Number</th>
+                      <th>Kind</th>
+                      <th>Pieces</th>
+                      <th>Kilograms</th>
+                      <th>Centimeters</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {storeState.records &&
+                      storeState.records[recordKey] &&
+                      storeState.records[recordKey].data &&
+                      Object.entries(storeState.records[recordKey].data).map(
+                        ([rowKey, value]) => (
+                          <tr key={rowKey}>
+                            <td>
+                              <Button
+                                variant="primary"
+                                size="sm"
+                                className="record-page_row-btn"
+                                onClick={() =>
+                                  editRow(recordKey, rowKey, value)
+                                }
+                              >
+                                <img
+                                  src="/edit.svg"
+                                  alt="edit"
+                                  width="15px"
+                                  height="15px"
+                                ></img>
+                              </Button>
+                              <Button
+                                variant="primary"
+                                size="sm"
+                                className="record-page_row-btn"
+                                onClick={() =>
+                                  handleDelete("row", {
+                                    recordUid: recordKey,
+                                    recordRowUid: rowKey,
+                                  })
+                                }
+                              >
+                                <img
+                                  src="/delete.svg"
+                                  alt="delete"
+                                  width="15px"
+                                  height="15px"
+                                ></img>
+                              </Button>
+                              {!!!value.kind ||
+                              !!!value.pieces ||
+                              !!!value.kilograms ? (
                                 <span
-                                  className={`row-${rowKey}`}
-                                  id={`row-${rowKey}-date`}
+                                  title="chybějící povinná data: druh ryby, váha nebo počet kusů"
+                                  style={{
+                                    color: "red",
+                                    fontWeight: "bold",
+                                    cursor: "pointer",
+                                  }}
                                 >
-                                  {value.date ? value.date : ""}
+                                  (!)
                                 </span>
-                              </td>
-
-                              <td>
+                              ) : (
+                                ""
+                              )}
+                              {!!!value.centimeters ? (
                                 <span
-                                  className={`row-${rowKey}`}
-                                  id={`row-${rowKey}-districtNumber`}
+                                  title="chybějící data: centimetry"
+                                  style={{
+                                    color: "blue",
+                                    fontWeight: "bold",
+                                    cursor: "pointer",
+                                  }}
                                 >
-                                  {value.districtNumber
-                                    ? value.districtNumber
-                                    : ""}
+                                  (!)
                                 </span>
-                              </td>
+                              ) : (
+                                ""
+                              )}
+                            </td>
 
-                              <td>
-                                <span
-                                  className={`row-${rowKey}`}
-                                  id={`row-${rowKey}-subdistrictNumber`}
-                                >
-                                  {value.subdistrictNumber
-                                    ? value.subdistrictNumber
-                                    : ""}
-                                </span>
-                              </td>
+                            <td>
+                              <span
+                                className={`row-${rowKey}`}
+                                id={`row-${rowKey}-date`}
+                              >
+                                {value.date ? value.date : ""}
+                              </span>
+                            </td>
 
-                              <td>
-                                <span
-                                  className={`row-${rowKey}`}
-                                  id={`row-${rowKey}-kind`}
-                                >
-                                  {value.kind ? value.kind : ""}
-                                </span>
-                              </td>
+                            <td>
+                              <span
+                                className={`row-${rowKey}`}
+                                id={`row-${rowKey}-districtNumber`}
+                              >
+                                {value.districtNumber
+                                  ? value.districtNumber
+                                  : ""}
+                              </span>
+                            </td>
 
-                              <td>
-                                <span
-                                  className={`row-${rowKey}`}
-                                  id={`row-${rowKey}-pieces`}
-                                >
-                                  {value.pieces ? value.pieces : ""}
-                                </span>
-                              </td>
+                            <td>
+                              <span
+                                className={`row-${rowKey}`}
+                                id={`row-${rowKey}-subdistrictNumber`}
+                              >
+                                {value.subdistrictNumber
+                                  ? value.subdistrictNumber
+                                  : ""}
+                              </span>
+                            </td>
 
-                              <td>
-                                <span
-                                  className={`row-${rowKey}`}
-                                  id={`row-${rowKey}-kilograms`}
-                                >
-                                  {value.kilograms ? value.kilograms : ""}
-                                </span>
-                              </td>
+                            <td>
+                              <span
+                                className={`row-${rowKey}`}
+                                id={`row-${rowKey}-kind`}
+                              >
+                                {value.kind ? value.kind : ""}
+                              </span>
+                            </td>
 
-                              <td>
-                                <span
-                                  className={`row-${rowKey}`}
-                                  id={`row-${rowKey}-centimeters`}
-                                >
-                                  {value.centimeters ? value.centimeters : ""}
-                                </span>
-                              </td>
-                            </tr>
-                          )
-                        )}
-                    </tbody>
-                  </Table>
+                            <td>
+                              <span
+                                className={`row-${rowKey}`}
+                                id={`row-${rowKey}-pieces`}
+                              >
+                                {value.pieces ? value.pieces : ""}
+                              </span>
+                            </td>
 
-                  <Modal
-                    show={showModalDelete}
-                    onHide={handleDeleteClose}
-                    animation={false}
-                    centered
-                  >
-                    <Modal.Header closeButton>
-                      <Modal.Title>Potvrdit akci</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>{onDelete && onDelete.text}</Modal.Body>
-                    <Modal.Footer>
-                      <Button variant="secondary" onClick={handleDeleteClose}>
-                        Close
+                            <td>
+                              <span
+                                className={`row-${rowKey}`}
+                                id={`row-${rowKey}-kilograms`}
+                              >
+                                {value.kilograms ? value.kilograms : ""}
+                              </span>
+                            </td>
+
+                            <td>
+                              <span
+                                className={`row-${rowKey}`}
+                                id={`row-${rowKey}-centimeters`}
+                              >
+                                {value.centimeters ? value.centimeters : ""}
+                              </span>
+                            </td>
+                          </tr>
+                        )
+                      )}
+                  </tbody>
+                </Table>
+
+                <Modal
+                  show={showModalDelete}
+                  onHide={handleDeleteClose}
+                  animation={false}
+                  centered
+                >
+                  <Modal.Header closeButton>
+                    <Modal.Title>Potvrdit akci</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>{onDelete && onDelete.text}</Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={handleDeleteClose}>
+                      Close
+                    </Button>
+                    <Button variant="primary" onClick={handleCloseAndDelete}>
+                      DELETE
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
+                <Modal
+                  show={showModalAdd}
+                  onHide={handleAddClose}
+                  animation={false}
+                  backdrop="static"
+                  centered
+                >
+                  <Modal.Header closeButton>
+                    <Modal.Title>
+                      {!!editRowData ? "Upravit řádek" : "Vyplnit řádek"}
+                    </Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <Form
+                      onSubmit={
+                        !!editRowData ? handleSubmitChange : handleSubmitAdd
+                      }
+                    >
+                      <Form.Group>
+                        <Form.Label>Date</Form.Label>
+                        <Form.Control
+                          type="date"
+                          name="date"
+                          defaultValue={
+                            !!editRowData ? editRowData.rowValue.date : today
+                          }
+                        />
+                      </Form.Group>
+
+                      <Form.Group>
+                        <Form.Label>District Number</Form.Label>
+                        <Form.Control
+                          required
+                          type="number"
+                          name="districtNumber"
+                          id={`${recordKey}form-districtNumber`}
+                          defaultValue={
+                            !!editRowData
+                              ? editRowData.rowValue.districtNumber
+                              : ""
+                          }
+                          onChange={(e) =>
+                            validator(
+                              "validateDistrictNumber",
+                              e.target.value,
+                              `${recordKey}form-districtNumber`
+                            )
+                          }
+                        />
+                        <Form.Text className="text-muted">
+                          We'll never share your email with anyone else.
+                        </Form.Text>
+                      </Form.Group>
+
+                      <Form.Group>
+                        <Form.Label>Subdistrict Number</Form.Label>
+                        <Form.Control
+                          required
+                          type="number"
+                          name="subdistrictNumber"
+                          id={`${recordKey}form-subdistrictNumber`}
+                          defaultValue={
+                            !!editRowData
+                              ? editRowData.rowValue.subdistrictNumber
+                              : ""
+                          }
+                          onChange={(e) =>
+                            validator(
+                              "validateNoDigits",
+                              e.target.value,
+                              `${recordKey}form-subdistrictNumber`
+                            )
+                          }
+                        />
+                        <Form.Text className="text-muted">
+                          Pokud podokresek nemá číslo vyplňte nulu.
+                        </Form.Text>
+                      </Form.Group>
+
+                      <Form.Group>
+                        <Form.Label>Kind</Form.Label>
+                        <Form.Control
+                          type="text"
+                          name="kind"
+                          id={`${recordKey}form-kind`}
+                          autoComplete="off"
+                          defaultValue={
+                            !!editRowData ? editRowData.rowValue.kind : ""
+                          }
+                          onChange={() =>
+                            autocompleterService.do(`${recordKey}form-kind`)
+                          }
+                        />
+                      </Form.Group>
+
+                      <Form.Group>
+                        <Form.Label>Pieces</Form.Label>
+                        <Form.Control
+                          type="number"
+                          name="pieces"
+                          id={`${recordKey}form-pieces`}
+                          defaultValue={
+                            !!editRowData ? editRowData.rowValue.pieces : ""
+                          }
+                          onChange={(e) =>
+                            validator(
+                              "validateNoDigits",
+                              e.target.value,
+                              `${recordKey}form-pieces`
+                            )
+                          }
+                        />
+                      </Form.Group>
+
+                      <Form.Group>
+                        <Form.Label>Kilograms</Form.Label>
+                        <Form.Control
+                          type="number"
+                          step=".01"
+                          name="kilograms"
+                          id={`${recordKey}form-kilograms`}
+                          defaultValue={
+                            !!editRowData ? editRowData.rowValue.kilograms : ""
+                          }
+                          onChange={(e) =>
+                            validator(
+                              "validate2Digits",
+                              e.target.value,
+                              `${recordKey}form-kilograms`
+                            )
+                          }
+                        />
+                      </Form.Group>
+
+                      <Form.Group>
+                        <Form.Label>Centimeters</Form.Label>
+                        <Form.Control
+                          type="number"
+                          step=".01"
+                          name="centimeters"
+                          id={`${recordKey}form-centimeters`}
+                          defaultValue={
+                            !!editRowData
+                              ? editRowData.rowValue.centimeters
+                              : ""
+                          }
+                          onChange={(e) =>
+                            validator(
+                              "validate2Digits",
+                              e.target.value,
+                              `${recordKey}form-centimeters`
+                            )
+                          }
+                        />
+                      </Form.Group>
+
+                      <Button variant="primary" type="submit">
+                        Submit
                       </Button>
-                      <Button variant="primary" onClick={handleCloseAndDelete}>
-                        DELETE
-                      </Button>
-                    </Modal.Footer>
-                  </Modal>
-                  <Modal
-                    show={showModalAdd}
-                    onHide={handleAddClose}
-                    animation={false}
-                    backdrop="static"
-                    centered
-                  >
-                    <Modal.Header closeButton>
-                      <Modal.Title>
-                        {!!editRowData ? "Upravit řádek" : "Vyplnit řádek"}
-                      </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                      <Form
-                        onSubmit={
-                          !!editRowData ? handleSubmitChange : handleSubmitAdd
-                        }
-                      >
-                        <Form.Group>
-                          <Form.Label>Date</Form.Label>
-                          <Form.Control
-                            type="date"
-                            name="date"
-                            defaultValue={
-                              !!editRowData ? editRowData.rowValue.date : today
-                            }
-                          />
-                        </Form.Group>
-
-                        <Form.Group>
-                          <Form.Label>District Number</Form.Label>
-                          <Form.Control
-                            required
-                            type="number"
-                            name="districtNumber"
-                            id={`${recordKey}form-districtNumber`}
-                            defaultValue={
-                              !!editRowData
-                                ? editRowData.rowValue.districtNumber
-                                : ""
-                            }
-                            onChange={(e) =>
-                              validator(
-                                "validateDistrictNumber",
-                                e.target.value,
-                                `${recordKey}form-districtNumber`
-                              )
-                            }
-                          />
-                          <Form.Text className="text-muted">
-                            We'll never share your email with anyone else.
-                          </Form.Text>
-                        </Form.Group>
-
-                        <Form.Group>
-                          <Form.Label>Subdistrict Number</Form.Label>
-                          <Form.Control
-                            required
-                            type="number"
-                            name="subdistrictNumber"
-                            id={`${recordKey}form-subdistrictNumber`}
-                            defaultValue={
-                              !!editRowData
-                                ? editRowData.rowValue.subdistrictNumber
-                                : ""
-                            }
-                            onChange={(e) =>
-                              validator(
-                                "validateNoDigits",
-                                e.target.value,
-                                `${recordKey}form-subdistrictNumber`
-                              )
-                            }
-                          />
-                          <Form.Text className="text-muted">
-                            Pokud podokresek nemá číslo vyplňte nulu.
-                          </Form.Text>
-                        </Form.Group>
-
-                        <Form.Group>
-                          <Form.Label>Kind</Form.Label>
-                          <Form.Control
-                            type="text"
-                            name="kind"
-                            id={`${recordKey}form-kind`}
-                            autoComplete="off"
-                            defaultValue={
-                              !!editRowData ? editRowData.rowValue.kind : ""
-                            }
-                            onChange={() =>
-                              autocompleterService.do(`${recordKey}form-kind`)
-                            }
-                          />
-                        </Form.Group>
-
-                        <Form.Group>
-                          <Form.Label>Pieces</Form.Label>
-                          <Form.Control
-                            type="number"
-                            name="pieces"
-                            id={`${recordKey}form-pieces`}
-                            defaultValue={
-                              !!editRowData ? editRowData.rowValue.pieces : ""
-                            }
-                            onChange={(e) =>
-                              validator(
-                                "validateNoDigits",
-                                e.target.value,
-                                `${recordKey}form-pieces`
-                              )
-                            }
-                          />
-                        </Form.Group>
-
-                        <Form.Group>
-                          <Form.Label>Kilograms</Form.Label>
-                          <Form.Control
-                            type="number"
-                            step=".01"
-                            name="kilograms"
-                            id={`${recordKey}form-kilograms`}
-                            defaultValue={
-                              !!editRowData
-                                ? editRowData.rowValue.kilograms
-                                : ""
-                            }
-                            onChange={(e) =>
-                              validator(
-                                "validate2Digits",
-                                e.target.value,
-                                `${recordKey}form-kilograms`
-                              )
-                            }
-                          />
-                        </Form.Group>
-
-                        <Form.Group>
-                          <Form.Label>Centimeters</Form.Label>
-                          <Form.Control
-                            type="number"
-                            step=".01"
-                            name="centimeters"
-                            id={`${recordKey}form-centimeters`}
-                            defaultValue={
-                              !!editRowData
-                                ? editRowData.rowValue.centimeters
-                                : ""
-                            }
-                            onChange={(e) =>
-                              validator(
-                                "validate2Digits",
-                                e.target.value,
-                                `${recordKey}form-centimeters`
-                              )
-                            }
-                          />
-                        </Form.Group>
-
-                        <Button variant="primary" type="submit">
-                          Submit
-                        </Button>
-                      </Form>
-                    </Modal.Body>
-                  </Modal>
-                </div>
-              </>
+                    </Form>
+                  </Modal.Body>
+                </Modal>
+              </div>
             ))}
         </div>
       </div>

@@ -23,47 +23,42 @@ const SignUpPage = ({ history }) => {
       const { username, email, password } = event.target.elements;
 
       let checkUsersArray = [];
-      let promise = new Promise((resolve, reject) => {
-        resolve(
-          firebaseService
-            .checkUserExists(username.value)
-            .once("value", (snapshot) => {
-              snapshot.forEach((childSnapshot) => {
-                checkUsersArray.push(childSnapshot.key);
-              });
-            })
-        );
-      });
 
-      // !! needed :-D
-      let triggerPromise = await promise;
-
-      if (!checkUsersArray.length) {
-        const role = "user";
-        const id = Date.now();
-        try {
-          // create account
-          await firebaseService
-            .auth()
-            .createUserWithEmailAndPassword(email.value, password.value)
-            .then((authUser) => {
-              // create user in db
-              firebaseService.firebaseUser(authUser.user.uid).set({
-                username: username.value,
-                email: email.value,
-                role,
-                id,
-              });
-            });
-          history.push("/");
-        } catch (error) {
-          setError(error);
-          setShowB(true);
-        }
-      } else {
-        setShow(true);
-        checkUsersArray = [];
-      }
+      firebaseService
+        .checkUserExists(username.value)
+        .once("value", (snapshot) => {
+          snapshot.forEach((childSnapshot) => {
+            checkUsersArray.push(childSnapshot.key);
+          });
+        })
+        .then(() => {
+          if (!checkUsersArray.length) {
+            const role = "user";
+            const id = Date.now();
+            try {
+              // create account
+              firebaseService
+                .auth()
+                .createUserWithEmailAndPassword(email.value, password.value)
+                .then((authUser) => {
+                  // create user in db
+                  firebaseService.firebaseUser(authUser.user.uid).set({
+                    username: username.value,
+                    email: email.value,
+                    role,
+                    id,
+                  });
+                  history.push("/");
+                });
+            } catch (error) {
+              setError(error);
+              setShowB(true);
+            }
+          } else {
+            setShow(true);
+            checkUsersArray = [];
+          }
+        });
     },
     [history]
   );

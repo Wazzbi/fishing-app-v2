@@ -61,9 +61,6 @@ class firebaseService {
   // *** GET ***
   static getImageUrl = (name, size, type) => {
     const defaultSize = size || 400;
-    const pathRef = appl
-      .storage()
-      .ref(`images/${name}/${name}-${defaultSize}.${type}`);
 
     return appl
       .storage()

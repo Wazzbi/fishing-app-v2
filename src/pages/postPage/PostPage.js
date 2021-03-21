@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import firebaseService from "../../services/firebase/firebase.service";
 import "./postPage.scss";
 import { Link } from "react-router-dom";
@@ -28,7 +28,7 @@ const PostPage = (props) => {
     setShow(true);
   };
 
-  const fetchImages = async () => {
+  const fetchImages = useCallback(async () => {
     if (post && post.images) {
       let w = [];
       for (const image of post.images) {
@@ -42,7 +42,7 @@ const PostPage = (props) => {
       }
       setImages(w);
     }
-  };
+  }, [post]);
 
   const fetchImagesLarge = async () => {
     if (post && post.images) {
@@ -60,11 +60,11 @@ const PostPage = (props) => {
     }
   };
 
-  const getPost = async () => {
+  const getPost = useCallback(async () => {
     let promise = firebaseService.getPost(params.id);
     let response = await promise;
     setPost(response);
-  };
+  }, [params]);
 
   useEffect(() => {
     localStorage.setItem("lastLocation", `/post/${params.id}`);
@@ -82,7 +82,14 @@ const PostPage = (props) => {
     if (post && !images.length) {
       fetchImages();
     }
-  }, [post]);
+  }, [
+    params.id,
+    post,
+    images.length,
+    storeState.selectedPost,
+    getPost,
+    fetchImages,
+  ]);
 
   return (
     <>
@@ -94,7 +101,8 @@ const PostPage = (props) => {
             to={"/news"}
             className="post-page_back-btn-icon"
           >
-            <img src="/back-arrow.png" width="15px" height="15px"></img> Back
+            <img src="/back-arrow.png" alt="" width="15px" height="15px"></img>{" "}
+            Back
           </Button>
           {post && (
             <div>
@@ -106,9 +114,9 @@ const PostPage = (props) => {
               </p>
               <p className="post-page_icons-group">
                 <Badge variant="primary">{post.category}</Badge>
-                <img src="/comment.svg" height="15px" width="15px"></img>
+                <img src="/comment.svg" alt="" height="15px" width="15px"></img>
                 <small>1526</small>
-                <img src="/heart.svg" height="15px" width="15px"></img>
+                <img src="/heart.svg" alt="" height="15px" width="15px"></img>
                 <small>99.1k</small>
               </p>
 
@@ -123,6 +131,7 @@ const PostPage = (props) => {
                     <div className="post-page_animated-background">
                       <img
                         src={images[index]}
+                        alt=""
                         className="post-page_image"
                         onClick={() => handleShow(index)}
                       ></img>
@@ -152,6 +161,7 @@ const PostPage = (props) => {
                       <div className="post-page_animated-background">
                         <img
                           src={imageUrl}
+                          alt=""
                           className="post-page_modal-images"
                         ></img>
                       </div>
