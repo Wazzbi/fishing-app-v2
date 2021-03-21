@@ -299,6 +299,11 @@ const NewsPage = ({ history }) => {
         className="news-page_float-btn"
         onClick={handleShow}
         disabled={!uploadPostDone}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
       >
         {uploadPostDone ? (
           <img src="/plus.svg" width="30px" height="30px"></img>
@@ -308,6 +313,7 @@ const NewsPage = ({ history }) => {
             animation="border"
             role="status"
             aria-hidden="true"
+            style={{ width: "30px", height: "30px" }}
           />
         )}
       </Button>
@@ -337,8 +343,16 @@ const NewsPage = ({ history }) => {
                 uploadImages.length === 0 ||
                 uploadImages.some((i) => Object.entries(i).length === 0)
               }
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "30px",
+                height: "30px",
+                marginBottom: "10px",
+              }}
             >
-              +
+              <img src="/plus.svg" width="15px" height="15px"></img>
             </Button>
 
             <Form.Group>
