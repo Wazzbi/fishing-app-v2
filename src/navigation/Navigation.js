@@ -36,8 +36,8 @@ const Navigation = () => {
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="ml-auto">
-                <Nav.Link as={Link} to={"/weather"} onClick={closeNav}>
-                  Weather
+                <Nav.Link as={Link} to={"/home"} onClick={closeNav}>
+                  Home
                 </Nav.Link>
                 <Nav.Link as={Link} to={"/news"} onClick={closeNav}>
                   News
@@ -48,11 +48,14 @@ const Navigation = () => {
                 <Nav.Link as={Link} to={"/summary"} onClick={closeNav}>
                   Summary
                 </Nav.Link>
-                <Nav.Link as={Link} to={"/home"} onClick={closeNav}>
-                  Home
+                <Nav.Link as={Link} to={"/weather"} onClick={closeNav}>
+                  Weather
                 </Nav.Link>
                 <Nav.Link as={Link} to={"/user"} onClick={closeNav}>
                   User
+                </Nav.Link>
+                <Nav.Link as={Link} to={"/settings"} onClick={closeNav}>
+                  Settings
                 </Nav.Link>
               </Nav>
 

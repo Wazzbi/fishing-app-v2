@@ -13,6 +13,7 @@ import SummaryPage from "./pages/summaryPage/SummaryPage";
 import NewsPage from "./pages/newsPage/NewsPage";
 import UserPage from "./pages/userPage/UserPage";
 import WeatherPage from "./pages/weatherPage/WeatherPage";
+import SettingPage from "./pages/settingPage/SettingPage";
 import PostPage from "./pages/postPage/PostPage";
 import Store from "./store/Store";
 
@@ -36,6 +37,7 @@ const App = () => {
             <PrivateRoute exact path="/post/:id" component={PostPage} />
             <PrivateRoute exact path="/user" component={UserPage} />
             <PrivateRoute exact path="/weather" component={WeatherPage} />
+            <PrivateRoute exact path="/settings" component={SettingPage} />
             <Redirect from="*" to="/" />
           </Store>
         </div>
