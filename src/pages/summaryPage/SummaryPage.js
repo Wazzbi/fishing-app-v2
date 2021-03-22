@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useContext, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useContext,
+  useCallback,
+  useRef,
+} from "react";
 import firebaseService from "../../services/firebase/firebase.service";
 import { AuthContext } from "../../Auth";
 import "./summaryPage.scss";
@@ -32,6 +38,8 @@ const SummaryPage = () => {
   const [recordsTogether, setRecordsTogether] = useState(null);
   const [loading, setLoading] = useState(false);
   const [storeState, dispatch] = useContext(StoreContext);
+
+  const isMountedRef = useRef(true);
 
   const prepareData = useCallback(
     (records, summaries) => {
@@ -119,10 +127,13 @@ const SummaryPage = () => {
                   },
                 },
               };
-              return setRecordsTogether({
-                ...recordsTogether,
-                ...finalData,
-              });
+              if (isMountedRef.current) {
+                setRecordsTogether({
+                  ...recordsTogether,
+                  ...finalData,
+                });
+              }
+              return null;
             });
           } else {
             // setovat k summary prázdný pole records pokud nejsou data
@@ -138,15 +149,17 @@ const SummaryPage = () => {
 
   const handleCloseModalAddSummary = () => setShowModalAddSummary(false);
   const handleShowModalChangeSummary = (summaryUid) => {
-    setSelectedSummary(summaryUid);
-    setSelectedRecords(
-      storeState.summaries &&
-        storeState.summaries[summaryUid] &&
-        storeState.summaries[summaryUid].records
-        ? storeState.summaries[summaryUid].records
-        : []
-    );
-    setShowModalAddSummary(true);
+    if (isMountedRef.current) {
+      setSelectedSummary(summaryUid);
+      setSelectedRecords(
+        storeState.summaries &&
+          storeState.summaries[summaryUid] &&
+          storeState.summaries[summaryUid].records
+          ? storeState.summaries[summaryUid].records
+          : []
+      );
+      setShowModalAddSummary(true);
+    }
   };
 
   const updateData = useCallback(() => {
@@ -158,8 +171,10 @@ const SummaryPage = () => {
       reject(new Error("Nemohu načíst záznamy uživatele"));
     })
       .then((records) => {
-        updateRecords = records;
-        dispatch({ type: "ADD_RECORDS", payload: { ...records } });
+        if (isMountedRef.current) {
+          updateRecords = records;
+          dispatch({ type: "ADD_RECORDS", payload: { ...records } });
+        }
       })
       .then(() => {
         new Promise((resolve, reject) => {
@@ -169,28 +184,38 @@ const SummaryPage = () => {
           reject(new Error("Nemohu načíst souhrny uživatele"));
         })
           .then((summaries) => {
-            updateSummaries = summaries;
-            dispatch({ type: "ADD_SUMMARIES", payload: { ...summaries } });
+            if (isMountedRef.current) {
+              updateSummaries = summaries;
+              dispatch({ type: "ADD_SUMMARIES", payload: { ...summaries } });
+            }
           })
           .then(() => {
-            setLoading(false);
-            prepareData(updateRecords, updateSummaries);
+            if (isMountedRef.current) {
+              setLoading(false);
+              prepareData(updateRecords, updateSummaries);
+            }
           });
       });
   }, [currentUser, dispatch, prepareData]);
 
   const handleSubmitChange = () => {
     handleChangeRecords(currentUser.uid, selectedSummary, selectedRecords);
-    setSelectedRecords([]);
+
     handleCloseModalAddSummary();
+
+    if (isMountedRef.current) {
+      setSelectedRecords([]);
+    }
   };
 
   const changeRecordInSummary = (recordId) => {
-    setSelectedRecords((oldArray) =>
-      oldArray.includes(recordId)
-        ? oldArray.filter((el) => el !== recordId)
-        : [...oldArray, recordId]
-    );
+    if (isMountedRef.current) {
+      setSelectedRecords((oldArray) =>
+        oldArray.includes(recordId)
+          ? oldArray.filter((el) => el !== recordId)
+          : [...oldArray, recordId]
+      );
+    }
   };
 
   const doCreateSummaryAndRefresh = () => {
@@ -201,41 +226,51 @@ const SummaryPage = () => {
       reject(new Error("Currently unavaiable create summary"));
     })
       .then(() => {
-        dispatch({ type: "ADD_SUMMARY", payload: { id } });
+        if (isMountedRef.current) {
+          dispatch({ type: "ADD_SUMMARY", payload: { id } });
+        }
       })
-      .catch(alert);
+      .catch((err) => {
+        if (isMountedRef.current) {
+          alert(err);
+        }
+      });
   };
 
   const handleChangeSummaryName = (userUid, summaryUid, newSummaryName) => {
-    const updatedSummary = {
-      ...storeState.summaries[summaryUid],
-      name: newSummaryName,
-    };
-    dispatch({
-      type: "EDIT_SUMMARY",
-      payload: { summaryUid, updatedSummary },
-    });
-    firebaseService.setUserSummary(userUid, summaryUid, updatedSummary);
+    if (isMountedRef.current) {
+      const updatedSummary = {
+        ...storeState.summaries[summaryUid],
+        name: newSummaryName,
+      };
+      dispatch({
+        type: "EDIT_SUMMARY",
+        payload: { summaryUid, updatedSummary },
+      });
+      firebaseService.setUserSummary(userUid, summaryUid, updatedSummary);
+    }
   };
 
   const handleChangeRecords = (userUid, summaryUid, changeRecords) => {
-    const updatedSummary = {
-      ...storeState.summaries[summaryUid],
-      records: [...changeRecords],
-    };
-
-    prepareData(storeState.records, {
-      ...storeState.summaries,
-      [summaryUid]: {
+    if (isMountedRef.current) {
+      const updatedSummary = {
         ...storeState.summaries[summaryUid],
         records: [...changeRecords],
-      },
-    });
-    dispatch({
-      type: "EDIT_SUMMARY",
-      payload: { summaryUid, updatedSummary },
-    });
-    firebaseService.setUserSummary(userUid, summaryUid, updatedSummary);
+      };
+
+      prepareData(storeState.records, {
+        ...storeState.summaries,
+        [summaryUid]: {
+          ...storeState.summaries[summaryUid],
+          records: [...changeRecords],
+        },
+      });
+      dispatch({
+        type: "EDIT_SUMMARY",
+        payload: { summaryUid, updatedSummary },
+      });
+      firebaseService.setUserSummary(userUid, summaryUid, updatedSummary);
+    }
   };
 
   const editSummaryName = (key) => {
@@ -244,25 +279,31 @@ const SummaryPage = () => {
   };
 
   const handleDelete = (params) => {
-    const text = "Chcete opravdu smazat tento Souhrn ?";
-    handleDeleteShow();
-    setOnDelete({
-      params,
-      text,
-    });
+    if (isMountedRef.current) {
+      const text = "Chcete opravdu smazat tento Souhrn ?";
+      handleDeleteShow();
+      setOnDelete({
+        params,
+        text,
+      });
+    }
   };
   const handleCloseAndDelete = () => {
-    setShowModalDelete(false);
-    doDelete();
+    if (isMountedRef.current) {
+      setShowModalDelete(false);
+      doDelete();
+    }
   };
   const handleDeleteClose = () => setShowModalDelete(false);
   const handleDeleteShow = () => setShowModalDelete(true);
 
   const doDelete = () => {
-    const { summaryUid } = onDelete.params;
+    if (isMountedRef.current) {
+      const { summaryUid } = onDelete.params;
 
-    firebaseService.deleteUserSummary(currentUser.uid, summaryUid);
-    dispatch({ type: "DELETE_SUMMARY", payload: { summaryUid } });
+      firebaseService.deleteUserSummary(currentUser.uid, summaryUid);
+      dispatch({ type: "DELETE_SUMMARY", payload: { summaryUid } });
+    }
   };
 
   const isChecked = (recordKey) => {
@@ -279,6 +320,7 @@ const SummaryPage = () => {
   };
 
   useEffect(() => {
+    isMountedRef.current = true;
     localStorage.setItem("lastLocation", "/summary");
 
     if (!storeState.summaries || !storeState.records) {
@@ -286,6 +328,8 @@ const SummaryPage = () => {
     } else {
       prepareData(storeState.records, storeState.summaries);
     }
+
+    return () => (isMountedRef.current = false);
   }, [prepareData, storeState.records, storeState.summaries, updateData]);
 
   return (

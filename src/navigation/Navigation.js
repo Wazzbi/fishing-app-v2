@@ -17,6 +17,11 @@ const Navigation = () => {
     setNavExpanded(false);
   };
 
+  const signOut = () =>
+    firebaseService
+      .auth()
+      .signOut()
+      .then(() => closeNav());
   // TODO místo user -> zobrazit jméno zkráceně
 
   const AppNavbar = () => {
@@ -59,10 +64,7 @@ const Navigation = () => {
                 </Nav.Link>
               </Nav>
 
-              <Button
-                variant="outline-light"
-                onClick={() => firebaseService.auth().signOut()}
-              >
+              <Button variant="outline-light" onClick={signOut}>
                 Sign out
               </Button>
             </Navbar.Collapse>

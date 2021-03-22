@@ -27,6 +27,7 @@ import Spinner from "react-bootstrap/Spinner";
 // TODO vytvořit 'moje zeď' s příspěvky kde budu mít odebírat
 // TODO možnost dávat si příspěvky do oblíbených
 // !! nezapomenout na LazyLoad componentu <LazyLoadImage/> umí i lazyload component
+// TODO přiadt tlačítko na refresh postů (scroll to top + init())
 
 const NewsPage = ({ history }) => {
   const { currentUserData } = useContext(AuthContext);
@@ -40,77 +41,92 @@ const NewsPage = ({ history }) => {
 
   const editor = useRef(null);
 
+  const isMountedRef = useRef(true);
+
   const handleClose = () => {
-    setUploadImages([]);
-    setShow(false);
-    setInputImageFieldCounter(1);
+    if (isMountedRef.current) {
+      setUploadImages([]);
+      setShow(false);
+      setInputImageFieldCounter(1);
+    }
   };
   const handleShow = () => setShow(true);
 
   const handleSubmit = (event) => {
-    handleClose();
-    setInputImageFieldCounter(1);
-    setUploadPostDone(false);
-    event.preventDefault();
-    const { title, category } = event.target.elements;
-    const usrname = currentUserData && currentUserData.username;
-    const usrId = currentUserData && currentUserData.id;
+    if (isMountedRef.current) {
+      handleClose();
+      setInputImageFieldCounter(1);
+      setUploadPostDone(false);
+      event.preventDefault();
+      const { title, category } = event.target.elements;
+      const usrname = currentUserData && currentUserData.username;
+      const usrId = currentUserData && currentUserData.id;
 
-    const postId = Date.now();
-    let currentdate = new Date();
-    let datetime =
-      currentdate.getDate() +
-      "." +
-      (currentdate.getMonth() + 1) +
-      "." +
-      currentdate.getFullYear() +
-      " " +
-      currentdate.getHours() +
-      ":" +
-      currentdate.getMinutes() +
-      ":" +
-      currentdate.getSeconds();
+      const postId = Date.now();
+      let currentdate = new Date();
+      let datetime =
+        currentdate.getDate() +
+        "." +
+        (currentdate.getMonth() + 1) +
+        "." +
+        currentdate.getFullYear() +
+        " " +
+        currentdate.getHours() +
+        ":" +
+        currentdate.getMinutes() +
+        ":" +
+        currentdate.getSeconds();
 
-    const created = datetime;
+      const created = datetime;
 
-    // TODO filtrování na med nechtěl object.entries fungovat...
-    const imageArray = uploadImages.filter((e) => !!e.med);
-    const imageArrayMetaData = imageArray.map((t) => {
-      return {
-        imageName: t.med.name,
-        imageType: t.med.type,
-      };
-    });
+      // TODO filtrování na med nechtěl object.entries fungovat...
+      const imageArray = uploadImages.filter((e) => !!e.med);
+      const imageArrayMetaData = imageArray.map((t) => {
+        return {
+          imageName: t.med.name,
+          imageType: t.med.type,
+        };
+      });
 
-    firebaseService
-      .createPost(
-        text,
-        imageArrayMetaData,
-        usrname,
-        created,
-        title.value,
-        usrId,
-        category.value,
-        postId
-      )
-      .then(() =>
-        firebaseService.createImage(imageArray).then(() => {
-          setUploadImages([]);
-          setText(null);
-          setUploadPostDone(true);
-          init();
-          firebaseService.getPostsCount().then((r) => setPostCount(r));
-        })
-      );
+      firebaseService
+        .createPost(
+          text,
+          imageArrayMetaData,
+          usrname,
+          created,
+          title.value,
+          usrId,
+          category.value,
+          postId
+        )
+        .then(() => {
+          firebaseService.createImage(imageArray).then(() => {
+            if (isMountedRef.current) {
+              setUploadImages([]);
+              setText(null);
+              setUploadPostDone(true);
+              init();
+              firebaseService.getPostsCount().then((r) => {
+                if (isMountedRef.current) {
+                  setPostCount(r);
+                }
+              });
+            }
+          });
+        });
+    }
   };
 
   const onEditorChange = (evt) => {
-    setText(evt.srcElement.innerHTML);
+    if (isMountedRef.current) {
+      setText(evt.srcElement.innerHTML);
+    }
   };
 
   // TODO podle id inputu upravovat index v poli uploadedImages
   const handleChangeImage = (e, i) => {
     // TODO nahrávání více fotek (přidat další input)
+
     const f = e.target.files[0];
     const fr = new FileReader();
 
@@ -133,7 +149,9 @@ const NewsPage = ({ history }) => {
           });
           // nahrát fotku na pozici dle indexu input pole
           uploadImages[i] = o;
-          setUploadImages([...uploadImages]);
+          if (isMountedRef.current) {
+            setUploadImages([...uploadImages]);
+          }
         } catch (err) {
           console.error(err);
         }
@@ -143,7 +161,9 @@ const NewsPage = ({ history }) => {
     } else {
       // držet pozici kvůli indexu kdyby uživatel chtěl přehrát fotku
       uploadImages[i] = {};
-      setUploadImages([...uploadImages]);
+      if (isMountedRef.current) {
+        setUploadImages([...uploadImages]);
+      }
     }
   };
 
@@ -164,13 +184,15 @@ const NewsPage = ({ history }) => {
   const init = useCallback(() => {
     let ww = {};
     firebaseService.getPostsInit().once("value", (snapshot) => {
-      snapshot.forEach((childSnapshot) => {
-        ww = { ...ww, [childSnapshot.key]: childSnapshot.val() };
-        dispatch({
-          type: "ADD_POSTS",
-          payload: { ...storeState.posts, ...ww },
+      if (isMountedRef.current) {
+        snapshot.forEach((childSnapshot) => {
+          ww = { ...ww, [childSnapshot.key]: childSnapshot.val() };
+          dispatch({
+            type: "ADD_POSTS",
+            payload: { ...storeState.posts, ...ww },
+          });
         });
-      });
+      }
     });
   }, [dispatch, storeState.posts]);
 
@@ -188,13 +210,15 @@ const NewsPage = ({ history }) => {
       await firebaseService
         .getPostsLimited(lastPostTimeStamp)
         .once("value", (snapshot) => {
-          snapshot.forEach((childSnapshot) => {
-            ww = { ...ww, [childSnapshot.key]: childSnapshot.val() };
-            dispatch({
-              type: "ADD_POSTS",
-              payload: { ...storeState.posts, ...ww },
+          if (isMountedRef.current) {
+            snapshot.forEach((childSnapshot) => {
+              ww = { ...ww, [childSnapshot.key]: childSnapshot.val() };
+              dispatch({
+                type: "ADD_POSTS",
+                payload: { ...storeState.posts, ...ww },
+              });
             });
-          });
+          }
         });
     };
 
@@ -278,12 +302,19 @@ const NewsPage = ({ history }) => {
   };
 
   useEffect(() => {
+    isMountedRef.current = true;
     localStorage.setItem("lastLocation", "/news");
-    firebaseService.getPostsCount().then((r) => setPostCount(r));
+
+    firebaseService.getPostsCount().then((r) => {
+      if (isMountedRef.current) {
+        setPostCount(r);
+      }
+    });
 
     if (!storeState.posts) {
       init();
     }
+    return () => (isMountedRef.current = false);
   }, [init, storeState.posts]);
 
   return (

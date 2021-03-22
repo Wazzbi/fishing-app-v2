@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useContext, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useContext,
+  useCallback,
+  useRef,
+} from "react";
 import firebaseService from "../../services/firebase/firebase.service";
 import validatorService from "../../services/validators/validator.service";
 import autocompleterService from "../../services/utils/autocompleter.service";
@@ -25,7 +31,7 @@ import Spinner from "react-bootstrap/Spinner";
 // TODO vyřešit vykřičkníky v poli actions když chybí nějaké data
 // TODO když se vrátím zpět tak na nascrollovanou pozici (posty do reduxu)
 // TODO loading spiner než se načtou posty
-// TODO !! datově náročný - předělat aby se nově udělaná tabulka nemusela stahovat -> redux + zněma ukládání do DB https://stackoverflow.com/questions/37483406/setting-custom-key-when-pushing-new-data-to-firebase-database
+// TODO dát ikonku u remane odemčený / zamčený zámek
 // !! řazení je ve stylech od nejnovějšího k nejstaršího
 
 const RecordPage = () => {
@@ -39,10 +45,14 @@ const RecordPage = () => {
   const [loading, setLoading] = useState(false);
   const [storeState, dispatch] = useContext(StoreContext);
 
+  const isMountedRef = useRef(true);
+
   const todayDate = () => {
     const today = new Date();
     const todayISO = today.toISOString().substr(0, 10);
-    setToday(todayISO);
+    if (isMountedRef.current) {
+      setToday(todayISO);
+    }
   };
 
   // validace je dvojená v handleChangeRecord
@@ -83,23 +93,26 @@ const RecordPage = () => {
 
   const doDelete = () => {
     if (onDelete.element === "record") {
-      const { recordUid } = onDelete.params;
-      dispatch({ type: "DELETE_RECORD", payload: { recordUid } });
-      firebaseService.deleteUserRecord(currentUser.uid, recordUid);
+      if (isMountedRef.current) {
+        const { recordUid } = onDelete.params;
+        dispatch({ type: "DELETE_RECORD", payload: { recordUid } });
+        firebaseService.deleteUserRecord(currentUser.uid, recordUid);
+      }
     }
     if (onDelete.element === "row") {
-      const { recordUid, recordRowUid } = onDelete.params;
-      dispatch({
-        type: "DELETE_RECORD_ROW",
-        payload: { recordUid, recordRowUid },
-      });
-      firebaseService.deleteUserRecordRow(
-        currentUser.uid,
-        recordUid,
-        recordRowUid
-      );
+      if (isMountedRef.current) {
+        const { recordUid, recordRowUid } = onDelete.params;
+        dispatch({
+          type: "DELETE_RECORD_ROW",
+          payload: { recordUid, recordRowUid },
+        });
+        firebaseService.deleteUserRecordRow(
+          currentUser.uid,
+          recordUid,
+          recordRowUid
+        );
+      }
     }
-    // updateData();
   };
 
   const doCreateRecordAndRefresh = () => {
@@ -109,9 +122,15 @@ const RecordPage = () => {
       reject(new Error("Currently unavaiable create record"));
     })
       .then(() => {
-        dispatch({ type: "ADD_RECORD", payload: { id } });
+        if (isMountedRef.current) {
+          dispatch({ type: "ADD_RECORD", payload: { id } });
+        }
       })
-      .catch(alert);
+      .catch((err) => {
+        if (isMountedRef) {
+          alert(err);
+        }
+      });
   };
 
   const handleChangeRecordName = (userUid, recordUid, newRecordName) => {
@@ -120,15 +139,20 @@ const RecordPage = () => {
       name: newRecordName,
     };
 
-    dispatch({
-      type: "EDIT_RECORD_NAME",
-      payload: { recordUid, updatedRecord },
-    });
-    firebaseService.setUserRecord(userUid, recordUid, updatedRecord);
+    if (isMountedRef.current) {
+      dispatch({
+        type: "EDIT_RECORD_NAME",
+        payload: { recordUid, updatedRecord },
+      });
+      firebaseService.setUserRecord(userUid, recordUid, updatedRecord);
+    }
   };
 
   const editRow = (recordUid, rowUid, rowValue) => {
-    setEditRowData({ recordUid, rowUid, rowValue });
+    if (isMountedRef.current) {
+      setEditRowData({ recordUid, rowUid, rowValue });
+    }
+
     handleAddShow();
   };
 
@@ -165,18 +189,20 @@ const RecordPage = () => {
       },
     };
 
-    dispatch({
-      type: "EDIT_RECORD_ROW",
-      payload: { recordUid: editRowData.recordUid, updatedRecord },
-    });
+    if (isMountedRef.current) {
+      dispatch({
+        type: "EDIT_RECORD_ROW",
+        payload: { recordUid: editRowData.recordUid, updatedRecord },
+      });
 
-    firebaseService.setUserRecord(
-      currentUser.uid,
-      editRowData.recordUid,
-      updatedRecord
-    );
+      firebaseService.setUserRecord(
+        currentUser.uid,
+        editRowData.recordUid,
+        updatedRecord
+      );
 
-    setEditRowData(null);
+      setEditRowData(null);
+    }
   };
 
   const editRecordName = (key) => {
@@ -185,23 +211,33 @@ const RecordPage = () => {
   };
 
   const addRowAndRefresh = (recordUid, props) => {
-    const rowId = Date.now();
-    firebaseService.createUserRecordRow(
-      currentUser.uid,
-      recordUid,
-      props,
-      rowId
-    );
-    dispatch({ type: "ADD_RECORD_ROW", payload: { recordUid, rowId, props } });
+    if (isMountedRef.current) {
+      const rowId = Date.now();
+      firebaseService.createUserRecordRow(
+        currentUser.uid,
+        recordUid,
+        props,
+        rowId
+      );
+      dispatch({
+        type: "ADD_RECORD_ROW",
+        payload: { recordUid, rowId, props },
+      });
+    }
   };
 
   const updateData = useCallback(() => {
-    setLoading(true);
+    if (isMountedRef.current) {
+      setLoading(true);
+    }
+
     firebaseService
       .getUserRecords(currentUser && currentUser.uid)
       .then((records) => {
-        dispatch({ type: "ADD_RECORDS", payload: { ...records } });
-        setLoading(false);
+        if (isMountedRef.current) {
+          dispatch({ type: "ADD_RECORDS", payload: { ...records } });
+          setLoading(false);
+        }
       });
   }, [currentUser, dispatch]);
 
@@ -217,15 +253,19 @@ const RecordPage = () => {
         ? "Chcete opravdu smazat celý záznam?"
         : "Chcete opravdu smazat tento řádek?";
     handleDeleteShow();
-    setOnDelete({
-      element,
-      params,
-      text,
-    });
+    if (isMountedRef.current) {
+      setOnDelete({
+        element,
+        params,
+        text,
+      });
+    }
   };
 
   const handleSubmitAdd = async (event) => {
-    setEditRowData(null);
+    if (isMountedRef.current) {
+      setEditRowData(null);
+    }
 
     handleAddClose();
 
@@ -253,24 +293,31 @@ const RecordPage = () => {
   };
 
   const handleAddClose = () => {
-    setEditRowData(null);
-    setShowModalAdd(false);
+    if (isMountedRef.current) {
+      setEditRowData(null);
+      setShowModalAdd(false);
+    }
   };
 
   const handleAddShow = () => setShowModalAdd(true);
 
   const handleAdd = (recordKey) => {
     handleAddShow();
-    setOnAdd(recordKey);
+    if (isMountedRef.current) {
+      setOnAdd(recordKey);
+    }
   };
 
   useEffect(() => {
+    isMountedRef.current = true;
     localStorage.setItem("lastLocation", "/record");
     todayDate();
 
     if (!storeState.records) {
       updateData();
     }
+
+    return () => (isMountedRef.current = false);
   }, [storeState.records, updateData]);
 
   return (
