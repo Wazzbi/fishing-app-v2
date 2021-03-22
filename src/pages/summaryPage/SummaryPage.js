@@ -202,13 +202,6 @@ const SummaryPage = () => {
     })
       .then(() => {
         dispatch({ type: "ADD_SUMMARY", payload: { id } });
-        // firebaseService
-        //   .getUserSummaries(currentUser && currentUser.uid)
-        //   .then((freshSummaries) =>
-        //     freshSummaries
-        //       ? setSummaries(freshSummaries)
-        //       : (setSummaries(null), setNoSummaryYet(true))
-        //   );
       })
       .catch(alert);
   };

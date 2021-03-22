@@ -128,7 +128,10 @@ const PostPage = (props) => {
               {!!post.images && (
                 <div className="post-page_images-container">
                   {post.images.map((image, index) => (
-                    <div className="post-page_animated-background">
+                    <div
+                      key={`image-${index}`}
+                      className="post-page_animated-background"
+                    >
                       <img
                         src={images[index]}
                         alt=""
@@ -156,8 +159,8 @@ const PostPage = (props) => {
                   controls={imagesLarge.length > 1 ? true : false}
                   defaultActiveIndex={activeImageCarousel}
                 >
-                  {imagesLarge.map((imageUrl) => (
-                    <Carousel.Item>
+                  {imagesLarge.map((imageUrl, index) => (
+                    <Carousel.Item key={`carousel-item-${index}`}>
                       <div className="post-page_animated-background">
                         <img
                           src={imageUrl}

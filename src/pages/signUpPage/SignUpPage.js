@@ -98,7 +98,7 @@ const SignUpPage = ({ history }) => {
             <Form.Control
               type="password"
               placeholder="Password"
-              minlength="8"
+              minLength="8"
               name="password"
               required
             />
