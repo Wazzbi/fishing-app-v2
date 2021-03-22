@@ -9,6 +9,7 @@ import firebaseService from "../../services/firebase/firebase.service";
 import { AuthContext } from "../../Auth";
 import "./summaryPage.scss";
 import { StoreContext } from "../../store/Store";
+import { fishKind } from "../../constants";
 
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
@@ -19,6 +20,8 @@ import FormControl from "react-bootstrap/FormControl";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import Dropdown from "react-bootstrap/Dropdown";
 import Spinner from "react-bootstrap/Spinner";
+import Tooltip from "react-bootstrap/Tooltip";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 
 // TODO zobrazovat seznam summary
 // TODO poslat vybraný summary do mailu
@@ -40,6 +43,10 @@ const SummaryPage = () => {
   const [storeState, dispatch] = useContext(StoreContext);
 
   const isMountedRef = useRef(true);
+
+  const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
 
   const prepareData = useCallback(
     (records, summaries) => {
@@ -118,7 +125,11 @@ const SummaryPage = () => {
                     ],
                     fishes: {
                       ...previousFishes,
-                      [row.kind.toLowerCase() || "none"]: {
+                      [fishKind.some(
+                        (f) => f === capitalizeFirstLetter(row.kind)
+                      )
+                        ? row.kind.toLowerCase()
+                        : "ostatní"]: {
                         ...previousKind,
                         pieces: (previousPieces || 0) + +row.pieces,
                         kilograms: (previousKilograms || 0) + +row.kilograms,
@@ -404,20 +415,22 @@ const SummaryPage = () => {
                     <tr>
                       <th colSpan="2">Revír</th>
                       <th rowSpan="2">Číslo podrevíru</th>
-                      <th colSpan="2">1 Kapr</th>
-                      <th colSpan="2">2 Okoun</th>
-                      <th colSpan="2">3 Candát</th>
+                      {fishKind.map((fish, index) => (
+                        <th colSpan="2" key={`fish-kind-${index}`}>{`${
+                          index + 1
+                        } ${fish}`}</th>
+                      ))}
                       <th rowSpan="2">Počet docházek</th>
                     </tr>
                     <tr>
                       <th>Číslo</th>
                       <th>Název</th>
-                      <th>Ks</th>
-                      <th>Kg</th>
-                      <th>Ks</th>
-                      <th>Kg</th>
-                      <th>Ks</th>
-                      <th>Kg</th>
+                      {fishKind.map((f, index) => {
+                        return [
+                          <th key={`fish-ks-${index}`}>Ks</th>,
+                          <th key={`fish-kg-${index}`}>Kg</th>,
+                        ];
+                      })}
                     </tr>
                   </thead>
                   <tbody>
@@ -428,20 +441,38 @@ const SummaryPage = () => {
                           <tr key={rowDataKey}>
                             <td>
                               {rowDataValue.districtNumber}{" "}
-                              <span
-                                title="chybějící povinná data: druh ryby, váha nebo počet kusů"
-                                style={{
-                                  color: "red",
-                                  fontWeight: "bold",
-                                  cursor: "pointer",
-                                }}
-                              >
-                                {rowDataValue.alertMissingData.some(
-                                  (a) => a === true
-                                )
-                                  ? "(!)"
-                                  : ""}
-                              </span>
+                              {rowDataValue.alertMissingData.some(
+                                (a) => a === true
+                              ) ? (
+                                <OverlayTrigger
+                                  trigger="click"
+                                  placement="right"
+                                  overlay={
+                                    <Tooltip id="tooltip-disabled">
+                                      chybějící povinná data: druh ryby, váha
+                                      nebo počet kusů
+                                    </Tooltip>
+                                  }
+                                >
+                                  <span className="d-inline-block">
+                                    <Button
+                                      variant="danger"
+                                      size="sm"
+                                      className="record-page_row-btn"
+                                      style={{ pointerEvents: "none" }}
+                                    >
+                                      <img
+                                        src="/exclamation.svg"
+                                        alt="exclamation"
+                                        width="15px"
+                                        height="15px"
+                                      ></img>
+                                    </Button>
+                                  </span>
+                                </OverlayTrigger>
+                              ) : (
+                                ""
+                              )}
                             </td>
                             <td> </td>
                             <td>
@@ -449,54 +480,30 @@ const SummaryPage = () => {
                                 ? rowDataValue.subdistrictNumber
                                 : "-"}
                             </td>
-                            <td>
-                              {rowDataValue &&
-                              rowDataValue.fishes &&
-                              rowDataValue.fishes.kapr &&
-                              rowDataValue.fishes.kapr.pieces
-                                ? rowDataValue.fishes.kapr.pieces
-                                : "-"}
-                            </td>
-                            <td>
-                              {rowDataValue &&
-                              rowDataValue.fishes &&
-                              rowDataValue.fishes.kapr &&
-                              rowDataValue.fishes.kapr.kilograms
-                                ? rowDataValue.fishes.kapr.kilograms
-                                : "-"}
-                            </td>
-                            <td>
-                              {rowDataValue &&
-                              rowDataValue.fishes &&
-                              rowDataValue.fishes.okoun &&
-                              rowDataValue.fishes.okoun.pieces
-                                ? rowDataValue.fishes.okoun.pieces
-                                : "-"}
-                            </td>
-                            <td>
-                              {rowDataValue &&
-                              rowDataValue.fishes &&
-                              rowDataValue.fishes.okoun &&
-                              rowDataValue.fishes.okoun.kilograms
-                                ? rowDataValue.fishes.okoun.kilograms
-                                : "-"}
-                            </td>
-                            <td>
-                              {rowDataValue &&
-                              rowDataValue.fishes &&
-                              rowDataValue.fishes.candat &&
-                              rowDataValue.fishes.candat.pieces
-                                ? rowDataValue.fishes.candat.pieces
-                                : "-"}
-                            </td>
-                            <td>
-                              {rowDataValue &&
-                              rowDataValue.fishes &&
-                              rowDataValue.fishes.candat &&
-                              rowDataValue.fishes.candat.kilograms
-                                ? rowDataValue.fishes.candat.kilograms
-                                : "-"}
-                            </td>
+                            {fishKind.map((fish, index) => {
+                              return [
+                                <td key={`fish-td-1-${index}`}>
+                                  {rowDataValue &&
+                                  rowDataValue.fishes &&
+                                  rowDataValue.fishes[fish.toLowerCase()] &&
+                                  rowDataValue.fishes[fish.toLowerCase()].pieces
+                                    ? rowDataValue.fishes[fish.toLowerCase()]
+                                        .pieces
+                                    : "-"}
+                                </td>,
+                                <td key={`fish-td-2-${index}`}>
+                                  {rowDataValue &&
+                                  rowDataValue.fishes &&
+                                  rowDataValue.fishes[fish.toLowerCase()] &&
+                                  rowDataValue.fishes[fish.toLowerCase()]
+                                    .kilograms
+                                    ? rowDataValue.fishes[fish.toLowerCase()]
+                                        .kilograms
+                                    : "-"}
+                                </td>,
+                              ];
+                            })}
+
                             <td>{rowDataValue.visited}</td>
                           </tr>
                         )

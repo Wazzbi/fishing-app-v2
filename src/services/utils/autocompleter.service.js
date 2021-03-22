@@ -1,18 +1,19 @@
 import autocomplete from "autocompleter";
+import { fishKind } from "../../constants";
 
 class autocompleterService {
   static do = (elementId) => {
-    // TODO vyvést toto do nějakého souboru constant toto pole je ještě v RecordPage
-    var fishes = [{ label: "Kapr" }, { label: "Okoun" }, { label: "Candát" }];
+    let fishes = [];
+    fishKind.forEach((f) => fishes.push({ label: f }));
 
-    var input = document.getElementById(elementId);
+    let input = document.getElementById(elementId);
 
     autocomplete({
       input: input,
       fetch: function (text, update) {
         text = text.toLowerCase();
         // you can also use AJAX requests instead of preloaded data
-        var suggestions = fishes.filter((n) =>
+        let suggestions = fishes.filter((n) =>
           n.label.toLowerCase().startsWith(text)
         );
         update(suggestions);

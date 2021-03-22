@@ -21,6 +21,10 @@ import FormControl from "react-bootstrap/FormControl";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import Dropdown from "react-bootstrap/Dropdown";
 import Spinner from "react-bootstrap/Spinner";
+import Tooltip from "react-bootstrap/Tooltip";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+
+import { fishKind } from "../../constants";
 
 // TODO funkce zabalit do usecallback
 // TODO init download jen seznam záznamů (např jen prvních 5) a po rozkliknutí donačíst data
@@ -440,30 +444,63 @@ const RecordPage = () => {
                               {!!!value.kind ||
                               !!!value.pieces ||
                               !!!value.kilograms ? (
-                                <span
-                                  title="chybějící povinná data: druh ryby, váha nebo počet kusů"
-                                  style={{
-                                    color: "red",
-                                    fontWeight: "bold",
-                                    cursor: "pointer",
-                                  }}
+                                <OverlayTrigger
+                                  trigger="click"
+                                  placement="right"
+                                  overlay={
+                                    <Tooltip id="tooltip-disabled">
+                                      Chybějící povinná data: druh ryby, váha
+                                      nebo počet kusů
+                                    </Tooltip>
+                                  }
                                 >
-                                  (!)
-                                </span>
+                                  <span className="d-inline-block">
+                                    <Button
+                                      variant="danger"
+                                      size="sm"
+                                      className="record-page_row-btn"
+                                      style={{ pointerEvents: "none" }}
+                                    >
+                                      <img
+                                        src="/exclamation.svg"
+                                        alt="exclamation"
+                                        width="15px"
+                                        height="15px"
+                                      ></img>
+                                    </Button>
+                                  </span>
+                                </OverlayTrigger>
                               ) : (
                                 ""
                               )}
-                              {!!!value.centimeters ? (
-                                <span
-                                  title="chybějící data: centimetry"
-                                  style={{
-                                    color: "blue",
-                                    fontWeight: "bold",
-                                    cursor: "pointer",
-                                  }}
+                              {!!!value.centimeters ||
+                              !fishKind.some((f) => f === value.kind) ? (
+                                <OverlayTrigger
+                                  trigger="click"
+                                  placement="right"
+                                  overlay={
+                                    <Tooltip id="tooltip-disabled">
+                                      Chybějící data: centimetry. Nebo tento
+                                      druh spadá do kategorie Ostatní
+                                    </Tooltip>
+                                  }
                                 >
-                                  (!)
-                                </span>
+                                  <span className="d-inline-block">
+                                    <Button
+                                      variant="info"
+                                      size="sm"
+                                      className="record-page_row-btn"
+                                      style={{ pointerEvents: "none" }}
+                                    >
+                                      <img
+                                        src="/exclamation.svg"
+                                        alt="exclamation"
+                                        width="15px"
+                                        height="15px"
+                                      ></img>
+                                    </Button>
+                                  </span>
+                                </OverlayTrigger>
                               ) : (
                                 ""
                               )}

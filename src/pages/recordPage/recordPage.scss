@@ -41,4 +41,15 @@
 // autocomplete potřeboval dostat nahoru aby byl vydět
 .autocomplete {
   z-index: 10000;
+  background-color: white;
+  border: 1px solid gray;
+  border-radius: 5px;
+
+  div {
+    &:hover {
+      background-color: rgb(213, 255, 255);
+      cursor: default;
+      font-weight: 500;
+    }
+  }
 }
