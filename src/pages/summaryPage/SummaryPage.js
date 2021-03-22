@@ -439,7 +439,7 @@ const SummaryPage = () => {
                       Object.entries(recordsTogether[summaryKey]).map(
                         ([rowDataKey, rowDataValue]) => (
                           <tr key={rowDataKey}>
-                            <td>
+                            <td className="summary-page_number-a-action">
                               {rowDataValue.districtNumber}{" "}
                               {rowDataValue.alertMissingData.some(
                                 (a) => a === true
@@ -458,7 +458,7 @@ const SummaryPage = () => {
                                     <Button
                                       variant="danger"
                                       size="sm"
-                                      className="record-page_row-btn"
+                                      className="summary-page_row-btn"
                                       style={{ pointerEvents: "none" }}
                                     >
                                       <img

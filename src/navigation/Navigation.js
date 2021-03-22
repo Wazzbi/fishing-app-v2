@@ -36,7 +36,7 @@ const Navigation = () => {
             expanded={navExpanded}
           >
             <Navbar.Brand as={Link} to={"/home"}>
-              React-Bootstrap
+              Fish-App
             </Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">

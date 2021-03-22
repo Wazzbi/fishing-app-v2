@@ -407,7 +407,7 @@ const RecordPage = () => {
                       Object.entries(storeState.records[recordKey].data).map(
                         ([rowKey, value]) => (
                           <tr key={rowKey}>
-                            <td>
+                            <td className="record-page_action-btns">
                               <Button
                                 variant="primary"
                                 size="sm"

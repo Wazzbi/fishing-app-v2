@@ -1,0 +1,42 @@
+.home-page_main {
+  max-width: 900px;
+  min-height: calc(100vh - 56px);
+  margin: auto;
+  padding: 0 10px;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  box-shadow: 1px 1px 5px 0px #c1c1c1;
+}
+
+.home-page_main-sections {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.home-page_main-section {
+  flex: 1 1 200px;
+  margin: 5px;
+  text-align: center;
+
+  color: white !important;
+  text-decoration: none !important;
+
+  div {
+    background-color: #007bff;
+    padding: 30px 0;
+    border-radius: 5px;
+    box-shadow: 1px 1px 5px 0px #c1c1c1;
+
+    &:hover {
+      background-color: #0063ce;
+    }
+  }
+}
+
+.home-page_cards {
+  margin: 30px 0;
+  padding: 0 5px;
+}
