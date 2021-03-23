@@ -336,12 +336,21 @@ const SummaryPage = () => {
 
     if (!storeState.summaries || !storeState.records) {
       updateData();
-    } else {
-      prepareData(storeState.records, storeState.summaries);
     }
+    //  else {
+    //   // !! infinite loop -> refactoring needed
+    //   prepareData(storeState.records, storeState.summaries);
+    // }
 
     return () => (isMountedRef.current = false);
-  }, [prepareData, storeState.records, storeState.summaries, updateData]);
+  }, [storeState.records, storeState.summaries, updateData]);
+
+  useEffect(() => {
+    prepareData(storeState.records, storeState.summaries);
+
+    // error v konzoly vede k CPU issue když se přidá dependence na prepareData
+    return prepareData(storeState.records, storeState.summaries);
+  }, [storeState.records, storeState.summaries]);
 
   return (
     <>
