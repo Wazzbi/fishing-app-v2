@@ -387,17 +387,18 @@ const RecordPage = () => {
                   </DropdownButton>
                 </InputGroup>
 
-                <Table responsive bordered hover size="sm">
+                <Table responsive hover size="sm">
                   <thead>
                     <tr>
                       <th>Actions</th>
+                      <th>Notes</th>
                       <th>Date</th>
-                      <th>District Number</th>
-                      <th>Subdistrict Number</th>
+                      <th>District</th>
+                      <th>Subdistrict</th>
                       <th>Kind</th>
-                      <th>Pieces</th>
-                      <th>Kilograms</th>
-                      <th>Centimeters</th>
+                      <th>Ks</th>
+                      <th>Kg</th>
+                      <th>Cm</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -441,6 +442,9 @@ const RecordPage = () => {
                                   height="15px"
                                 ></img>
                               </Button>
+                            </td>
+
+                            <td className="record-page_action-btns">
                               {!!!value.kind ||
                               !!!value.pieces ||
                               !!!value.kilograms ? (
@@ -506,7 +510,7 @@ const RecordPage = () => {
                               )}
                             </td>
 
-                            <td>
+                            <td className="record-page_date">
                               <span
                                 className={`row-${rowKey}`}
                                 id={`row-${rowKey}-date`}
@@ -537,7 +541,7 @@ const RecordPage = () => {
                               </span>
                             </td>
 
-                            <td>
+                            <td className="record-page_kind">
                               <span
                                 className={`row-${rowKey}`}
                                 id={`row-${rowKey}-kind`}

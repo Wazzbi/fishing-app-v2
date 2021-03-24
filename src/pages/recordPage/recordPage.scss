@@ -39,7 +39,16 @@
 }
 
 .record-page_action-btns {
+  width: 100px;
   min-width: 81px;
+}
+
+.record-page_date {
+  min-width: 100px;
+}
+
+.record-page_kind {
+  white-space: nowrap;
 }
 
 // autocomplete potřeboval dostat nahoru aby byl vydět

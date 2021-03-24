@@ -38,5 +38,13 @@
 }
 
 .summary-page_number-a-action {
-  min-width: 102px;
+  width: 110px;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+.summary-page_kind {
+  min-width: 80px;
+  white-space: nowrap;
 }

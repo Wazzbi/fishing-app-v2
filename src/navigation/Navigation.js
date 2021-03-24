@@ -11,17 +11,9 @@ import Button from "react-bootstrap/Button";
 
 const Navigation = () => {
   const { currentUser } = useContext(AuthContext);
-  const [navExpanded, setNavExpanded] = useState(false);
 
-  const closeNav = () => {
-    setNavExpanded(false);
-  };
+  const signOut = () => firebaseService.auth().signOut();
 
-  const signOut = () =>
-    firebaseService
-      .auth()
-      .signOut()
-      .then(() => closeNav());
   // TODO místo user -> zobrazit jméno zkráceně
 
   const AppNavbar = () => {
@@ -32,8 +24,7 @@ const Navigation = () => {
             expand="lg"
             variant="dark"
             className="navigation_nav"
-            onToggle={(state) => setNavExpanded(state)}
-            expanded={navExpanded}
+            collapseOnSelect
           >
             <Navbar.Brand as={Link} to={"/home"}>
               Fish-App
@@ -41,25 +32,25 @@ const Navigation = () => {
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="ml-auto">
-                <Nav.Link as={Link} to={"/home"} onClick={closeNav}>
+                <Nav.Link as={Link} to={"/home"}>
                   Home
                 </Nav.Link>
-                <Nav.Link as={Link} to={"/news"} onClick={closeNav}>
+                <Nav.Link as={Link} to={"/news"}>
                   News
                 </Nav.Link>
-                <Nav.Link as={Link} to={"/record"} onClick={closeNav}>
+                <Nav.Link as={Link} to={"/record"}>
                   Record
                 </Nav.Link>
-                <Nav.Link as={Link} to={"/summary"} onClick={closeNav}>
+                <Nav.Link as={Link} to={"/summary"}>
                   Summary
                 </Nav.Link>
-                <Nav.Link as={Link} to={"/weather"} onClick={closeNav}>
+                <Nav.Link as={Link} to={"/weather"}>
                   Weather
                 </Nav.Link>
-                <Nav.Link as={Link} to={"/user"} onClick={closeNav}>
+                <Nav.Link as={Link} to={"/user"}>
                   User
                 </Nav.Link>
-                <Nav.Link as={Link} to={"/settings"} onClick={closeNav}>
+                <Nav.Link as={Link} to={"/settings"}>
                   Settings
                 </Nav.Link>
               </Nav>

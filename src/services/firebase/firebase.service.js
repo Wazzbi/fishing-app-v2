@@ -17,6 +17,7 @@ const appl = app.initializeApp(config);
 
 //TODO duplicitní reference
 // TODO error handling zde
+// TODO refactoring serives všecj viz https://stackoverflow.com/questions/35855781/having-services-in-react-application (post od Kildareflare)
 // *** User API ***
 const user = (uid) => appl.database().ref(`users/${uid}`);
 const usersRef = appl.database().ref("users/");

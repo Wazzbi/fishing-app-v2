@@ -419,15 +419,17 @@ const SummaryPage = () => {
                   </DropdownButton>
                 </InputGroup>
 
-                <Table responsive bordered hover size="sm">
+                <Table responsive hover size="sm">
                   <thead>
                     <tr>
                       <th colSpan="2">Revír</th>
                       <th rowSpan="2">Číslo podrevíru</th>
                       {fishKind.map((fish, index) => (
-                        <th colSpan="2" key={`fish-kind-${index}`}>{`${
-                          index + 1
-                        } ${fish}`}</th>
+                        <th
+                          className="summary-page_kind"
+                          colSpan="2"
+                          key={`fish-kind-${index}`}
+                        >{`${index + 1} ${fish}`}</th>
                       ))}
                       <th rowSpan="2">Počet docházek</th>
                     </tr>
