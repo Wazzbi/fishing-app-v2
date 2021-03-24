@@ -38,10 +38,12 @@
 }
 
 .summary-page_number-a-action {
-  width: 110px;
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: space-between;
+  min-width: 105px;
+
+  // notifikace zarovnaný do prava
+  span {
+    float: right;
+  }
 }
 
 .summary-page_kind {

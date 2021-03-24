@@ -28,7 +28,10 @@ const HomePage = () => {
       <div className="home-page_cards">
         <Card border="primary" style={{ marginTop: "10px" }}>
           <Card.Body>
-            <Card.Title>Primary Card Title</Card.Title>
+            <Card.Title>Aktualizace záložky Počasí</Card.Title>
+            <Card.Subtitle className="mb-2 text-muted">
+              12.12.2021
+            </Card.Subtitle>
             <Card.Text>
               Some quick example text to build on the card title and make up the
               bulk of the card's content.
@@ -38,7 +41,10 @@ const HomePage = () => {
 
         <Card border="danger" style={{ marginTop: "10px" }}>
           <Card.Body>
-            <Card.Title>Danger Card Title</Card.Title>
+            <Card.Title>Změna v pravidlech rybaření na Lipnu</Card.Title>
+            <Card.Subtitle className="mb-2 text-muted">
+              10.11.2021
+            </Card.Subtitle>
             <Card.Text>
               Some quick example text to build on the card title and make up the
               bulk of the card's content.
