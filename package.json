@@ -5,7 +5,7 @@
   "dependencies": {
     "autocompleter": "^6.1.0",
     "bootstrap": "^4.6.0",
-    "browser-image-compression": "^1.0.14",
+    "compress.js": "^1.1.2",
     "firebase": "^8.2.8",
     "jodit-react": "^1.0.74",
     "node-sass": "4.14.0",

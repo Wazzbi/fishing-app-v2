@@ -7,7 +7,6 @@ import React, {
 } from "react";
 import "./newsPage.scss";
 import firebaseService from "../../services/firebase/firebase.service";
-import imageCompression from "browser-image-compression";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -21,6 +20,8 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import Spinner from "react-bootstrap/Spinner";
+
+const Compress = require("compress.js");
 
 // TODO emoji, odkazy
 // TODO main kontajner udělat squeeze a nakonec s flex-base nebo min-width
@@ -40,8 +41,8 @@ const NewsPage = ({ history }) => {
   const [uploadPostDone, setUploadPostDone] = useState(true);
 
   const editor = useRef(null);
-
   const isMountedRef = useRef(true);
+  const compress = new Compress();
 
   const handleClose = () => {
     if (isMountedRef.current) {
@@ -123,38 +124,52 @@ const NewsPage = ({ history }) => {
     }
   };
 
-  const handleChangeImage = (e, i) => {
-    const f = e.target.files[0];
-    const fr = new FileReader();
+  const handleChangeImage = async (e, i) => {
+    const files = [...e.target.files];
+    // const fr = new FileReader();
 
-    if (f) {
-      fr.onload = async (ev2) => {
-        const name = Date.now();
-        const file = dataURLtoFile(ev2.target.result, name);
-        const type =
-          f.type.indexOf("/") !== -1
-            ? f.type.slice(f.type.indexOf("/") + 1)
-            : f.type;
+    if (!!files.length) {
+      const name = Date.now();
+      const type =
+        files[0].type.indexOf("/") !== -1
+          ? files[0].type.slice(files[0].type.indexOf("/") + 1)
+          : files[0].type;
 
-        try {
-          let o;
-          await imageCompression(file, optionsMed).then((blob) => {
-            o = { ...o, med: { blob, name, type, size: 400 } };
-          });
-          await imageCompression(file, optionsMin).then((blob) => {
-            o = { ...o, min: { blob, name, type, size: 200 } };
-          });
-          // nahrát fotku na pozici dle indexu input pole
-          uploadImages[i] = o;
-          if (isMountedRef.current) {
-            setUploadImages([...uploadImages]);
-          }
-        } catch (err) {
-          console.error(err);
+      try {
+        let o;
+        let smallImage = await compress.compress(files, {
+          size: 0.5,
+          quality: 0.75,
+          maxWidth: 200,
+          maxHeight: 200,
+          resize: true,
+        });
+        let img1 = smallImage[0];
+        let base64str = img1.data;
+        let imgExt = img1.ext;
+        let blob = Compress.convertBase64ToFile(base64str, imgExt);
+        o = { ...o, min: { blob, name, type, size: 200 } };
+
+        let bigImage = await compress.compress(files, {
+          size: 1.5,
+          quality: 0.75,
+          maxWidth: 600,
+          maxHeight: 600,
+          // resize: true,
+        });
+        img1 = bigImage[0];
+        base64str = img1.data;
+        imgExt = img1.ext;
+        blob = Compress.convertBase64ToFile(base64str, imgExt);
+        o = { ...o, med: { blob, name, type, size: 400 } };
+
+        uploadImages[i] = o;
+        if (isMountedRef.current) {
+          setUploadImages([...uploadImages]);
         }
-      };
-
-      fr.readAsDataURL(f);
+      } catch (err) {
+        console.error(err);
+      }
     } else {
       // držet pozici kvůli indexu kdyby uživatel chtěl přehrát fotku
       uploadImages[i] = {};
@@ -162,6 +177,38 @@ const NewsPage = ({ history }) => {
         setUploadImages([...uploadImages]);
       }
     }
+
+    // if (f) {
+    //   fr.onload = async (evt) => {
+    //     const name = Date.now();
+    //     const file = dataURLtoFile(evt.target.result, name);
+
+    //     const files = [...evt.target.files];
+
+    //     try {
+    //       let o;
+    //       await imageCompression(file, optionsMed).then((blob) => {
+    //         o = { ...o, med: { blob, name, type, size: 400 } };
+    //       });
+
+    //       // await imageCompression(file, optionsMin).then((blob) => {
+    //       //   o = { ...o, min: { blob, name, type, size: 200 } };
+    //       // });
+
+    //       // nahrát fotku na pozici dle indexu input pole
+    //       uploadImages[i] = o;
+    //       if (isMountedRef.current) {
+    //         setUploadImages([...uploadImages]);
+    //       }
+    //     } catch (err) {
+    //       console.error(err);
+    //     }
+    //   };
+
+    //   fr.readAsDataURL(f);
+    // } else {
+
+    // }
   };
 
   const dataURLtoFile = (dataurl, filename) => {

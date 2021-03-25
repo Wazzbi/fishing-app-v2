@@ -149,6 +149,7 @@ const PostPage = (props) => {
             show={show}
             onHide={handleClose}
             animation={false}
+            size="lg"
             contentClassName="post-page_modal-images-modal"
             centered
           >
@@ -161,7 +162,7 @@ const PostPage = (props) => {
                 >
                   {imagesLarge.map((imageUrl, index) => (
                     <Carousel.Item key={`carousel-item-${index}`}>
-                      <div className="post-page_animated-background">
+                      <div className="loader">
                         <img
                           src={imageUrl}
                           alt=""
