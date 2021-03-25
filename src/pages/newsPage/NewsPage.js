@@ -123,10 +123,7 @@ const NewsPage = ({ history }) => {
     }
   };
 
-  // TODO podle id inputu upravovat index v poli uploadedImages
   const handleChangeImage = (e, i) => {
-    // TODO nahrávání více fotek (přidat další input)
-
     const f = e.target.files[0];
     const fr = new FileReader();
 
