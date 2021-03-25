@@ -11,6 +11,7 @@ import Button from "react-bootstrap/Button";
 
 // TODO like btn + komentaře
 // TODO pořdná animace než se načtou obr a pak modal
+// TODO effect cleanUp
 
 const PostPage = (props) => {
   const params = props.match.params; // id postu

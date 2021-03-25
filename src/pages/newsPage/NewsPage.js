@@ -12,7 +12,7 @@ import "react-lazy-load-image-component/src/effects/blur.css";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { AuthContext } from "../../Auth";
 import JoditEditor from "jodit-react";
-import { configEditor, optionsMed, optionsMin } from "./constants";
+import { configEditor } from "./constants";
 import Jdenticon from "react-jdenticon";
 import { StoreContext } from "../../store/Store";
 
@@ -126,7 +126,6 @@ const NewsPage = ({ history }) => {
 
   const handleChangeImage = async (e, i) => {
     const files = [...e.target.files];
-    // const fr = new FileReader();
 
     if (!!files.length) {
       const name = Date.now();
@@ -177,52 +176,6 @@ const NewsPage = ({ history }) => {
         setUploadImages([...uploadImages]);
       }
     }
-
-    // if (f) {
-    //   fr.onload = async (evt) => {
-    //     const name = Date.now();
-    //     const file = dataURLtoFile(evt.target.result, name);
-
-    //     const files = [...evt.target.files];
-
-    //     try {
-    //       let o;
-    //       await imageCompression(file, optionsMed).then((blob) => {
-    //         o = { ...o, med: { blob, name, type, size: 400 } };
-    //       });
-
-    //       // await imageCompression(file, optionsMin).then((blob) => {
-    //       //   o = { ...o, min: { blob, name, type, size: 200 } };
-    //       // });
-
-    //       // nahrát fotku na pozici dle indexu input pole
-    //       uploadImages[i] = o;
-    //       if (isMountedRef.current) {
-    //         setUploadImages([...uploadImages]);
-    //       }
-    //     } catch (err) {
-    //       console.error(err);
-    //     }
-    //   };
-
-    //   fr.readAsDataURL(f);
-    // } else {
-
-    // }
-  };
-
-  const dataURLtoFile = (dataurl, filename) => {
-    var arr = dataurl.split(","),
-      mime = arr[0].match(/:(.*?);/)[1],
-      bstr = atob(arr[1]),
-      n = bstr.length,
-      u8arr = new Uint8Array(n);
-
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
-    }
-
-    return new File([u8arr], filename, { type: mime });
   };
 
   const init = useCallback(() => {
