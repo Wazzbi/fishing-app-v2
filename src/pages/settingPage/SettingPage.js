@@ -12,7 +12,7 @@ const SettingPage = () => {
   return (
     <>
       <h1>SettingPage</h1>
-      <p>ver. 0.1.2</p>
+      <p>ver. 0.1.3</p>
     </>
   );
 };
