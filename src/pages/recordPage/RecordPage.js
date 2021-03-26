@@ -328,7 +328,7 @@ const RecordPage = () => {
     <>
       <div className="record-page_main">
         <Button
-          variant="primary"
+          variant="secondary"
           className="record-page-add-btn"
           onClick={doCreateRecordAndRefresh}
         >
@@ -365,7 +365,7 @@ const RecordPage = () => {
 
                   <DropdownButton
                     as={InputGroup.Append}
-                    variant="outline-secondary"
+                    variant="outline-dark"
                     title="Menu"
                     id={`input-group-dropdown-${recordKey}`}
                   >
@@ -410,7 +410,7 @@ const RecordPage = () => {
                           <tr key={rowKey}>
                             <td className="record-page_action-btns">
                               <Button
-                                variant="primary"
+                                variant="secondary"
                                 size="sm"
                                 className="record-page_row-btn"
                                 onClick={() =>
@@ -425,7 +425,7 @@ const RecordPage = () => {
                                 ></img>
                               </Button>
                               <Button
-                                variant="primary"
+                                variant="secondary"
                                 size="sm"
                                 className="record-page_row-btn"
                                 onClick={() =>

@@ -327,7 +327,7 @@ const NewsPage = ({ history }) => {
       </div>
 
       <Button
-        variant="primary"
+        variant="secondary"
         className="news-page_float-btn"
         onClick={handleShow}
         disabled={!uploadPostDone}

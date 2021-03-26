@@ -55,7 +55,7 @@ const Navigation = () => {
                 </Nav.Link>
               </Nav>
 
-              <Button variant="outline-light" onClick={signOut}>
+              <Button className="navigation_btn" onClick={signOut}>
                 Sign out
               </Button>
             </Navbar.Collapse>

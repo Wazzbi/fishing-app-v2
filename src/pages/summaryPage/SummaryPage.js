@@ -356,7 +356,7 @@ const SummaryPage = () => {
     <>
       <div className="summary-page_main">
         <Button
-          variant="primary"
+          variant="secondary"
           className="summary-page-add-btn"
           onClick={doCreateSummaryAndRefresh}
         >
@@ -396,7 +396,7 @@ const SummaryPage = () => {
 
                   <DropdownButton
                     as={InputGroup.Append}
-                    variant="outline-secondary"
+                    variant="outline-dark"
                     title="Menu"
                     id={`input-group-dropdown-${summaryKey}`}
                   >

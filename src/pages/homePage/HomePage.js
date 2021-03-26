@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./homePage.scss";
 
-import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 
 const HomePage = () => {
@@ -13,71 +12,50 @@ const HomePage = () => {
   return (
     <div className="home-page_main">
       <div className="home-page_main-sections">
-        <Link to={"/record"} className="home-page_main-section">
-          <div>Record</div>
+        <Link to={"/record"} className="home-page_main-section-btn">
+          <div className="home-page_main-section-btn-first">
+            Evidence docházek a úlovků{" "}
+          </div>
         </Link>
 
-        <Link to={"/summary"} className="home-page_main-section">
-          <div>Summary</div>
+        <Link to={"/summary"} className="home-page_main-section-btn">
+          <div className="home-page_main-section-btn-second">
+            Sumář docházek a úlovků{" "}
+          </div>
         </Link>
 
-        <Link to={"/news"} className="home-page_main-section">
-          <div>News</div>
+        <Link to={"/news"} className="home-page_main-section-btn">
+          <div className="home-page_main-section-btn-third">
+            Příspěvky rybářů
+          </div>
         </Link>
       </div>
 
-      <div className="home-page_cards">
-        <Card style={{ marginTop: "10px" }}>
-          <Card.Header>
-            <Button
-              variant="info"
-              size="sm"
-              className="record-page_row-btn"
-              style={{ pointerEvents: "none" }}
-            >
-              <img
-                src="/exclamation.svg"
-                alt="exclamation"
-                width="15px"
-                height="15px"
-              ></img>
-            </Button>{" "}
-            <span className="text-muted">12.12.2021</span>
-          </Card.Header>
-          <Card.Body>
-            <Card.Title>Aktualizace záložky Počasí</Card.Title>
-            <Card.Text>
-              Some quick example text to build on the card title and make up the
-              bulk of the card's content.
-            </Card.Text>
-          </Card.Body>
-        </Card>
+      <div className="home-page_title-container">
+        <div>
+          <p className="home-page_title">Výtejte na Rybce</p>
+          <div className="home-page_title-text">
+            <p style={{ margin: "0" }}>
+              This is a simple hero unit, a simple jumbotron-style component for
+              calling extra attention to featured content or information. This
+              is a simple hero unit, a simple jumbotron-style component for
+              calling extra attention.
+            </p>
 
-        <Card style={{ marginTop: "10px" }}>
-          <Card.Header>
-            <Button
-              variant="danger"
-              size="sm"
-              className="record-page_row-btn"
-              style={{ pointerEvents: "none" }}
-            >
-              <img
-                src="/exclamation.svg"
-                alt="exclamation"
-                width="15px"
-                height="15px"
-              ></img>
-            </Button>{" "}
-            <span className="text-muted">23.10.2021</span>
-          </Card.Header>
-          <Card.Body>
-            <Card.Title>Změna v pravidlech rybaření na Lipnu</Card.Title>
-            <Card.Text>
-              Some quick example text to build on the card title and make up the
-              bulk of the card's content.
-            </Card.Text>
-          </Card.Body>
-        </Card>
+            <Button className="home-page_ghoust-btn home-page_title-btn">
+              Číst více
+            </Button>
+          </div>
+
+          <div className="home-page_wave">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+              <path
+                fill="#e6f1d7"
+                d="M0,160L60,170.7C120,181,240,203,360,208C480,213,600,203,720,186.7C840,171,960,149,1080,149.3C1200,149,1320,171,1380,181.3L1440,192L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"
+              ></path>
+            </svg>
+          </div>
+        </div>
       </div>
     </div>
   );
