@@ -27,7 +27,7 @@ const Navigation = () => {
             collapseOnSelect
           >
             <Navbar.Brand as={Link} to={"/home"}>
-              Fish-App
+              <b>Rybka</b>
             </Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">

@@ -33,7 +33,7 @@ const HomePage = () => {
 
       <div className="home-page_title-container">
         <div>
-          <p className="home-page_title">Výtejte na Rybce</p>
+          <p className="home-page_title">Vítejte na Rybce</p>
           <div className="home-page_title-text">
             <p style={{ margin: "0" }}>
               This is a simple hero unit, a simple jumbotron-style component for
