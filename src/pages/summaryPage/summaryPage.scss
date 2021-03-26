@@ -5,6 +5,12 @@
 }
 .summary-page-add-btn {
   box-shadow: 3px 3px 5px 0px #c1c1c1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
 }
 
 .summary-page_summaries {
@@ -49,4 +55,10 @@
 .summary-page_kind {
   min-width: 80px;
   white-space: nowrap;
+}
+
+// bootstrap override
+.dropdown-item:active {
+  color: red;
+  background-color: #e0e0e0;
 }

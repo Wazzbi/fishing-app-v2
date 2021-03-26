@@ -30,14 +30,14 @@ const LandingPage = ({ history, location }) => {
       return (
         <div className="landing-page_main">
           <h3>Loading...</h3>
-          <Spinner animation="border" variant="primary" />
+          <Spinner animation="border" variant="success" />
         </div>
       );
     } else if (currentUser) {
       return (
         <div className="landing-page_main">
           <h3>Logged user - redirect</h3>
-          <Spinner animation="border" variant="primary" />
+          <Spinner animation="border" variant="success" />
         </div>
       );
     } else {

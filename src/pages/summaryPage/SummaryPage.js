@@ -356,17 +356,16 @@ const SummaryPage = () => {
     <>
       <div className="summary-page_main">
         <Button
-          variant="secondary"
+          variant="success"
           className="summary-page-add-btn"
           onClick={doCreateSummaryAndRefresh}
         >
-          Add summary card
+          <img src="/plus.svg" alt="" width="30px" height="30px"></img>
         </Button>
 
         <br />
-        <br />
 
-        {loading && <Spinner animation="border" variant="primary" />}
+        {loading && <Spinner animation="border" variant="success" />}
         {!!storeState.summaries &&
           Object.entries(storeState.summaries).length === 0 && (
             <p>Add some summary dude!</p>
@@ -396,7 +395,7 @@ const SummaryPage = () => {
 
                   <DropdownButton
                     as={InputGroup.Append}
-                    variant="outline-dark"
+                    variant="outline-secondary"
                     title="Menu"
                     id={`input-group-dropdown-${summaryKey}`}
                   >
@@ -539,7 +538,7 @@ const SummaryPage = () => {
             <Button variant="secondary" onClick={handleDeleteClose}>
               Close
             </Button>
-            <Button variant="primary" onClick={handleCloseAndDelete}>
+            <Button variant="outline-danger" onClick={handleCloseAndDelete}>
               DELETE
             </Button>
           </Modal.Footer>
@@ -570,7 +569,7 @@ const SummaryPage = () => {
                   />
                 ))}
               <Button
-                variant="primary"
+                variant="success"
                 type="submit"
                 disabled={selectedRecords && selectedRecords.length === 0}
               >

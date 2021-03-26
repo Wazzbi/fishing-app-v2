@@ -6,6 +6,12 @@
 
 .record-page-add-btn {
   box-shadow: 3px 3px 5px 0px #c1c1c1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
 }
 
 .record-page_record-name {
@@ -49,6 +55,12 @@
 
 .record-page_kind {
   white-space: nowrap;
+}
+
+// bootstrap override
+.dropdown-item:active {
+  color: red;
+  background-color: #e0e0e0;
 }
 
 // autocomplete potřeboval dostat nahoru aby byl vydět

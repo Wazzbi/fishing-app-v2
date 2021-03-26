@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
     return (
       <div className="auth_main">
         <h3>Loading</h3>
-        <Spinner animation="border" variant="primary" />
+        <Spinner animation="border" variant="success" />
       </div>
     );
   }

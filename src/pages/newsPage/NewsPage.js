@@ -227,7 +227,7 @@ const NewsPage = ({ history }) => {
         style={{ padding: "5px" }}
         loader={
           <div style={{ textAlign: "center" }}>
-            <Spinner animation="border" variant="primary" />
+            <Spinner animation="border" variant="success" />
           </div>
         }
         endMessage={
@@ -321,13 +321,13 @@ const NewsPage = ({ history }) => {
           renderPosts()
         ) : (
           <div style={{ textAlign: "center", marginTop: "30px" }}>
-            <Spinner animation="border" variant="primary" />
+            <Spinner animation="border" variant="success" />
           </div>
         )}
       </div>
 
       <Button
-        variant="secondary"
+        variant="success"
         className="news-page_float-btn"
         onClick={handleShow}
         disabled={!uploadPostDone}

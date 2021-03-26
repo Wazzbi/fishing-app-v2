@@ -65,10 +65,10 @@ const LoginPage = ({ history }) => {
           </Form.Group>
 
           <div className="login-page_btn-group">
-            <Button variant="outline-primary" as={Link} to={"/"}>
+            <Button variant="outline-success" as={Link} to={"/"}>
               Back
             </Button>
-            <Button variant="primary" type="submit">
+            <Button variant="success" type="submit">
               Submit
             </Button>
           </div>
