@@ -46,7 +46,7 @@ const LandingPage = ({ history, location }) => {
           <h1>LandingPage</h1>
           <br />
           <br />
-          <Button variant="primary" onClick={handleClick}>
+          <Button variant="success" onClick={handleClick}>
             Sign In
           </Button>
         </div>
