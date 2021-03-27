@@ -34,8 +34,8 @@ const HomePage = () => {
       <div className="home-page_title-container">
         <div>
           <p className="home-page_title">Vítejte na Rybce</p>
-          <div className="home-page_title-text">
-            <p style={{ margin: "0" }}>
+          <div className="home-page_title-text-area">
+            <p className="home-page_title-text">
               This is a simple hero unit, a simple jumbotron-style component for
               calling extra attention to featured content or information. This
               is a simple hero unit, a simple jumbotron-style component for
@@ -71,7 +71,9 @@ const HomePage = () => {
             </p>
           </div>
 
-          <Button className="home-page_ghoust-btn">Číst více</Button>
+          <div className="home-page_card-text-btn-wrapper">
+            <Button className="home-page_ghoust-btn">Číst více</Button>
+          </div>
         </div>
         <div className="home-page_card">
           <p className="home-page_card-title">Aktuálně na českých rybnících</p>
@@ -85,7 +87,9 @@ const HomePage = () => {
             </p>
           </div>
 
-          <Button className="home-page_ghoust-btn">Číst více</Button>
+          <div className="home-page_card-text-btn-wrapper">
+            <Button className="home-page_ghoust-btn">Číst více</Button>
+          </div>
         </div>
       </div>
     </div>
