@@ -106,10 +106,10 @@ const SignUpPage = ({ history }) => {
           </Form.Group>
 
           <div className="sign-up_btn-group">
-            <Button variant="outline-primary" as={Link} to={"/"}>
+            <Button variant="outline-secondary" as={Link} to={"/"}>
               Back
             </Button>
-            <Button variant="primary" type="submit">
+            <Button variant="success" type="submit">
               Submit
             </Button>
           </div>

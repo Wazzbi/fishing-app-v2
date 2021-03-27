@@ -30,6 +30,7 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 // TODO zablokovat SEND když budou nějaká nevalidní data
 // TODO sloupce s rybama přes loop
 // !! řazení je ve stylech od nejnovějšího k nejstaršího
+// TODO když nejsou v sloupci ryby žádný data tak sloupec nezobrazit
 
 const SummaryPage = () => {
   const { currentUser } = useContext(AuthContext);
