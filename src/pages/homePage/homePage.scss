@@ -49,6 +49,7 @@
   background-color: transparent;
   color: $primary;
   border-radius: 25px;
+  width: 84px;
 
   &:active,
   &:focus,
@@ -59,7 +60,7 @@
 }
 
 .home-page_title-container {
-  margin: 30px;
+  margin: 30px 30px 0;
 
   @media only screen and (max-width: 600px) {
     margin: 30px 0;
@@ -88,6 +89,7 @@
   text-align: justify;
   position: relative;
   z-index: 1;
+  color: #656565;
 
   @media only screen and (max-width: 600px) {
     text-align: center;
@@ -111,5 +113,53 @@
   @media only screen and (max-width: 500px) {
     visibility: visible;
     margin-top: -30px;
+  }
+}
+
+.home-page_cards {
+  display: flex;
+  margin: 0 30px;
+  flex-wrap: wrap;
+
+  @media only screen and (max-width: 600px) {
+    margin: 0;
+  }
+
+  .home-page_card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1 0 270px;
+    margin-bottom: 30px;
+    border-width: 0;
+    border-left: 5px solid;
+    border-image: linear-gradient(#382933, #a4b494) 0 100%;
+    padding: 0 20px 10px 10px;
+
+    .home-page_card-title {
+      font-size: 32px;
+      font-weight: 500;
+      line-height: 36px;
+      color: #3b5249;
+
+      @media only screen and (max-width: 410px) {
+        font-size: 27px;
+        line-height: 32px;
+        font-weight: 400;
+      }
+    }
+
+    .home-page_card-text-wrapper {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      flex: 1;
+      padding-bottom: 15px;
+    }
+
+    .home-page_card-text {
+      text-align: justify;
+      color: #656565;
+    }
   }
 }

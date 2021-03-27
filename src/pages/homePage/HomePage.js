@@ -57,6 +57,37 @@ const HomePage = () => {
           </div>
         </div>
       </div>
+
+      <div className="home-page_cards">
+        <div className="home-page_card">
+          <p className="home-page_card-title">
+            Jak se stát partnerem této aplikace ?
+          </p>
+
+          <div className="home-page_card-text-wrapper">
+            <p className="home-page_card-text">
+              It uses utility classes for typography and spacing to space
+              content out within the larger container.
+            </p>
+          </div>
+
+          <Button className="home-page_ghoust-btn">Číst více</Button>
+        </div>
+        <div className="home-page_card">
+          <p className="home-page_card-title">Aktuálně na českých rybnících</p>
+
+          <div className="home-page_card-text-wrapper">
+            <p className="home-page_card-text">
+              12.9.2021 | It uses utility classes for typography and spacing to
+              space content out within the larger container. It uses utility
+              classes for typography and spacing to space content out within the
+              larger container.
+            </p>
+          </div>
+
+          <Button className="home-page_ghoust-btn">Číst více</Button>
+        </div>
+      </div>
     </div>
   );
 };
