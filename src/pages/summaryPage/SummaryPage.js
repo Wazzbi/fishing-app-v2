@@ -357,7 +357,7 @@ const SummaryPage = () => {
       <div className="summary-page_main">
         <Button
           variant="success"
-          className="summary-page-add-btn"
+          className="summary-page_float-btn"
           onClick={doCreateSummaryAndRefresh}
         >
           <img src="/plus.svg" alt="" width="30px" height="30px"></img>
@@ -456,7 +456,7 @@ const SummaryPage = () => {
                               ) ? (
                                 <OverlayTrigger
                                   trigger="click"
-                                  placement="right"
+                                  placement="top"
                                   overlay={
                                     <Tooltip id="tooltip-disabled">
                                       chybějící povinná data: druh ryby, váha
@@ -464,20 +464,13 @@ const SummaryPage = () => {
                                     </Tooltip>
                                   }
                                 >
-                                  <span className="d-inline-block">
-                                    <Button
-                                      variant="danger"
-                                      size="sm"
-                                      className="summary-page_row-btn"
-                                      style={{ pointerEvents: "none" }}
-                                    >
-                                      <img
-                                        src="/exclamation.svg"
-                                        alt="exclamation"
-                                        width="15px"
-                                        height="15px"
-                                      ></img>
-                                    </Button>
+                                  <span className="d-inline-block summary-page_note">
+                                    <img
+                                      src="/exclamation-red.svg"
+                                      alt="exclamation"
+                                      width="16px"
+                                      height="16px"
+                                    ></img>
                                   </span>
                                 </OverlayTrigger>
                               ) : (

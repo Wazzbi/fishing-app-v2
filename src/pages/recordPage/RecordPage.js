@@ -330,7 +330,7 @@ const RecordPage = () => {
       <div className="record-page_main">
         <Button
           variant="success"
-          className="record-page-add-btn"
+          className="record-page_float-btn"
           onClick={doCreateRecordAndRefresh}
         >
           <img src="/plus.svg" alt="" width="30px" height="30px"></img>
@@ -409,39 +409,29 @@ const RecordPage = () => {
                         ([rowKey, value]) => (
                           <tr key={rowKey}>
                             <td className="record-page_action-btns">
-                              <Button
-                                variant="light"
-                                size="sm"
-                                className="record-page_row-btn"
+                              <img
+                                src="/edit.svg"
+                                alt="edit"
+                                width="15px"
+                                height="15px"
+                                style={{ margin: "0px 8px" }}
                                 onClick={() =>
                                   editRow(recordKey, rowKey, value)
                                 }
-                              >
-                                <img
-                                  src="/edit.svg"
-                                  alt="edit"
-                                  width="15px"
-                                  height="15px"
-                                ></img>
-                              </Button>
-                              <Button
-                                variant="light"
-                                size="sm"
-                                className="record-page_row-btn"
+                              ></img>
+                              <img
+                                src="/delete.svg"
+                                alt="delete"
+                                width="16px"
+                                height="16px"
+                                style={{ margin: "0px 8px" }}
                                 onClick={() =>
                                   handleDelete("row", {
                                     recordUid: recordKey,
                                     recordRowUid: rowKey,
                                   })
                                 }
-                              >
-                                <img
-                                  src="/delete.svg"
-                                  alt="delete"
-                                  width="15px"
-                                  height="15px"
-                                ></img>
-                              </Button>
+                              ></img>
                             </td>
 
                             <td className="record-page_action-btns">
@@ -450,7 +440,7 @@ const RecordPage = () => {
                               !!!value.kilograms ? (
                                 <OverlayTrigger
                                   trigger="click"
-                                  placement="right"
+                                  placement="top"
                                   overlay={
                                     <Tooltip id="tooltip-disabled">
                                       Chybějící povinná data: druh ryby, váha
@@ -458,30 +448,25 @@ const RecordPage = () => {
                                     </Tooltip>
                                   }
                                 >
-                                  <span className="d-inline-block">
-                                    <Button
-                                      variant="danger"
-                                      size="sm"
-                                      className="record-page_row-btn"
-                                      style={{ pointerEvents: "none" }}
-                                    >
-                                      <img
-                                        src="/exclamation.svg"
-                                        alt="exclamation"
-                                        width="15px"
-                                        height="15px"
-                                      ></img>
-                                    </Button>
+                                  <span className="d-inline-block record-page_note">
+                                    <img
+                                      src="/exclamation-red.svg"
+                                      alt="exclamation"
+                                      width="16px"
+                                      height="16px"
+                                    ></img>
                                   </span>
                                 </OverlayTrigger>
                               ) : (
-                                ""
+                                <span className="record-page_note-empty">
+                                  -
+                                </span>
                               )}
                               {!!!value.centimeters ||
                               !fishKind.some((f) => f === value.kind) ? (
                                 <OverlayTrigger
                                   trigger="click"
-                                  placement="right"
+                                  placement="top"
                                   overlay={
                                     <Tooltip id="tooltip-disabled">
                                       Chybějící data: centimetry. Nebo tento
@@ -489,24 +474,19 @@ const RecordPage = () => {
                                     </Tooltip>
                                   }
                                 >
-                                  <span className="d-inline-block">
-                                    <Button
-                                      variant="info"
-                                      size="sm"
-                                      className="record-page_row-btn"
-                                      style={{ pointerEvents: "none" }}
-                                    >
-                                      <img
-                                        src="/exclamation.svg"
-                                        alt="exclamation"
-                                        width="15px"
-                                        height="15px"
-                                      ></img>
-                                    </Button>
+                                  <span className="d-inline-block record-page_note">
+                                    <img
+                                      src="/exclamation-blue.svg"
+                                      alt="exclamation"
+                                      width="16px"
+                                      height="16px"
+                                    ></img>
                                   </span>
                                 </OverlayTrigger>
                               ) : (
-                                ""
+                                <span className="record-page_note-empty">
+                                  -
+                                </span>
                               )}
                             </td>
 

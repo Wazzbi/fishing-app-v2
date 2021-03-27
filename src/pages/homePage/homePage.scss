@@ -4,11 +4,15 @@
   max-width: 900px;
   min-height: calc(100vh - 56px);
   margin: auto;
-  padding: 0 10px;
+
   display: flex;
   flex-direction: column;
   background-color: white;
   box-shadow: 1px 1px 5px 0px #c1c1c1;
+}
+
+.home-page_main-body {
+  padding: 0 10px;
 }
 
 .home-page_main-sections {
@@ -100,7 +104,7 @@
 
   .home-page_title-text {
     margin: 0;
-    font-family: "Poppins" !important;
+    font-family: "Poppins", sans-serif !important;
   }
 }
 
@@ -166,7 +170,7 @@
     .home-page_card-text {
       text-align: justify;
       color: #656565;
-      font-family: "Poppins" !important;
+      font-family: "Poppins", sans-serif !important;
     }
 
     .home-page_card-text-btn-wrapper {

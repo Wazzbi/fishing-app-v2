@@ -1,17 +1,18 @@
 .record-page_main {
   max-width: 1200px;
-  margin: 20px auto;
+  margin: 0px auto 80px;
   padding: 0 10px;
 }
 
-.record-page-add-btn {
-  box-shadow: 3px 3px 5px 0px #c1c1c1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 50px;
-  height: 50px;
+.record-page_float-btn {
+  position: fixed;
+  right: 5%;
+  bottom: 5%;
+  z-index: 1000;
   border-radius: 50%;
+  width: 55px;
+  height: 55px;
+  box-shadow: 3px 3px 5px 0px #c1c1c1;
 }
 
 .record-page_record-name {
@@ -55,6 +56,15 @@
 
 .record-page_kind {
   white-space: nowrap;
+}
+
+.record-page_note {
+  margin-right: 16px;
+  cursor: pointer;
+}
+.record-page_note-empty {
+  margin-right: 16px;
+  padding: 0 5px;
 }
 
 // bootstrap override
