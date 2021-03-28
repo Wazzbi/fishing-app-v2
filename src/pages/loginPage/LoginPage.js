@@ -76,6 +76,7 @@ const LoginPage = ({ history }) => {
       </div>
       <br />
       <Link to={"/signUp"}>Create new account</Link>
+      <Link to={"/forgotPassword"}>Reset Password</Link>
 
       <div className="login-page_notification">
         <Col style={{ width: "100%" }}>
