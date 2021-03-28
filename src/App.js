@@ -22,33 +22,35 @@ import ForgotPasswordPage from "./pages/forgotPasswordPage/ForgotPasswordPage";
 
 const App = () => {
   return (
-    <AuthProvider>
-      <HashRouter>
-        <div>
-          <Store>
-            <Navigation />
+    <>
+      <AuthProvider>
+        <HashRouter>
+          <div>
+            <Store>
+              <Navigation />
 
-            <Route exact path="/" component={LandingPage} />
-            <Route exact path="/login" component={LoginPage} />
-            <Route exact path="/signup" component={SignUpPage} />
-            <Route
-              exact
-              path="/forgotPassword"
-              component={ForgotPasswordPage}
-            />
-            <PrivateRoute exact path="/home" component={HomePage} />
-            <PrivateRoute exact path="/record" component={RecordPage} />
-            <PrivateRoute exact path="/summary" component={SummaryPage} />
-            <PrivateRoute exact path="/news" component={NewsPage} />
-            <PrivateRoute exact path="/post/:id" component={PostPage} />
-            <PrivateRoute exact path="/user" component={UserPage} />
-            <PrivateRoute exact path="/weather" component={WeatherPage} />
-            <PrivateRoute exact path="/settings" component={SettingPage} />
-            <Redirect from="*" to="/" />
-          </Store>
-        </div>
-      </HashRouter>
-    </AuthProvider>
+              <Route exact path="/" component={LandingPage} />
+              <Route exact path="/login" component={LoginPage} />
+              <Route exact path="/signup" component={SignUpPage} />
+              <Route
+                exact
+                path="/forgotPassword"
+                component={ForgotPasswordPage}
+              />
+              <PrivateRoute exact path="/home" component={HomePage} />
+              <PrivateRoute exact path="/record" component={RecordPage} />
+              <PrivateRoute exact path="/summary" component={SummaryPage} />
+              <PrivateRoute exact path="/news" component={NewsPage} />
+              <PrivateRoute exact path="/post/:id" component={PostPage} />
+              <PrivateRoute exact path="/user" component={UserPage} />
+              <PrivateRoute exact path="/weather" component={WeatherPage} />
+              <PrivateRoute exact path="/settings" component={SettingPage} />
+              <Redirect from="*" to="/" />
+            </Store>
+          </div>
+        </HashRouter>
+      </AuthProvider>
+    </>
   );
 };
 
