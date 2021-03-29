@@ -9,6 +9,10 @@
   background-color: white;
   border-radius: 10px;
   box-shadow: 1px 1px 5px 0px #c1c1c1;
+
+  .modal-header {
+    border-bottom: none;
+  }
 }
 
 .post-page_title {

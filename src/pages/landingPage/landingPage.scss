@@ -1,8 +1,9 @@
 .landing-page_main {
   width: 100vw;
-  height: calc(100vh - 56px); // minus navbar
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  background-image: url("/pattern.svg");
 }
