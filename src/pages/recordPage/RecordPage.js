@@ -439,7 +439,6 @@ const RecordPage = () => {
                               !!!value.pieces ||
                               !!!value.kilograms ? (
                                 <OverlayTrigger
-                                  trigger="click"
                                   placement="top"
                                   overlay={
                                     <Tooltip id="tooltip-disabled">
@@ -465,7 +464,6 @@ const RecordPage = () => {
                               {!!!value.centimeters ||
                               !fishKind.some((f) => f === value.kind) ? (
                                 <OverlayTrigger
-                                  trigger="click"
                                   placement="top"
                                   overlay={
                                     <Tooltip id="tooltip-disabled">

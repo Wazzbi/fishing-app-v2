@@ -456,7 +456,6 @@ const SummaryPage = () => {
                                 (a) => a === true
                               ) ? (
                                 <OverlayTrigger
-                                  trigger="click"
                                   placement="top"
                                   overlay={
                                     <Tooltip id="tooltip-disabled">
