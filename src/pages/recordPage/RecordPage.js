@@ -480,9 +480,18 @@ const RecordPage = () => {
                                   </span>
                                 </OverlayTrigger>
                               ) : (
+                                ""
+                              )}
+                              {value.kind &&
+                              value.pieces &&
+                              value.kilograms &&
+                              value.centimeters &&
+                              fishKind.some((f) => f === value.kind) ? (
                                 <span className="record-page_note-empty">
                                   -
                                 </span>
+                              ) : (
+                                ""
                               )}
                             </td>
 
