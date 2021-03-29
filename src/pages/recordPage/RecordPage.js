@@ -457,9 +457,7 @@ const RecordPage = () => {
                                   </span>
                                 </OverlayTrigger>
                               ) : (
-                                <span className="record-page_note-empty">
-                                  -
-                                </span>
+                                ""
                               )}
                               {!!!value.centimeters ||
                               !fishKind.some((f) => f === value.kind) ? (

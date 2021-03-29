@@ -331,6 +331,172 @@ const SummaryPage = () => {
     }
   };
 
+  const onlyUnique = (value, index, self) => {
+    return self.indexOf(value) === index;
+  };
+
+  const renderSummaryTable = (summaryKey, value) => {
+    let kindArray = [];
+    let finalfishKind = [];
+
+    // zkontroluj zdali data existují
+    const data = recordsTogether && recordsTogether[summaryKey];
+    if (data) {
+      // získej pole řádků z summary
+      const fKind = Object.entries(data).map(
+        ([rowKey, rowValue]) => rowValue.fishes
+      );
+      // řádky zredukuj na názvy ryb *kind* může vrátit pole ryb
+      const reduceFKind = fKind.map((fish) =>
+        Object.entries(fish).map(([kind, data]) => kind)
+      );
+      // pole polí zredukuj na normální pole
+      reduceFKind.forEach((f) => kindArray.push(...f));
+      // vyfiltruj duplicitní typy ryb
+      const filteredFKind = kindArray.filter(onlyUnique);
+      // zredukuj pole typů ryb na ty co jsou v daném sumáři (tímto  se zachová pořadí typů ryb pro všechny sumáře)
+      finalfishKind = fishKind.filter((f) =>
+        filteredFKind.includes(f.toLowerCase())
+      );
+    }
+
+    return (
+      <div key={summaryKey} className="summary-page_table">
+        <InputGroup className="summary-page_record-name">
+          <FormControl
+            id={`${summaryKey}-summaryName`}
+            name="summaryName"
+            type="text"
+            placeholder="Summary Name"
+            onChange={(e) =>
+              handleChangeSummaryName(
+                currentUser.uid,
+                summaryKey,
+                e.target.value
+              )
+            }
+            value={value && value.name ? value.name : ""}
+            disabled
+          />
+
+          <DropdownButton
+            as={InputGroup.Append}
+            variant="outline-secondary"
+            title="Menu"
+            id={`input-group-dropdown-${summaryKey}`}
+          >
+            <Dropdown.Item onClick={() => editSummaryName(summaryKey)}>
+              rename
+            </Dropdown.Item>
+            <Dropdown.Item
+              onClick={() => handleShowModalChangeSummary(summaryKey)}
+            >
+              select records
+            </Dropdown.Item>
+            <Dropdown.Item>send</Dropdown.Item>
+            <Dropdown.Divider />
+            <Dropdown.Item
+              className="summary-page_delete-text"
+              onClick={() => handleDelete({ summaryUid: summaryKey })}
+            >
+              delete
+            </Dropdown.Item>
+          </DropdownButton>
+        </InputGroup>
+
+        <Table responsive hover size="sm">
+          <thead>
+            <tr>
+              <th colSpan="2">Revír</th>
+              <th rowSpan="2">Číslo podrevíru</th>
+              {finalfishKind.map((fish, index) => (
+                <th
+                  className="summary-page_kind"
+                  colSpan="2"
+                  key={`fish-kind-${index}`}
+                >{`${fish}`}</th>
+              ))}
+              <th rowSpan="2">Počet docházek</th>
+            </tr>
+            <tr>
+              <th>Číslo</th>
+              <th>Název</th>
+              {finalfishKind.map((f, index) => {
+                return [
+                  <th key={`fish-ks-${index}`}>Ks</th>,
+                  <th key={`fish-kg-${index}`}>Kg</th>,
+                ];
+              })}
+            </tr>
+          </thead>
+          <tbody>
+            {!!recordsTogether &&
+              !!recordsTogether[summaryKey] &&
+              Object.entries(recordsTogether[summaryKey]).map(
+                ([rowDataKey, rowDataValue]) => (
+                  <tr key={rowDataKey}>
+                    <td className="summary-page_number-a-action">
+                      {rowDataValue.districtNumber}{" "}
+                      {rowDataValue.alertMissingData.some((a) => a === true) ? (
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={
+                            <Tooltip id="tooltip-disabled">
+                              chybějící povinná data: druh ryby, váha nebo počet
+                              kusů
+                            </Tooltip>
+                          }
+                        >
+                          <span className="d-inline-block summary-page_note">
+                            <img
+                              src="/exclamation-red.svg"
+                              alt="exclamation"
+                              width="16px"
+                              height="16px"
+                            ></img>
+                          </span>
+                        </OverlayTrigger>
+                      ) : (
+                        ""
+                      )}
+                    </td>
+                    <td> </td>
+                    <td>
+                      {rowDataValue.subdistrictNumber
+                        ? rowDataValue.subdistrictNumber
+                        : "-"}
+                    </td>
+                    {finalfishKind.map((fish, index) => {
+                      return [
+                        <td key={`fish-td-1-${index}`}>
+                          {rowDataValue &&
+                          rowDataValue.fishes &&
+                          rowDataValue.fishes[fish.toLowerCase()] &&
+                          rowDataValue.fishes[fish.toLowerCase()].pieces
+                            ? rowDataValue.fishes[fish.toLowerCase()].pieces
+                            : "-"}
+                        </td>,
+                        <td key={`fish-td-2-${index}`}>
+                          {rowDataValue &&
+                          rowDataValue.fishes &&
+                          rowDataValue.fishes[fish.toLowerCase()] &&
+                          rowDataValue.fishes[fish.toLowerCase()].kilograms
+                            ? rowDataValue.fishes[fish.toLowerCase()].kilograms
+                            : "-"}
+                        </td>,
+                      ];
+                    })}
+
+                    <td>{rowDataValue.visited}</td>
+                  </tr>
+                )
+              )}
+          </tbody>
+        </Table>
+      </div>
+    );
+  };
+
   useEffect(() => {
     isMountedRef.current = true;
     localStorage.setItem("lastLocation", "/summary");
@@ -338,10 +504,6 @@ const SummaryPage = () => {
     if (!storeState.summaries || !storeState.records) {
       updateData();
     }
-    //  else {
-    //   // !! infinite loop -> refactoring needed
-    //   prepareData(storeState.records, storeState.summaries);
-    // }
 
     return () => (isMountedRef.current = false);
   }, [storeState.records, storeState.summaries, updateData]);
@@ -375,146 +537,9 @@ const SummaryPage = () => {
         <div className="summary-page_summaries">
           {!!storeState.summaries &&
             !!Object.entries(storeState.summaries).length &&
-            Object.entries(storeState.summaries).map(([summaryKey, value]) => (
-              <div key={summaryKey} className="summary-page_table">
-                <InputGroup className="summary-page_record-name">
-                  <FormControl
-                    id={`${summaryKey}-summaryName`}
-                    name="summaryName"
-                    type="text"
-                    placeholder="Summary Name"
-                    onChange={(e) =>
-                      handleChangeSummaryName(
-                        currentUser.uid,
-                        summaryKey,
-                        e.target.value
-                      )
-                    }
-                    value={value && value.name ? value.name : ""}
-                    disabled
-                  />
-
-                  <DropdownButton
-                    as={InputGroup.Append}
-                    variant="outline-secondary"
-                    title="Menu"
-                    id={`input-group-dropdown-${summaryKey}`}
-                  >
-                    <Dropdown.Item onClick={() => editSummaryName(summaryKey)}>
-                      rename
-                    </Dropdown.Item>
-                    <Dropdown.Item
-                      onClick={() => handleShowModalChangeSummary(summaryKey)}
-                    >
-                      select records
-                    </Dropdown.Item>
-                    <Dropdown.Item>send</Dropdown.Item>
-                    <Dropdown.Divider />
-                    <Dropdown.Item
-                      className="summary-page_delete-text"
-                      onClick={() => handleDelete({ summaryUid: summaryKey })}
-                    >
-                      delete
-                    </Dropdown.Item>
-                  </DropdownButton>
-                </InputGroup>
-
-                <Table responsive hover size="sm">
-                  <thead>
-                    <tr>
-                      <th colSpan="2">Revír</th>
-                      <th rowSpan="2">Číslo podrevíru</th>
-                      {fishKind.map((fish, index) => (
-                        <th
-                          className="summary-page_kind"
-                          colSpan="2"
-                          key={`fish-kind-${index}`}
-                        >{`${index + 1} ${fish}`}</th>
-                      ))}
-                      <th rowSpan="2">Počet docházek</th>
-                    </tr>
-                    <tr>
-                      <th>Číslo</th>
-                      <th>Název</th>
-                      {fishKind.map((f, index) => {
-                        return [
-                          <th key={`fish-ks-${index}`}>Ks</th>,
-                          <th key={`fish-kg-${index}`}>Kg</th>,
-                        ];
-                      })}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {!!recordsTogether &&
-                      !!recordsTogether[summaryKey] &&
-                      Object.entries(recordsTogether[summaryKey]).map(
-                        ([rowDataKey, rowDataValue]) => (
-                          <tr key={rowDataKey}>
-                            <td className="summary-page_number-a-action">
-                              {rowDataValue.districtNumber}{" "}
-                              {rowDataValue.alertMissingData.some(
-                                (a) => a === true
-                              ) ? (
-                                <OverlayTrigger
-                                  placement="top"
-                                  overlay={
-                                    <Tooltip id="tooltip-disabled">
-                                      chybějící povinná data: druh ryby, váha
-                                      nebo počet kusů
-                                    </Tooltip>
-                                  }
-                                >
-                                  <span className="d-inline-block summary-page_note">
-                                    <img
-                                      src="/exclamation-red.svg"
-                                      alt="exclamation"
-                                      width="16px"
-                                      height="16px"
-                                    ></img>
-                                  </span>
-                                </OverlayTrigger>
-                              ) : (
-                                ""
-                              )}
-                            </td>
-                            <td> </td>
-                            <td>
-                              {rowDataValue.subdistrictNumber
-                                ? rowDataValue.subdistrictNumber
-                                : "-"}
-                            </td>
-                            {fishKind.map((fish, index) => {
-                              return [
-                                <td key={`fish-td-1-${index}`}>
-                                  {rowDataValue &&
-                                  rowDataValue.fishes &&
-                                  rowDataValue.fishes[fish.toLowerCase()] &&
-                                  rowDataValue.fishes[fish.toLowerCase()].pieces
-                                    ? rowDataValue.fishes[fish.toLowerCase()]
-                                        .pieces
-                                    : "-"}
-                                </td>,
-                                <td key={`fish-td-2-${index}`}>
-                                  {rowDataValue &&
-                                  rowDataValue.fishes &&
-                                  rowDataValue.fishes[fish.toLowerCase()] &&
-                                  rowDataValue.fishes[fish.toLowerCase()]
-                                    .kilograms
-                                    ? rowDataValue.fishes[fish.toLowerCase()]
-                                        .kilograms
-                                    : "-"}
-                                </td>,
-                              ];
-                            })}
-
-                            <td>{rowDataValue.visited}</td>
-                          </tr>
-                        )
-                      )}
-                  </tbody>
-                </Table>
-              </div>
-            ))}
+            Object.entries(storeState.summaries).map(([summaryKey, value]) =>
+              renderSummaryTable(summaryKey, value)
+            )}
         </div>
 
         <Modal
