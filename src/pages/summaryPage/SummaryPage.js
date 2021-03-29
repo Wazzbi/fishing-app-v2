@@ -67,9 +67,17 @@ const SummaryPage = () => {
               )
               .map(([recordKey, recoredValue]) =>
                 // získej čistá data rows
-                Object.entries(recoredValue.data).map(([rowKey, rowValue]) =>
-                  recordsArray.push(rowValue)
-                )
+                {
+                  if (recoredValue && recoredValue.data) {
+                    Object.entries(recoredValue.data).map(
+                      ([rowKey, rowValue]) => {
+                        if (rowValue) {
+                          recordsArray.push(rowValue);
+                        }
+                      }
+                    );
+                  }
+                }
               );
 
             recordsArray.map((row, index) => {
