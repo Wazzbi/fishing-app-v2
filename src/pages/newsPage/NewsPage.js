@@ -44,6 +44,14 @@ const NewsPage = ({ history }) => {
   const isMountedRef = useRef(true);
   const compress = new Compress();
 
+  function storePosition() {
+    let scrollBarPosition = window.pageYOffset | document.body.scrollTop;
+    dispatch({
+      type: "NEWS_SCROLL_POSITION",
+      payload: scrollBarPosition,
+    });
+  }
+
   const handleClose = () => {
     if (isMountedRef.current) {
       setUploadImages([]);
@@ -297,6 +305,15 @@ const NewsPage = ({ history }) => {
     }
     return element;
   };
+
+  useEffect(() => {
+    window.addEventListener("scroll", storePosition);
+
+    if (storeState.newsPageScrollPosition) {
+      window.scrollTo(0, storeState.newsPageScrollPosition);
+    }
+    return () => window.removeEventListener("scroll", storePosition);
+  }, []);
 
   useEffect(() => {
     isMountedRef.current = true;

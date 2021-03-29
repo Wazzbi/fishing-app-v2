@@ -3,6 +3,7 @@ export const initialState = {
   posts: null,
   records: null,
   summaries: null,
+  newsPageScrollPosition: null,
 };
 
 const Reducer = (state, action) => {
@@ -118,6 +119,11 @@ const Reducer = (state, action) => {
           ...state.summaries,
           [action.payload.summaryUid]: action.payload.updatedSummary,
         },
+      };
+    case "NEWS_SCROLL_POSITION":
+      return {
+        ...state,
+        newsPageScrollPosition: action.payload,
       };
 
     default:
