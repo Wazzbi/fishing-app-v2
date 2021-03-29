@@ -74,9 +74,7 @@ const NewsPage = ({ history }) => {
         " " +
         currentdate.getHours() +
         ":" +
-        currentdate.getMinutes() +
-        ":" +
-        currentdate.getSeconds();
+        currentdate.getMinutes();
 
       const created = datetime;
 
@@ -152,8 +150,8 @@ const NewsPage = ({ history }) => {
         let bigImage = await compress.compress(files, {
           size: 1.5,
           quality: 0.75,
-          maxWidth: 600,
-          maxHeight: 600,
+          // maxWidth: 600,
+          // maxHeight: 600,
           // resize: true,
         });
         img1 = bigImage[0];
@@ -224,7 +222,6 @@ const NewsPage = ({ history }) => {
         dataLength={postsRender.length}
         next={fetchMorePosts}
         hasMore={postCount !== postsRender.length}
-        style={{ padding: "5px" }}
         loader={
           <div style={{ textAlign: "center" }}>
             <Spinner animation="border" variant="success" />
@@ -243,31 +240,34 @@ const NewsPage = ({ history }) => {
             onClick={() => changeRoute(postKey)}
           >
             <div className="news-page_header">
-              <div className="news-page_post-icon">
-                <Jdenticon size="30" value={postValue.username || ""} />
-              </div>
               <div className="news-page_header-title">
+                <div className="news-page_header-title-first-row">
+                  <Jdenticon size="30" value={postValue.username || ""} />
+                  <small>
+                    {postValue.username} {" | "} {postValue.created}
+                  </small>
+                </div>
                 <span>{postValue.title}</span>
-                <br />
-                <small>
-                  {postValue.username} {" | "} {postValue.created}
-                </small>
               </div>
             </div>
-            <div
-              id={`${postKey}-post-text`}
-              className="news-page_post-text"
-              dangerouslySetInnerHTML={{ __html: postValue.text }}
-            ></div>
-            <div className="news-page_post-text-overlay">
-              <div className="news-page_post-text-overlay-icon-group-left">
-                <img src="/comment.svg" alt="" height="15px" width="15px"></img>
-                <span>1526</span>
-                <img src="/heart.svg" alt="" height="15px" width="15px"></img>
-                <span>99.1k</span>
+            <div className="news-page_post-text-wrapper">
+              <div
+                id={`${postKey}-post-text`}
+                className="news-page_post-text"
+                dangerouslySetInnerHTML={{ __html: postValue.text }}
+              ></div>
+              <div className="news-page_post-text-overlay"></div>
+            </div>
+
+            <div className="news-page_post-footer">
+              <div className="news-page_post-footer-icon-group-left">
+                <img src="/comment.svg" alt="" height="16px" width="16px"></img>
+                <span style={{ color: "#808080" }}>1526</span>
+                <img src="/heart.svg" alt="" height="16px" width="16px"></img>
+                <span style={{ color: "#808080" }}>99.1k</span>
               </div>
 
-              <img src="/right.svg" alt="" height="15px" width="15px"></img>
+              <img src="/right.svg" alt="" height="16px" width="15px"></img>
             </div>
           </div>
         ))}
@@ -365,7 +365,7 @@ const NewsPage = ({ history }) => {
           <Form onSubmit={handleSubmit}>
             <Form.Group id="inputImages">{renderInputImageFields()}</Form.Group>
             <Button
-              variant="primary"
+              variant="success"
               onClick={() => {
                 setInputImageFieldCounter(inputImageFieldCounter + 1);
                 uploadImages[inputImageFieldCounter] = {};
@@ -412,7 +412,7 @@ const NewsPage = ({ history }) => {
               />
             </Form.Group>
 
-            <Button variant="primary" type="submit">
+            <Button variant="success" type="submit">
               Submit
             </Button>
           </Form>

@@ -97,28 +97,26 @@ const PostPage = (props) => {
       <div className="post-page_main">
         <div className="post-page-post">
           <Button
-            variant="outline-primary"
+            variant="outline-dark"
             as={Link}
             to={"/news"}
             className="post-page_back-btn-icon"
-          >
-            <img src="/back-arrow.png" alt="" width="15px" height="15px"></img>{" "}
-            Back
-          </Button>
+            title="Back"
+          ></Button>
           {post && (
             <div>
-              <h1>{post.title}</h1>
+              <p className="post-page_title">{post.title}</p>
               <p>
-                <small>
+                <small style={{ color: "#808080" }}>
                   {post.username} {" | "} {post.created}
                 </small>
               </p>
               <p className="post-page_icons-group">
-                <Badge variant="primary">{post.category}</Badge>
+                <Badge variant="dark">{post.category}</Badge>
                 <img src="/comment.svg" alt="" height="15px" width="15px"></img>
-                <small>1526</small>
+                <small style={{ color: "#808080" }}>1526</small>
                 <img src="/heart.svg" alt="" height="15px" width="15px"></img>
-                <small>99.1k</small>
+                <small style={{ color: "#808080" }}>99.1k</small>
               </p>
 
               <div
@@ -160,6 +158,7 @@ const PostPage = (props) => {
                 <Carousel
                   controls={imagesLarge.length > 1 ? true : false}
                   defaultActiveIndex={activeImageCarousel}
+                  interval={null}
                 >
                   {imagesLarge.map((imageUrl, index) => (
                     <Carousel.Item key={`carousel-item-${index}`}>

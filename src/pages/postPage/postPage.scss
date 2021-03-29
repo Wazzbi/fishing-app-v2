@@ -11,6 +11,17 @@
   box-shadow: 1px 1px 5px 0px #c1c1c1;
 }
 
+.post-page_title {
+  font-size: 2.5rem;
+  line-height: 45px;
+
+  @media screen and (max-width: 500px) {
+    font-size: 1.5rem;
+    line-height: 25px;
+    margin-bottom: 10px;
+  }
+}
+
 .post-page_image {
   width: 100px;
   height: 100px;
@@ -25,7 +36,7 @@
   flex-wrap: wrap;
   justify-content: flex-start;
   align-items: center;
-  border-top: 2px solid black;
+  border-top: 2px solid #e0e0e0;
 }
 
 .post-page_modal-images {
@@ -36,6 +47,7 @@
 
 .post-page_modal-images-modal {
   background-color: #333333;
+  min-height: 300px;
 
   // bootstrap override
   .close {
@@ -46,19 +58,20 @@
 
 .post-page_back-btn-icon {
   transition: all 250ms;
-
-  img {
-    vertical-align: baseline;
-
-    filter: invert(32%) sepia(83%) saturate(3434%) hue-rotate(200deg)
-      brightness(103%) contrast(106%);
-  }
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url("/back.svg");
+  background-size: 20px;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-bottom: 15px;
 
   &:hover {
-    img {
-      filter: invert(100%) sepia(0%) saturate(2%) hue-rotate(67deg)
-        brightness(108%) contrast(101%);
-    }
+    background-image: url("/back-active.svg");
   }
 }
 
