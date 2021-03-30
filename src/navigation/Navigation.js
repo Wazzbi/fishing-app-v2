@@ -56,7 +56,7 @@ const Navigation = () => {
               </Nav>
 
               <Button className="navigation_btn" onClick={signOut}>
-                Sign out
+                Odhlásit
               </Button>
             </Navbar.Collapse>
           </Navbar>
