@@ -22,6 +22,10 @@
       background-color: $quaternary;
       color: $primary !important;
     }
+
+    @media screen and (max-width: 900px) {
+      margin: 10px;
+    }
   }
 }
 

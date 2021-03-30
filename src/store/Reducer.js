@@ -30,7 +30,7 @@ const Reducer = (state, action) => {
         ...state,
         records: {
           ...state.records,
-          [action.payload.id]: { name: "New Record" },
+          [action.payload.id]: { name: "Nový Záznam" },
         },
       };
     case "DELETE_RECORD":
@@ -100,7 +100,7 @@ const Reducer = (state, action) => {
         ...state,
         summaries: {
           ...state.summaries,
-          [action.payload.id]: { name: "New Summary" },
+          [action.payload.id]: { name: "Nový souhrn" },
         },
       };
     case "DELETE_SUMMARY":

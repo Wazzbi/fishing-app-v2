@@ -210,7 +210,7 @@ class firebaseService {
       .child(id)
       .set(
         {
-          name: "New Record",
+          name: "Nový Záznam",
         },
         (err) => console.log(err ? "error while pushing" : "successful push")
       );
@@ -247,7 +247,7 @@ class firebaseService {
       .child(summaryId)
       .set(
         {
-          name: "New Summary",
+          name: "Nový Souhrn",
         },
         (err) => console.log(err ? "error while pushing" : "successful push")
       );

@@ -107,16 +107,20 @@ const PostPage = (props) => {
             <div>
               <p className="post-page_title">{post.title}</p>
               <p>
-                <small style={{ color: "#808080" }}>
+                <small style={{ color: "#808080", fontFamily: "poppins" }}>
                   {post.username} {" | "} {post.created}
                 </small>
               </p>
               <p className="post-page_icons-group">
                 <Badge variant="dark">{post.category}</Badge>
                 <img src="/comment.svg" alt="" height="15px" width="15px"></img>
-                <small style={{ color: "#808080" }}>1526</small>
+                <small style={{ color: "#808080", fontFamily: "poppins" }}>
+                  1526
+                </small>
                 <img src="/heart.svg" alt="" height="15px" width="15px"></img>
-                <small style={{ color: "#808080" }}>99.1k</small>
+                <small style={{ color: "#808080", fontFamily: "poppins" }}>
+                  99.1k
+                </small>
               </p>
 
               <div

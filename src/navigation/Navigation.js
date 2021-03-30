@@ -33,25 +33,25 @@ const Navigation = () => {
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="ml-auto">
                 <Nav.Link as={Link} to={"/home"}>
-                  Home
+                  Domů
                 </Nav.Link>
                 <Nav.Link as={Link} to={"/news"}>
-                  News
+                  Příspěvky
                 </Nav.Link>
                 <Nav.Link as={Link} to={"/record"}>
-                  Record
+                  Záznamy
                 </Nav.Link>
                 <Nav.Link as={Link} to={"/summary"}>
-                  Summary
+                  Souhrny
                 </Nav.Link>
                 <Nav.Link as={Link} to={"/weather"}>
-                  Weather
+                  Počasí
                 </Nav.Link>
                 <Nav.Link as={Link} to={"/user"}>
-                  User
+                  Účet
                 </Nav.Link>
                 <Nav.Link as={Link} to={"/settings"}>
-                  Settings
+                  Nastavení
                 </Nav.Link>
               </Nav>
 

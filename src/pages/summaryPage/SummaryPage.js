@@ -394,20 +394,20 @@ const SummaryPage = () => {
             id={`input-group-dropdown-${summaryKey}`}
           >
             <Dropdown.Item onClick={() => editSummaryName(summaryKey)}>
-              rename
+              Přejmenovat souhrn
             </Dropdown.Item>
             <Dropdown.Item
               onClick={() => handleShowModalChangeSummary(summaryKey)}
             >
-              select records
+              Vybrat záznamy
             </Dropdown.Item>
-            <Dropdown.Item>send</Dropdown.Item>
+            <Dropdown.Item>Poslat na mail</Dropdown.Item>
             <Dropdown.Divider />
             <Dropdown.Item
               className="summary-page_delete-text"
               onClick={() => handleDelete({ summaryUid: summaryKey })}
             >
-              delete
+              Smazat
             </Dropdown.Item>
           </DropdownButton>
         </InputGroup>
@@ -539,7 +539,7 @@ const SummaryPage = () => {
         {loading && <Spinner animation="border" variant="success" />}
         {!!storeState.summaries &&
           Object.entries(storeState.summaries).length === 0 && (
-            <p>Add some summary dude!</p>
+            <span>Zatím nejsou žádné souhrny</span>
           )}
 
         <div className="summary-page_summaries">
@@ -562,10 +562,10 @@ const SummaryPage = () => {
           <Modal.Body>{onDelete && onDelete.text}</Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleDeleteClose}>
-              Close
+              Zavřít
             </Button>
             <Button variant="outline-danger" onClick={handleCloseAndDelete}>
-              DELETE
+              SMAZAT
             </Button>
           </Modal.Footer>
         </Modal>
@@ -579,7 +579,7 @@ const SummaryPage = () => {
           centered
         >
           <Modal.Header closeButton>
-            <Modal.Title>Vyberte zápisy</Modal.Title>
+            <Modal.Title>Vyberte Záznamy</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form onSubmit={handleSubmitChange}>
@@ -594,6 +594,7 @@ const SummaryPage = () => {
                     onChange={() => changeRecordInSummary(recordKey)}
                   />
                 ))}
+              <br />
               <Button
                 variant="success"
                 type="submit"

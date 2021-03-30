@@ -339,7 +339,7 @@ const RecordPage = () => {
         {loading && <Spinner animation="border" variant="success" />}
         {!!storeState.records &&
           Object.entries(storeState.records).length === 0 && (
-            <p>No records... Add some :-)</p>
+            <span>Zatím nejsou žádné záznamy</span>
           )}
         <div className="record-page_records">
           {!!storeState.records &&
@@ -370,10 +370,10 @@ const RecordPage = () => {
                     id={`input-group-dropdown-${recordKey}`}
                   >
                     <Dropdown.Item onClick={() => editRecordName(recordKey)}>
-                      rename
+                      Přejmenovat záznam
                     </Dropdown.Item>
                     <Dropdown.Item onClick={() => handleAdd(recordKey)}>
-                      add row
+                      Přidat řádek
                     </Dropdown.Item>
                     <Dropdown.Divider />
                     <Dropdown.Item
@@ -382,7 +382,7 @@ const RecordPage = () => {
                         handleDelete("record", { recordUid: recordKey })
                       }
                     >
-                      delete
+                      Smazat
                     </Dropdown.Item>
                   </DropdownButton>
                 </InputGroup>
@@ -390,12 +390,12 @@ const RecordPage = () => {
                 <Table responsive hover size="sm">
                   <thead>
                     <tr>
-                      <th>Actions</th>
-                      <th>Notes</th>
-                      <th>Date</th>
-                      <th>District</th>
-                      <th>Subdistrict</th>
-                      <th>Kind</th>
+                      <th>Akce</th>
+                      <th>Pozn.</th>
+                      <th>Datum</th>
+                      <th>Okresek</th>
+                      <th>Podokresek</th>
+                      <th>Druh</th>
                       <th>Ks</th>
                       <th>Kg</th>
                       <th>Cm</th>
@@ -581,10 +581,10 @@ const RecordPage = () => {
           <Modal.Body>{onDelete && onDelete.text}</Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleDeleteClose}>
-              Close
+              Zavřít
             </Button>
             <Button variant="outline-danger" onClick={handleCloseAndDelete}>
-              DELETE
+              SMAZAT
             </Button>
           </Modal.Footer>
         </Modal>
@@ -605,7 +605,7 @@ const RecordPage = () => {
               onSubmit={!!editRowData ? handleSubmitChange : handleSubmitAdd}
             >
               <Form.Group>
-                <Form.Label>Date</Form.Label>
+                <Form.Label>Datum</Form.Label>
                 <Form.Control
                   type="date"
                   name="date"
@@ -616,7 +616,7 @@ const RecordPage = () => {
               </Form.Group>
 
               <Form.Group>
-                <Form.Label>District Number</Form.Label>
+                <Form.Label>Číslo Okresku</Form.Label>
                 <Form.Control
                   required
                   type="number"
@@ -633,13 +633,10 @@ const RecordPage = () => {
                     )
                   }
                 />
-                <Form.Text className="text-muted">
-                  We'll never share your email with anyone else.
-                </Form.Text>
               </Form.Group>
 
               <Form.Group>
-                <Form.Label>Subdistrict Number</Form.Label>
+                <Form.Label>Číslo Podokresku</Form.Label>
                 <Form.Control
                   required
                   type="number"
@@ -662,7 +659,7 @@ const RecordPage = () => {
               </Form.Group>
 
               <Form.Group>
-                <Form.Label>Kind</Form.Label>
+                <Form.Label>Druh</Form.Label>
                 <Form.Control
                   type="text"
                   name="kind"
@@ -674,7 +671,7 @@ const RecordPage = () => {
               </Form.Group>
 
               <Form.Group>
-                <Form.Label>Pieces</Form.Label>
+                <Form.Label>Kusů</Form.Label>
                 <Form.Control
                   type="number"
                   name="pieces"
@@ -693,7 +690,7 @@ const RecordPage = () => {
               </Form.Group>
 
               <Form.Group>
-                <Form.Label>Kilograms</Form.Label>
+                <Form.Label>Váha (Kg)</Form.Label>
                 <Form.Control
                   type="number"
                   step=".01"
@@ -713,7 +710,7 @@ const RecordPage = () => {
               </Form.Group>
 
               <Form.Group>
-                <Form.Label>Centimeters</Form.Label>
+                <Form.Label>Délka (Cm)</Form.Label>
                 <Form.Control
                   type="number"
                   step=".01"

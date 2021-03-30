@@ -158,9 +158,9 @@ const NewsPage = ({ history }) => {
         let bigImage = await compress.compress(files, {
           size: 1.5,
           quality: 0.75,
-          // maxWidth: 600,
-          // maxHeight: 600,
-          // resize: true,
+          maxWidth: 800,
+          maxHeight: 800,
+          resize: true,
         });
         img1 = bigImage[0];
         base64str = img1.data;
@@ -240,6 +240,7 @@ const NewsPage = ({ history }) => {
             <b>Yay! You have seen it all</b>
           </p>
         }
+        style={{ overflow: "hidden" }}
       >
         {postsRender.map(([postKey, postValue]) => (
           <div
