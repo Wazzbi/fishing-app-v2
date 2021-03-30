@@ -180,7 +180,7 @@ const RecordPage = () => {
       date: date.value,
       districtNumber: districtNumber.value,
       subdistrictNumber: subdistrictNumber.value,
-      kind: kind.value,
+      kind: capitalizeFirstLetter(kind.value),
       pieces: pieces.value,
       kilograms: kilograms.value,
       centimeters: centimeters.value,
@@ -290,12 +290,16 @@ const RecordPage = () => {
       date: date.value,
       districtNumber: districtNumber.value,
       subdistrictNumber: subdistrictNumber.value,
-      kind: kind.value,
+      kind: capitalizeFirstLetter(kind.value),
       pieces: pieces.value,
       kilograms: kilograms.value,
       centimeters: centimeters.value,
     });
   };
+
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
 
   const handleAddClose = () => {
     if (isMountedRef.current) {
