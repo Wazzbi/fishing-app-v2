@@ -415,8 +415,8 @@ const SummaryPage = () => {
         <Table responsive hover size="sm">
           <thead>
             <tr>
-              <th colSpan="2">Revír</th>
-              <th rowSpan="2">Číslo podrevíru</th>
+              <th colSpan="3">Revír</th>
+
               {finalfishKind.map((fish, index) => (
                 <th
                   className="summary-page_kind"
@@ -428,7 +428,8 @@ const SummaryPage = () => {
             </tr>
             <tr>
               <th>Číslo</th>
-              <th>Název</th>
+              <th style={{ minWidth: "85px" }}>Název</th>
+              <th style={{ minWidth: "110px" }}>Podrevíru</th>
               {finalfishKind.map((f, index) => {
                 return [
                   <th key={`fish-ks-${index}`}>Ks</th>,
@@ -468,7 +469,7 @@ const SummaryPage = () => {
                         ""
                       )}
                     </td>
-                    <td> </td>
+                    <td>-</td>
                     <td>
                       {rowDataValue.subdistrictNumber
                         ? rowDataValue.subdistrictNumber

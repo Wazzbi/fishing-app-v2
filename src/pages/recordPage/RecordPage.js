@@ -397,8 +397,8 @@ const RecordPage = () => {
                       <th>Akce</th>
                       <th>Pozn.</th>
                       <th>Datum</th>
-                      <th>Okresek</th>
-                      <th>Podokresek</th>
+                      <th>Revír</th>
+                      <th>Podrevír</th>
                       <th>Druh</th>
                       <th>Ks</th>
                       <th>Kg</th>
@@ -620,7 +620,7 @@ const RecordPage = () => {
               </Form.Group>
 
               <Form.Group>
-                <Form.Label>Číslo Okresku</Form.Label>
+                <Form.Label>Číslo Revíru</Form.Label>
                 <Form.Control
                   required
                   type="number"
@@ -640,7 +640,7 @@ const RecordPage = () => {
               </Form.Group>
 
               <Form.Group>
-                <Form.Label>Číslo Podokresku</Form.Label>
+                <Form.Label>Číslo Podrevíru</Form.Label>
                 <Form.Control
                   required
                   type="number"
@@ -658,7 +658,7 @@ const RecordPage = () => {
                   }
                 />
                 <Form.Text className="text-muted">
-                  Pokud podokresek nemá číslo vyplňte nulu.
+                  Pokud podrevíru nemá číslo vyplňte nulu.
                 </Form.Text>
               </Form.Group>
 

@@ -63,18 +63,23 @@ const SignUpPage = ({ history }) => {
     [history]
   );
 
+  const goToLandingPage = () => {
+    localStorage.setItem("lastLocation", "/");
+    history.push("/");
+  };
+
   useEffect(() => {
-    localStorage.setItem("lastLocation", "/signup");
+    localStorage.setItem("lastLocation", "/");
   }, []);
 
   return (
     <div className="sign-up_main">
       <div className="sign-up_form">
-        <h1 className="sign-up_title">Sign up</h1>
+        <h1 className="sign-up_title">Nový účet</h1>
 
         <Form onSubmit={handleSignUp}>
           <Form.Group controlId="formBasicUsername">
-            <Form.Label>Username</Form.Label>
+            <Form.Label>Uživatelské jméno</Form.Label>
             <Form.Control
               type="text"
               placeholder="Username"
@@ -94,7 +99,7 @@ const SignUpPage = ({ history }) => {
           </Form.Group>
 
           <Form.Group controlId="formBasicPassword">
-            <Form.Label>Password</Form.Label>
+            <Form.Label>Heslo</Form.Label>
             <Form.Control
               type="password"
               placeholder="Password"
@@ -102,15 +107,15 @@ const SignUpPage = ({ history }) => {
               name="password"
               required
             />
-            <Form.Text className="text-muted">Atleast 8 characters</Form.Text>
+            <Form.Text className="text-muted">Alespoň 8 znaků</Form.Text>
           </Form.Group>
 
           <div className="sign-up_btn-group">
-            <Button variant="outline-secondary" as={Link} to={"/"}>
-              Back
+            <Button variant="outline-secondary" onClick={goToLandingPage}>
+              Zpět
             </Button>
             <Button variant="success" type="submit">
-              Submit
+              Potvrdit
             </Button>
           </div>
         </Form>
