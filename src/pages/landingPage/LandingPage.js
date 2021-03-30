@@ -43,12 +43,16 @@ const LandingPage = ({ history, location }) => {
     } else {
       return (
         <div className="landing-page_main">
-          <h1>LandingPage</h1>
-          <br />
-          <br />
-          <Button variant="success" onClick={handleClick}>
-            Sign In
-          </Button>
+          <div className="landing-page_main-container">
+            <h3>Výtejte na rybářské aplikaci</h3>
+            <h1>
+              <b>Rybka</b>
+            </h1>
+            <br />
+            <Button variant="success" onClick={handleClick}>
+              Přihlásit
+            </Button>
+          </div>
         </div>
       );
     }
@@ -57,7 +61,7 @@ const LandingPage = ({ history, location }) => {
   useEffect(() => {
     localStorage.setItem("lastLocation", "/");
     redirect();
-  });
+  }, []);
 
   return <Content />;
 };

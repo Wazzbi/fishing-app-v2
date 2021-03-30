@@ -237,7 +237,7 @@ const NewsPage = ({ history }) => {
         }
         endMessage={
           <p style={{ textAlign: "center" }}>
-            <b>Yay! You have seen it all</b>
+            <b>Jaj! To je vše</b>
           </p>
         }
         style={{ overflow: "hidden" }}
@@ -297,7 +297,7 @@ const NewsPage = ({ history }) => {
           key={`form-file-${index}`}
           id={`input-image-${index}`}
           name="file"
-          label="Example file input"
+          label="Přiložit fotku"
           accept="image/*"
           onChange={(event) => handleChangeImage(event, index)}
         />
@@ -406,7 +406,7 @@ const NewsPage = ({ history }) => {
             </Button>
 
             <Form.Group>
-              <Form.Label>Category</Form.Label>
+              <Form.Label>Kategorie</Form.Label>
               <Form.Control as="select" name="category" required>
                 <option>Law</option>
                 <option>Post</option>
@@ -414,12 +414,12 @@ const NewsPage = ({ history }) => {
             </Form.Group>
 
             <Form.Group>
-              <Form.Label>Title</Form.Label>
+              <Form.Label>Titul</Form.Label>
               <Form.Control type="text" name="title" maxLength="60" required />
             </Form.Group>
 
             <Form.Group>
-              <Form.Label>Example textarea</Form.Label>
+              <Form.Label>Text příspěvku</Form.Label>
               <JoditEditor
                 ref={editor}
                 value={text}
@@ -431,7 +431,7 @@ const NewsPage = ({ history }) => {
             </Form.Group>
 
             <Button variant="success" type="submit">
-              Submit
+              Potvrdit
             </Button>
           </Form>
         </Modal.Body>

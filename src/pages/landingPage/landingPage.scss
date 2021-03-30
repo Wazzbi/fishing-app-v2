@@ -7,3 +7,26 @@
   align-items: center;
   background-image: url("/pattern.svg");
 }
+
+.landing-page_main-container {
+  max-width: 600px;
+  text-align: center;
+  padding: 50px;
+  backdrop-filter: blur(8px);
+  border-radius: 15px;
+  background-color: #80808014;
+
+  h3 {
+    font-size: 1.75rem;
+  }
+
+  @media screen and (max-width: 500px) {
+    max-width: 300px;
+    padding: 20px;
+
+    h3 {
+      font-size: 1rem;
+      margin-bottom: 20px;
+    }
+  }
+}

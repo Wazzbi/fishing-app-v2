@@ -29,6 +29,11 @@ const LoginPage = ({ history }) => {
     [history]
   );
 
+  const goToLandingPage = () => {
+    localStorage.setItem("lastLocation", "/");
+    history.push("/");
+  };
+
   const { currentUser } = useContext(AuthContext);
 
   useEffect(() => {
@@ -39,44 +44,47 @@ const LoginPage = ({ history }) => {
     <Redirect to="/home" />
   ) : (
     <div className="login-page_main">
-      <div className="login-page_form">
-        <h1 className="login-page_title">Log in</h1>
+      <div className="login-page_main-container">
+        <div className="login-page_form">
+          <h1 className="login-page_title">Přihlášení</h1>
 
-        <Form onSubmit={handleLogin}>
-          <Form.Group controlId="formBasicEmail">
-            <Form.Label>Email</Form.Label>
-            <Form.Control
-              type="email"
-              placeholder="Email"
-              name="email"
-              required
-            />
-          </Form.Group>
+          <Form onSubmit={handleLogin}>
+            <Form.Group controlId="formBasicEmail">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Email"
+                name="email"
+                required
+              />
+            </Form.Group>
 
-          <Form.Group controlId="formBasicPassword">
-            <Form.Label>Password</Form.Label>
-            <Form.Control
-              type="password"
-              placeholder="Password"
-              minLength="8"
-              name="password"
-              required
-            />
-          </Form.Group>
+            <Form.Group controlId="formBasicPassword">
+              <Form.Label>Heslo</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Heslo"
+                minLength="8"
+                name="password"
+                required
+              />
+            </Form.Group>
 
-          <div className="login-page_btn-group">
-            <Button variant="outline-secondary" as={Link} to={"/"}>
-              Back
-            </Button>
-            <Button variant="success" type="submit">
-              Submit
-            </Button>
-          </div>
-        </Form>
+            <div className="login-page_btn-group">
+              <Button variant="outline-secondary" onClick={goToLandingPage}>
+                Zpět
+              </Button>
+              <Button variant="success" type="submit">
+                Potvrdit
+              </Button>
+            </div>
+          </Form>
+        </div>
+        <br />
+        <Link to={"/signUp"}>Vytvořit nový účet</Link>
+        <br />
+        <Link to={"/forgotPassword"}>Reset hesla</Link>
       </div>
-      <br />
-      <Link to={"/signUp"}>Create new account</Link>
-      <Link to={"/forgotPassword"}>Reset Password</Link>
 
       <div className="login-page_notification">
         <Col style={{ width: "100%" }}>
