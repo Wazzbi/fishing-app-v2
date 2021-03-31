@@ -10,6 +10,8 @@ import { AuthContext } from "../../Auth";
 import "./summaryPage.scss";
 import { StoreContext } from "../../store/Store";
 import { fishKind } from "../../constants";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
@@ -343,6 +345,38 @@ const SummaryPage = () => {
     return self.indexOf(value) === index;
   };
 
+  // https://www.npmjs.com/package/jspdf-autotable
+  const exportSummary = () => {
+    // const newWindow = window.open();
+    // const content = `<b>hello world</b><button class="hide" onclick="window.print();"> Print </button><style scoped>@media print{.hide {display:none}}</style>`;
+    // newWindow.document.write(content);
+
+    const doc = new jsPDF("l", "mm", "a4");
+
+    // It can parse html:
+    // <table id="my-table"><!-- ... --></table>
+    // doc.autoTable({ html: "#my-table" });
+
+    // Or use javascript directly:
+    doc.autoTable({
+      theme: "grid",
+      headStyles: {
+        fillColor: [255, 255, 255],
+        textColor: [0, 0, 0],
+        lineColor: [0, 0, 0],
+        lineWidth: 1,
+      },
+      head: [["Name", "Email", "Country"]],
+      body: [
+        ["David", "david@example.com", "Sweden"],
+        ["Castille", "castille@example.com", "Spain"],
+        // ...
+      ],
+    });
+
+    doc.save("table.pdf");
+  };
+
   const renderSummaryTable = (summaryKey, value) => {
     let kindArray = [];
     let finalfishKind = [];
@@ -401,7 +435,7 @@ const SummaryPage = () => {
             >
               Vybrat záznamy
             </Dropdown.Item>
-            <Dropdown.Item>Poslat na mail</Dropdown.Item>
+            <Dropdown.Item onClick={exportSummary}>Uložit sumář</Dropdown.Item>
             <Dropdown.Divider />
             <Dropdown.Item
               className="summary-page_delete-text"

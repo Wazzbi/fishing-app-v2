@@ -68,6 +68,10 @@
 
 // bootstrap override
 .dropdown-item:active {
-  color: red;
   background-color: #e0e0e0;
+  color: black;
+}
+
+.summary-page_delete-text.dropdown-item:active {
+  color: red !important;
 }

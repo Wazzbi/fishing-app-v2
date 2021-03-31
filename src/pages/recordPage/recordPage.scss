@@ -69,8 +69,12 @@
 
 // bootstrap override
 .dropdown-item:active {
-  color: red;
   background-color: #e0e0e0;
+  color: black;
+}
+
+.record-page_delete-text.dropdown-item:active {
+  color: red;
 }
 
 // autocomplete potřeboval dostat nahoru aby byl vydět

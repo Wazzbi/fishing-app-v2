@@ -734,7 +734,7 @@ const RecordPage = () => {
               </Form.Group>
 
               <Button variant="success" type="submit">
-                Submit
+                Potvrdit
               </Button>
             </Form>
           </Modal.Body>
