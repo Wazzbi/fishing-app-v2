@@ -43,7 +43,11 @@ const HomePage = () => {
                 for calling extra attention.
               </p>
 
-              <Button className="home-page_ghoust-btn home-page_title-btn">
+              <Button
+                className="home-page_ghoust-btn home-page_title-btn"
+                as={Link}
+                to={"/titleArticle"}
+              >
                 Číst více
               </Button>
             </div>

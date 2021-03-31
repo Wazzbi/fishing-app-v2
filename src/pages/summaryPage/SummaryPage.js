@@ -359,12 +359,18 @@ const SummaryPage = () => {
 
     // Or use javascript directly:
     doc.autoTable({
-      theme: "grid",
+      theme: "plain",
       headStyles: {
         fillColor: [255, 255, 255],
         textColor: [0, 0, 0],
         lineColor: [0, 0, 0],
-        lineWidth: 1,
+        lineWidth: 0.25,
+      },
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+        textColor: [0, 0, 0],
+        lineColor: [0, 0, 0],
+        lineWidth: 0.25,
       },
       head: [["Name", "Email", "Country"]],
       body: [

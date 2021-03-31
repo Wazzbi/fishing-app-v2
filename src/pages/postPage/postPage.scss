@@ -4,7 +4,7 @@
 }
 
 .post-page-post {
-  padding: 10px;
+  padding: 20px;
   margin: 0 5px;
   background-color: white;
   border-radius: 10px;
@@ -12,6 +12,10 @@
 
   .modal-header {
     border-bottom: none;
+  }
+
+  @media screen and (max-width: 500px) {
+    padding: 10px;
   }
 }
 

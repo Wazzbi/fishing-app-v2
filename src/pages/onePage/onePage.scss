@@ -1,0 +1,87 @@
+// TODO identický s postPage teno file kdyžtak zrušit a odkazovat se na styly postPage
+
+.onePage-page_main {
+  max-width: 800px;
+  margin: 20px auto;
+}
+
+.onePage-page-post {
+  padding: 20px;
+  margin: 0 5px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 1px 1px 5px 0px #c1c1c1;
+
+  .modal-header {
+    border-bottom: none;
+  }
+
+  @media screen and (max-width: 500px) {
+    padding: 10px;
+  }
+}
+
+.onePage-page_title {
+  font-size: 2.5rem;
+  line-height: 45px;
+
+  @media screen and (max-width: 500px) {
+    font-size: 1.5rem;
+    line-height: 25px;
+    margin-bottom: 10px;
+  }
+}
+
+.onePage-page_image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.onePage-page_images-container {
+  width: 100%;
+  min-height: 120px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+  border-top: 2px solid #e0e0e0;
+}
+
+.onePage-page_modal-images {
+  width: 100%;
+  height: 80vh;
+  object-fit: contain;
+}
+
+.onePage-page_back-btn-icon {
+  transition: all 250ms;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url("/back.svg");
+  background-size: 20px;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-bottom: 15px;
+
+  &:hover {
+    background-image: url("/back-active.svg");
+  }
+}
+
+.onePage-page_icons-group {
+  display: flex;
+  align-items: center;
+  img {
+    margin: 0 5px 0 10px;
+  }
+}
+
+.onePage-page_text {
+  overflow: hidden;
+}
