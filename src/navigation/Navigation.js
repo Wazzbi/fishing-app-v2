@@ -50,8 +50,8 @@ const Navigation = () => {
                 <Nav.Link as={Link} to={"/user"}>
                   Účet
                 </Nav.Link>
-                <Nav.Link as={Link} to={"/settings"}>
-                  Nastavení
+                <Nav.Link as={Link} to={"/about"}>
+                  O aplikaci
                 </Nav.Link>
               </Nav>
 

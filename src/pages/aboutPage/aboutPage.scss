@@ -1,0 +1,27 @@
+// TODO identický s postPage teno file kdyžtak zrušit a odkazovat se na styly userPage
+
+.aboutPage-main {
+  max-width: 800px;
+  margin: 20px auto;
+}
+
+.aboutPage-container {
+  padding: 20px;
+  margin: 0 5px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 1px 1px 5px 0px #c1c1c1;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  @media screen and (max-width: 500px) {
+    padding: 20px 10px;
+  }
+
+  p {
+    font-family: "poppins";
+  }
+}

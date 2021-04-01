@@ -1,11 +1,22 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../Auth";
+import "./userPage.scss";
+
+import ButtonGroup from "react-bootstrap/ButtonGroup";
+import ToggleButton from "react-bootstrap/ToggleButton";
 
 // TODO change password z předešlé verze v gitu
 // TODO GET data tady a né v Auth.js ...
+// TODO barevné schéma ukládat do localStorage
 
 const UserPage = () => {
   const { currentUserData } = useContext(AuthContext);
+  const [radioValue, setRadioValue] = useState("1");
+
+  const radios = [
+    { name: "Světlé", value: "1" },
+    { name: "Tmavé", value: "2" },
+  ];
 
   useEffect(() => {
     localStorage.setItem("lastLocation", "/user");
@@ -13,13 +24,53 @@ const UserPage = () => {
 
   return (
     <>
-      <h1>UserPage</h1>
-      <br />
-      <p>
-        <b>{currentUserData && currentUserData.username}</b>
-      </p>
-      <p>{currentUserData && currentUserData.email}</p>
-      <p>{currentUserData && currentUserData.role}</p>
+      <div className="userPage-main">
+        <div className="userPage-container">
+          <h4>Obecné</h4>
+          <div className="userPage-flex-row">
+            <span className="userPage-row-title">Uživatelské jméno:</span>
+            <span className="userPage-row-value">
+              {currentUserData && currentUserData.username}
+            </span>
+          </div>
+          <div className="userPage-flex-row">
+            <span className="userPage-row-title">Přihlašovací email:</span>
+            <span className="userPage-row-value">
+              {currentUserData && currentUserData.email}
+            </span>
+          </div>
+          <div className="userPage-flex-row">
+            <span className="userPage-row-title">Uživatelská role:</span>
+            <span className="userPage-row-value">
+              {currentUserData && currentUserData.role}
+            </span>
+          </div>
+
+          <br />
+          <h4>Nastavení</h4>
+          <div className="userPage-flex-row">
+            <span className="userPage-row-title">Barevné schéma:</span>
+            <span className="userPage-row-value">
+              <ButtonGroup toggle>
+                {radios.map((radio, idx) => (
+                  <ToggleButton
+                    key={idx}
+                    type="radio"
+                    variant="outline-secondary"
+                    size="sm"
+                    name="radio"
+                    value={radio.value}
+                    checked={radioValue === radio.value}
+                    onChange={(e) => setRadioValue(e.currentTarget.value)}
+                  >
+                    {radio.name}
+                  </ToggleButton>
+                ))}
+              </ButtonGroup>
+            </span>
+          </div>
+        </div>
+      </div>
     </>
   );
 };

@@ -13,7 +13,7 @@ import SummaryPage from "./pages/summaryPage/SummaryPage";
 import NewsPage from "./pages/newsPage/NewsPage";
 import UserPage from "./pages/userPage/UserPage";
 import WeatherPage from "./pages/weatherPage/WeatherPage";
-import SettingPage from "./pages/settingPage/SettingPage";
+import AboutPage from "./pages/aboutPage/AboutPage";
 import PostPage from "./pages/postPage/PostPage";
 import Store from "./store/Store";
 import ForgotPasswordPage from "./pages/forgotPasswordPage/ForgotPasswordPage";
@@ -62,7 +62,7 @@ const App = () => {
               />
               <PrivateRoute exact path="/user" component={UserPage} />
               <PrivateRoute exact path="/weather" component={WeatherPage} />
-              <PrivateRoute exact path="/settings" component={SettingPage} />
+              <PrivateRoute exact path="/about" component={AboutPage} />
               <Redirect from="*" to="/" />
             </Store>
           </div>

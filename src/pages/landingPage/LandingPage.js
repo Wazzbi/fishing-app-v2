@@ -29,14 +29,14 @@ const LandingPage = ({ history, location }) => {
     if (lastLocation && lastLocation !== "/") {
       return (
         <div className="landing-page_main">
-          <h3>Loading...</h3>
+          <h3>Načítání...</h3>
           <Spinner animation="border" variant="success" />
         </div>
       );
     } else if (currentUser) {
       return (
         <div className="landing-page_main">
-          <h3>Logged user - redirect</h3>
+          <h3>Přihlášený uživatel - přechod na hlavní stránku</h3>
           <Spinner animation="border" variant="success" />
         </div>
       );

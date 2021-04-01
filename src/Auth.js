@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
   if (pending) {
     return (
       <div className="auth_main">
-        <h3>Loading</h3>
+        <h3>Načítání</h3>
         <Spinner animation="border" variant="success" />
       </div>
     );

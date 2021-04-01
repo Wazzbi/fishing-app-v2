@@ -1,0 +1,31 @@
+.userPage-main {
+  max-width: 800px;
+  margin: 20px auto;
+}
+
+.userPage-container {
+  padding: 20px;
+  margin: 0 5px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 1px 1px 5px 0px #c1c1c1;
+
+  @media screen and (max-width: 500px) {
+    padding: 20px 10px;
+  }
+}
+
+.userPage-flex-row {
+  display: flex;
+  flex-wrap: wrap;
+  line-height: 32px;
+}
+
+.userPage-row-title {
+  color: gray;
+  flex: 1 0 160px;
+}
+
+.userPage-row-value {
+  flex: 10 0 160px;
+}
