@@ -18,6 +18,8 @@ import PostPage from "./pages/postPage/PostPage";
 import Store from "./store/Store";
 import ForgotPasswordPage from "./pages/forgotPasswordPage/ForgotPasswordPage";
 import TitleArticle from "./pages/onePage/TitleArticle";
+import PartnerArticle from "./pages/onePage/PartnerArticle";
+import ActualArticle from "./pages/onePage/ActualArticle";
 
 // TODO localStorage je hnusně na každé stránce - určitě to jde udělat globálně
 
@@ -47,6 +49,16 @@ const App = () => {
                 exact
                 path="/titleArticle"
                 component={TitleArticle}
+              />
+              <PrivateRoute
+                exact
+                path="/partnerArticle"
+                component={PartnerArticle}
+              />
+              <PrivateRoute
+                exact
+                path="/actualArticle"
+                component={ActualArticle}
               />
               <PrivateRoute exact path="/user" component={UserPage} />
               <PrivateRoute exact path="/weather" component={WeatherPage} />

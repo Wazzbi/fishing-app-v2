@@ -77,7 +77,13 @@ const HomePage = () => {
             </div>
 
             <div className="home-page_card-text-btn-wrapper">
-              <Button className="home-page_ghoust-btn">Číst více</Button>
+              <Button
+                className="home-page_ghoust-btn"
+                as={Link}
+                to={"/partnerArticle"}
+              >
+                Číst více
+              </Button>
             </div>
           </div>
           <div className="home-page_card">
@@ -95,7 +101,13 @@ const HomePage = () => {
             </div>
 
             <div className="home-page_card-text-btn-wrapper">
-              <Button className="home-page_ghoust-btn">Číst více</Button>
+              <Button
+                className="home-page_ghoust-btn"
+                as={Link}
+                to={"/actualArticle"}
+              >
+                Číst více
+              </Button>
             </div>
           </div>
         </div>

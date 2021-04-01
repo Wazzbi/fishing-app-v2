@@ -408,8 +408,12 @@ const NewsPage = ({ history }) => {
             <Form.Group>
               <Form.Label>Kategorie</Form.Label>
               <Form.Control as="select" name="category" required>
-                <option>Law</option>
+                <option>Info</option>
                 <option>Post</option>
+                <option>Zajímavost</option>
+                <option>Svět</option>
+                <option>CZ</option>
+                <option>SK</option>
               </Form.Control>
             </Form.Group>
 

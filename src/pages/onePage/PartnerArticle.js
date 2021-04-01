@@ -9,9 +9,9 @@ import Button from "react-bootstrap/Button";
 // TODO pořdná animace než se načtou obr a pak modal
 // TODO effect cleanUp
 
-const TitleArticle = () => {
+const PartnerArticle = () => {
   useEffect(() => {
-    localStorage.setItem("lastLocation", `/titleArticle`);
+    localStorage.setItem("lastLocation", `/partnerArticle`);
     // nasty react...
     // https://stackoverflow.com/questions/58431946/why-does-my-react-router-link-bring-me-to-the-middle-of-a-page
     window.scrollTo(0, 0);
@@ -48,4 +48,4 @@ const TitleArticle = () => {
   );
 };
 
-export default TitleArticle;
+export default PartnerArticle;
