@@ -268,59 +268,6 @@ const SummaryPage = () => {
       });
   }, [currentUser, dispatch, prepareData]);
 
-  const handleSubmitChange = () => {
-    handleChangeRecords(currentUser.uid, selectedSummary, selectedRecords);
-
-    handleCloseModalAddSummary();
-
-    if (isMountedRef.current) {
-      setSelectedRecords([]);
-    }
-  };
-
-  const changeRecordInSummary = (recordId) => {
-    if (isMountedRef.current) {
-      setSelectedRecords((oldArray) =>
-        oldArray.includes(recordId)
-          ? oldArray.filter((el) => el !== recordId)
-          : [...oldArray, recordId]
-      );
-    }
-  };
-
-  const doCreateSummaryAndRefresh = () => {
-    const id = Date.now();
-    setLoading(false);
-    new Promise((resolve, reject) => {
-      resolve(firebaseService.createUserSummary(currentUser.uid, id));
-      reject(new Error("Currently unavaiable create summary"));
-    })
-      .then(() => {
-        if (isMountedRef.current) {
-          dispatch({ type: "ADD_SUMMARY", payload: { id } });
-        }
-      })
-      .catch((err) => {
-        if (isMountedRef.current) {
-          alert(err);
-        }
-      });
-  };
-
-  const handleChangeSummaryName = (userUid, summaryUid, newSummaryName) => {
-    if (isMountedRef.current) {
-      const updatedSummary = {
-        ...storeState.summaries[summaryUid],
-        name: newSummaryName,
-      };
-      dispatch({
-        type: "EDIT_SUMMARY",
-        payload: { summaryUid, updatedSummary },
-      });
-      firebaseService.setUserSummary(userUid, summaryUid, updatedSummary);
-    }
-  };
-
   const handleChangeRecords = (userUid, summaryUid, changeRecords) => {
     if (isMountedRef.current) {
       const updatedSummary = {
@@ -368,19 +315,6 @@ const SummaryPage = () => {
 
       firebaseService.deleteUserSummary(currentUser.uid, summaryUid);
       dispatch({ type: "DELETE_SUMMARY", payload: { summaryUid } });
-    }
-  };
-
-  const isChecked = (recordKey) => {
-    if (
-      !!storeState.summaries &&
-      storeState.summaries[selectedSummary] &&
-      storeState.summaries[selectedSummary].records &&
-      storeState.summaries[selectedSummary].records.length !== 0
-    ) {
-      return storeState.summaries[selectedSummary].records.includes(recordKey);
-    } else {
-      return false;
     }
   };
 
@@ -459,13 +393,6 @@ const SummaryPage = () => {
             name="summaryName"
             type="text"
             placeholder="Summary Name"
-            onChange={(e) =>
-              handleChangeSummaryName(
-                currentUser.uid,
-                summaryKey,
-                e.target.value
-              )
-            }
             value={value && value.summaryId ? value.summaryId : ""}
             disabled
           />
@@ -634,42 +561,6 @@ const SummaryPage = () => {
               SMAZAT
             </Button>
           </Modal.Footer>
-        </Modal>
-
-        <Modal
-          show={showModalAddSummary}
-          onHide={handleCloseModalAddSummary}
-          backdrop="static"
-          keyboard={false}
-          animation={false}
-          centered
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>Vyberte Záznamy</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form onSubmit={handleSubmitChange}>
-              {!!storeState.records &&
-                Object.entries(storeState.records).map(([recordKey, value]) => (
-                  <Form.Check
-                    key={recordKey}
-                    type="checkbox"
-                    id={recordKey}
-                    label={value && value.name ? value.name : "No name!"}
-                    defaultChecked={isChecked(recordKey)}
-                    onChange={() => changeRecordInSummary(recordKey)}
-                  />
-                ))}
-              <br />
-              <Button
-                variant="success"
-                type="submit"
-                disabled={selectedRecords && selectedRecords.length === 0}
-              >
-                Submit
-              </Button>
-            </Form>
-          </Modal.Body>
         </Modal>
       </div>
     </>
