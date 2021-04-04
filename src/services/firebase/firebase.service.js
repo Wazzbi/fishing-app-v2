@@ -24,6 +24,8 @@ const usersRef = appl.database().ref("users/");
 
 // *** Record API ***
 const records = (uid) => appl.database().ref(`records/${uid}`);
+const record = (userUid, recordName) =>
+  appl.database().ref(`records/${userUid}/${recordName}`);
 const newRecordRef = (userUid) => appl.database().ref(`records/${userUid}`);
 
 const recordRef = (userUid, recordUid) =>
@@ -134,9 +136,35 @@ class firebaseService {
     }
   };
 
+  static getUserRecord = async (uid, recordName) => {
+    try {
+      const snapshot = await record(uid, recordName).get();
+      if (snapshot.exists()) {
+        return snapshot.val();
+      } else {
+        console.log("No data available");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   static getUserRecords = async (uid) => {
     try {
       const snapshot = await records(uid).get();
+      if (snapshot.exists()) {
+        return snapshot.val();
+      } else {
+        console.log("No data available");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  static getUserSummary = async (uid, summaryName) => {
+    try {
+      const snapshot = await summaryRef(uid, summaryName).get();
       if (snapshot.exists()) {
         return snapshot.val();
       } else {
@@ -203,14 +231,12 @@ class firebaseService {
     }
   };
 
-  static createUserRecord = (userUid) => {
-    const id = Date.now();
-
+  static createUserRecord = (userUid, recordId) => {
     return newRecordRef(userUid)
-      .child(id)
+      .child(recordId)
       .set(
         {
-          name: "Nový Záznam",
+          recordId,
         },
         (err) => console.log(err ? "error while pushing" : "successful push")
       );
@@ -247,7 +273,7 @@ class firebaseService {
       .child(summaryId)
       .set(
         {
-          name: "Nový Souhrn",
+          summaryId,
         },
         (err) => console.log(err ? "error while pushing" : "successful push")
       );

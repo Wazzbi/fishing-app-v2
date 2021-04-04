@@ -33,6 +33,7 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 // TODO sloupce s rybama přes loop
 // !! řazení je ve stylech od nejnovějšího k nejstaršího
 // TODO když nejsou v sloupci ryby žádný data tak sloupec nezobrazit
+// TODO udělat sekci pro staré summary
 
 const SummaryPage = () => {
   const { currentUser } = useContext(AuthContext);
@@ -58,20 +59,20 @@ const SummaryPage = () => {
       if (!!records && !!summaries) {
         Object.entries(summaries).map(([summaryKey, summaryValue], index) => {
           // získej pole records z summary
-          const { records: summaryRecords } = summaryValue;
+          // const { records: summaryRecords } = summaryValue;
 
-          if (!!summaryRecords) {
+          if (true) {
             let recordsArray = [];
             // získej dané records pro každý summary
             Object.entries(records)
-              .filter(([recordKey, recordValue]) =>
-                summaryRecords.includes(recordKey)
-              )
-              .map(([recordKey, recoredValue]) =>
+              // .filter(([recordKey, recordValue]) =>
+              //   summaryRecords.includes(recordKey)
+              // )
+              .map(([recordKey, recordValue]) =>
                 // získej čistá data rows
                 {
-                  if (recoredValue && recoredValue.data) {
-                    Object.entries(recoredValue.data).map(
+                  if (recordValue && recordValue.data) {
+                    Object.entries(recordValue.data).map(
                       ([rowKey, rowValue]) => {
                         if (rowValue) {
                           recordsArray.push(rowValue);
@@ -112,14 +113,44 @@ const SummaryPage = () => {
               const previousFishes =
                 previousDistrict && previousDistrict.fishes;
               const previousKind = previousFishes && previousFishes[row.kind];
-              const previousPieces = previousKind && previousKind.pieces;
-              const previousKilograms = previousKind && previousKind.kilograms;
 
               if (!!!row.kind && !!!row.kilograms && !!!row.pieces) {
                 alertMissingData = false;
               } else if (!!!row.kind || !!!row.kilograms || !!!row.pieces) {
                 alertMissingData = true;
               }
+
+              const _fishKind = fishKind.some(
+                (f) => f === capitalizeFirstLetter(row.kind)
+              )
+                ? row.kind.toLowerCase()
+                : "ostatní";
+
+              const _fishPieces =
+                finalData &&
+                finalData[summaryKey] &&
+                finalData[summaryKey][
+                  `${row.districtNumber}-${row.subdistrictNumber || 0}`
+                ].fishes &&
+                finalData[summaryKey][
+                  `${row.districtNumber}-${row.subdistrictNumber || 0}`
+                ].fishes[_fishKind] &&
+                finalData[summaryKey][
+                  `${row.districtNumber}-${row.subdistrictNumber || 0}`
+                ].fishes[_fishKind].pieces;
+
+              const _fishKilograms =
+                finalData &&
+                finalData[summaryKey] &&
+                finalData[summaryKey][
+                  `${row.districtNumber}-${row.subdistrictNumber || 0}`
+                ].fishes &&
+                finalData[summaryKey][
+                  `${row.districtNumber}-${row.subdistrictNumber || 0}`
+                ].fishes[_fishKind] &&
+                finalData[summaryKey][
+                  `${row.districtNumber}-${row.subdistrictNumber || 0}`
+                ].fishes[_fishKind].kilograms;
 
               finalData = {
                 ...finalData,
@@ -136,14 +167,10 @@ const SummaryPage = () => {
                     ],
                     fishes: {
                       ...previousFishes,
-                      [fishKind.some(
-                        (f) => f === capitalizeFirstLetter(row.kind)
-                      )
-                        ? row.kind.toLowerCase()
-                        : "ostatní"]: {
+                      [_fishKind]: {
                         ...previousKind,
-                        pieces: (previousPieces || 0) + +row.pieces,
-                        kilograms: (previousKilograms || 0) + +row.kilograms,
+                        pieces: (_fishPieces || 0) + +row.pieces,
+                        kilograms: (_fishKilograms || 0) + +row.kilograms,
                       },
                     },
                   },
@@ -170,45 +197,66 @@ const SummaryPage = () => {
   );
 
   const handleCloseModalAddSummary = () => setShowModalAddSummary(false);
-  const handleShowModalChangeSummary = (summaryUid) => {
-    if (isMountedRef.current) {
-      setSelectedSummary(summaryUid);
-      setSelectedRecords(
-        storeState.summaries &&
-          storeState.summaries[summaryUid] &&
-          storeState.summaries[summaryUid].records
-          ? storeState.summaries[summaryUid].records
-          : []
-      );
-      setShowModalAddSummary(true);
-    }
-  };
 
   const updateData = useCallback(() => {
     // protože je useState async dotahuji data přes proměnné...
     let updateRecords, updateSummaries;
+    const _currentUser = currentUser && currentUser.uid;
+    let _currentYear = new Date();
+    let currentYear = _currentYear.getFullYear();
+
     setLoading(true);
     new Promise((resolve, reject) => {
-      resolve(firebaseService.getUserRecords(currentUser && currentUser.uid));
+      // načti record aktuálního roku
+      resolve(firebaseService.getUserRecord(_currentUser, currentYear));
       reject(new Error("Nemohu načíst záznamy uživatele"));
     })
-      .then((records) => {
+      .then((record) => {
         if (isMountedRef.current) {
-          updateRecords = records;
-          dispatch({ type: "ADD_RECORDS", payload: { ...records } });
+          if (record) {
+            updateRecords = record;
+            dispatch({ type: "ADD_RECORD", payload: { ...record } });
+          } else {
+            updateRecords = record;
+            let _recordName = new Date();
+            let recordId = _recordName.getFullYear();
+
+            if (isMountedRef.current) {
+              dispatch({ type: "ADD_RECORD", payload: { recordId } });
+            }
+          }
         }
       })
       .then(() => {
         new Promise((resolve, reject) => {
-          resolve(
-            firebaseService.getUserSummaries(currentUser && currentUser.uid)
-          );
+          resolve(firebaseService.getUserSummary(_currentUser, currentYear));
           reject(new Error("Nemohu načíst souhrny uživatele"));
         })
-          .then((summaries) => {
+          .then((summary) => {
             if (isMountedRef.current) {
-              updateSummaries = summaries;
-              dispatch({ type: "ADD_SUMMARIES", payload: { ...summaries } });
+              if (summary) {
+                updateSummaries = summary;
+                dispatch({ type: "ADD_SUMMARY", payload: { ...summary } });
+              } else {
+                dispatch({
+                  type: "ADD_SUMMARY",
+                  payload: { summaryId: currentYear },
+                });
+
+                new Promise((resolve, reject) => {
+                  resolve(
+                    firebaseService.createUserSummary(_currentUser, currentYear)
+                  );
+                  reject(new Error("Currently unavaiable create summary"));
+                }).catch((err) => {
+                  if (isMountedRef.current) {
+                    alert(err);
+                  }
+                  // bez ohledu jestli je ve view (mělo by být rekurzivně)
+                  // TODO mělo by být rekurzivně
+                  firebaseService.createUserSummary(_currentUser, currentYear);
+                });
+              }
             }
           })
           .then(() => {
@@ -293,11 +341,6 @@ const SummaryPage = () => {
       });
       firebaseService.setUserSummary(userUid, summaryUid, updatedSummary);
     }
-  };
-
-  const editSummaryName = (key) => {
-    const elName = document.getElementById(`${key}-summaryName`);
-    elName.disabled = !elName.disabled;
   };
 
   const handleDelete = (params) => {
@@ -423,7 +466,7 @@ const SummaryPage = () => {
                 e.target.value
               )
             }
-            value={value && value.name ? value.name : ""}
+            value={value && value.summaryId ? value.summaryId : ""}
             disabled
           />
 
@@ -433,14 +476,6 @@ const SummaryPage = () => {
             title="Menu"
             id={`input-group-dropdown-${summaryKey}`}
           >
-            <Dropdown.Item onClick={() => editSummaryName(summaryKey)}>
-              Přejmenovat souhrn
-            </Dropdown.Item>
-            <Dropdown.Item
-              onClick={() => handleShowModalChangeSummary(summaryKey)}
-            >
-              Vybrat záznamy
-            </Dropdown.Item>
             <Dropdown.Item onClick={exportSummary}>Uložit sumář</Dropdown.Item>
             <Dropdown.Divider />
             <Dropdown.Item
@@ -469,7 +504,7 @@ const SummaryPage = () => {
             <tr>
               <th>Číslo</th>
               <th style={{ minWidth: "85px" }}>Název</th>
-              <th style={{ minWidth: "110px" }}>Podrevíru</th>
+              <th style={{ minWidth: "110px" }}>Podrevír</th>
               {finalfishKind.map((f, index) => {
                 return [
                   <th key={`fish-ks-${index}`}>Ks</th>,
@@ -567,16 +602,6 @@ const SummaryPage = () => {
   return (
     <>
       <div className="summary-page_main">
-        <Button
-          variant="success"
-          className="summary-page_float-btn"
-          onClick={doCreateSummaryAndRefresh}
-        >
-          <img src="/plus.svg" alt="" width="30px" height="30px"></img>
-        </Button>
-
-        <br />
-
         {loading && <Spinner animation="border" variant="success" />}
         {!!storeState.summaries &&
           Object.entries(storeState.summaries).length === 0 && (

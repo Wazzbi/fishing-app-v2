@@ -37,6 +37,7 @@ import { fishKind } from "../../constants";
 // TODO loading spiner než se načtou posty
 // TODO dát ikonku u remane odemčený / zamčený zámek
 // !! řazení je ve stylech od nejnovějšího k nejstaršího
+// TODO udělat sekci pro staré recordy
 
 const RecordPage = () => {
   const { currentUser } = useContext(AuthContext);
@@ -48,6 +49,7 @@ const RecordPage = () => {
   const [editRowData, setEditRowData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [storeState, dispatch] = useContext(StoreContext);
+  const [actualYear, setActualYear] = useState(null);
 
   const isMountedRef = useRef(true);
 
@@ -121,21 +123,24 @@ const RecordPage = () => {
   };
 
   const doCreateRecordAndRefresh = () => {
-    const id = Date.now();
+    let _recordName = new Date();
+    let recordId = _recordName.getFullYear();
+
+    if (isMountedRef.current) {
+      dispatch({ type: "ADD_RECORD", payload: { recordId } });
+    }
+
     new Promise((resolve, reject) => {
-      resolve(firebaseService.createUserRecord(currentUser.uid));
+      resolve(firebaseService.createUserRecord(currentUser.uid, recordId));
       reject(new Error("Currently unavaiable create record"));
-    })
-      .then(() => {
-        if (isMountedRef.current) {
-          dispatch({ type: "ADD_RECORD", payload: { id } });
-        }
-      })
-      .catch((err) => {
-        if (isMountedRef) {
-          alert(err);
-        }
-      });
+    }).catch((err) => {
+      if (isMountedRef) {
+        alert(err);
+      }
+      // bez kondice zdali je view snažit se data uložit
+      // TODO předělat rekurzivně
+      firebaseService.createUserRecord(currentUser.uid, recordId);
+    });
   };
 
   const handleChangeRecordName = (userUid, recordUid, newRecordName) => {
@@ -210,11 +215,6 @@ const RecordPage = () => {
     }
   };
 
-  const editRecordName = (key) => {
-    const elName = document.getElementById(`${key}-recordName`);
-    elName.disabled = !elName.disabled;
-  };
-
   const addRowAndRefresh = (recordUid, props) => {
     if (isMountedRef.current) {
       const rowId = Date.now();
@@ -231,19 +231,34 @@ const RecordPage = () => {
     }
   };
 
+  // získej z DB record aktuálního roku nebo ho vytvoř
   const updateData = useCallback(() => {
     if (isMountedRef.current) {
       setLoading(true);
     }
 
-    firebaseService
-      .getUserRecords(currentUser && currentUser.uid)
-      .then((records) => {
-        if (isMountedRef.current) {
-          dispatch({ type: "ADD_RECORDS", payload: { ...records } });
-          setLoading(false);
+    const uid = currentUser && currentUser.uid;
+    let _recordName = new Date();
+    let recordName = _recordName.getFullYear();
+
+    firebaseService.getUserRecord(uid, recordName).then((record) => {
+      if (isMountedRef.current) {
+        console.log(record);
+        if (!record) {
+          // když není nalezen záznam aktuálního roku -> vytroř ho
+          doCreateRecordAndRefresh();
+        } else {
+          // pokud záznam existuje -> jen ho ulož do store
+          dispatch({
+            type: "ADD_RECORD",
+            // setovaní recordId kvůli úplně novým tabulkám viz doCreateRecordAndRefresh a row 357 **onClick={() => handleAdd(actualYearRecord.recordId)}**
+            payload: { recordId: record.name, ...record },
+          });
         }
-      });
+
+        setLoading(false);
+      }
+    });
   }, [currentUser, dispatch]);
 
   const handleCloseAndDelete = () => {
@@ -321,6 +336,9 @@ const RecordPage = () => {
     isMountedRef.current = true;
     localStorage.setItem("lastLocation", "/record");
     todayDate();
+    let _currentYear = new Date();
+    let currentYear = _currentYear.getFullYear();
+    setActualYear(currentYear);
 
     if (!storeState.records) {
       updateData();
@@ -335,7 +353,7 @@ const RecordPage = () => {
         <Button
           variant="success"
           className="record-page_float-btn"
-          onClick={doCreateRecordAndRefresh}
+          onClick={() => handleAdd(actualYear)}
         >
           <img src="/plus.svg" alt="" width="30px" height="30px"></img>
         </Button>
@@ -354,7 +372,7 @@ const RecordPage = () => {
                   <FormControl
                     id={`${recordKey}-recordName`}
                     name="recordName"
-                    type="recordName"
+                    type="text"
                     placeholder="Record Name"
                     onChange={(e) =>
                       handleChangeRecordName(
@@ -363,7 +381,7 @@ const RecordPage = () => {
                         e.target.value
                       )
                     }
-                    value={value && value.name ? value.name : ""}
+                    value={value && value.recordId ? value.recordId : ""}
                     disabled
                   />
 
@@ -373,13 +391,6 @@ const RecordPage = () => {
                     title="Menu"
                     id={`input-group-dropdown-${recordKey}`}
                   >
-                    <Dropdown.Item onClick={() => editRecordName(recordKey)}>
-                      Přejmenovat záznam
-                    </Dropdown.Item>
-                    <Dropdown.Item onClick={() => handleAdd(recordKey)}>
-                      Přidat řádek
-                    </Dropdown.Item>
-                    <Dropdown.Divider />
                     <Dropdown.Item
                       className="record-page_delete-text"
                       onClick={() =>
