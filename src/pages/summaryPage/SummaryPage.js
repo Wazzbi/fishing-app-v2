@@ -196,8 +196,6 @@ const SummaryPage = () => {
     [recordsTogether]
   );
 
-  const handleCloseModalAddSummary = () => setShowModalAddSummary(false);
-
   const updateData = useCallback(() => {
     // protože je useState async dotahuji data přes proměnné...
     let updateRecords, updateSummaries;
@@ -267,28 +265,6 @@ const SummaryPage = () => {
           });
       });
   }, [currentUser, dispatch, prepareData]);
-
-  const handleChangeRecords = (userUid, summaryUid, changeRecords) => {
-    if (isMountedRef.current) {
-      const updatedSummary = {
-        ...storeState.summaries[summaryUid],
-        records: [...changeRecords],
-      };
-
-      prepareData(storeState.records, {
-        ...storeState.summaries,
-        [summaryUid]: {
-          ...storeState.summaries[summaryUid],
-          records: [...changeRecords],
-        },
-      });
-      dispatch({
-        type: "EDIT_SUMMARY",
-        payload: { summaryUid, updatedSummary },
-      });
-      firebaseService.setUserSummary(userUid, summaryUid, updatedSummary);
-    }
-  };
 
   const handleDelete = (params) => {
     if (isMountedRef.current) {
@@ -387,32 +363,35 @@ const SummaryPage = () => {
 
     return (
       <div key={summaryKey} className="summary-page_table">
-        <InputGroup className="summary-page_record-name">
-          <FormControl
-            id={`${summaryKey}-summaryName`}
-            name="summaryName"
-            type="text"
-            placeholder="Summary Name"
-            value={value && value.summaryId ? value.summaryId : ""}
-            disabled
-          />
+        <div className="summary-page_record-name">
+          <span style={{ fontSize: "22px", margin: "0 10px" }}>
+            {value && value.summaryId}
+          </span>
 
-          <DropdownButton
-            as={InputGroup.Append}
-            variant="outline-secondary"
-            title="Menu"
-            id={`input-group-dropdown-${summaryKey}`}
-          >
-            <Dropdown.Item onClick={exportSummary}>Uložit sumář</Dropdown.Item>
-            <Dropdown.Divider />
-            <Dropdown.Item
-              className="summary-page_delete-text"
-              onClick={() => handleDelete({ summaryUid: summaryKey })}
-            >
-              Smazat
-            </Dropdown.Item>
-          </DropdownButton>
-        </InputGroup>
+          <div style={{ display: "flex" }}>
+            <div className="summary-page_icons">
+              <img
+                src="/export.svg"
+                alt="edit"
+                width="15px"
+                height="15px"
+                style={{ margin: "0px 8px", cursor: "pointer" }}
+                onClick={exportSummary}
+              ></img>
+            </div>
+
+            <div className="summary-page_icons">
+              <img
+                src="/delete.svg"
+                alt="delete"
+                width="16px"
+                height="16px"
+                style={{ margin: "0px 8px", cursor: "pointer" }}
+                onClick={() => handleDelete({ summaryUid: summaryKey })}
+              ></img>
+            </div>
+          </div>
+        </div>
 
         <Table responsive hover size="sm">
           <thead>

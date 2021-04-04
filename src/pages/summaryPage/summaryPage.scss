@@ -1,6 +1,6 @@
 .summary-page_main {
   max-width: 1200px;
-  margin: 40px auto 80px;
+  margin: 24px auto 80px;
   padding: 0 10px;
 }
 
@@ -10,8 +10,24 @@
 }
 
 .summary-page_record-name {
-  max-width: 500px;
-  margin-bottom: 5px;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #a4b494bf;
+  border-radius: 5px 5px 0 0;
+  padding: 5px 0;
+
+  .summary-page_icons {
+    background-color: white;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 10px;
+  }
 }
 
 .summary-page_table {

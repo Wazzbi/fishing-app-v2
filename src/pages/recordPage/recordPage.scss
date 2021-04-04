@@ -16,8 +16,23 @@
 }
 
 .record-page_record-name {
-  max-width: 500px;
-  margin-bottom: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #a4b494bf;
+  border-radius: 5px 5px 0 0;
+  padding: 5px 0;
+
+  .record-page_icons {
+    background-color: white;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 10px;
+  }
 }
 
 .record-page_records {

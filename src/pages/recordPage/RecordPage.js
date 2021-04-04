@@ -368,39 +368,24 @@ const RecordPage = () => {
             !!Object.entries(storeState.records).length &&
             Object.entries(storeState.records).map(([recordKey, value]) => (
               <div key={recordKey} className="record-page_table">
-                <InputGroup className="record-page_record-name">
-                  <FormControl
-                    id={`${recordKey}-recordName`}
-                    name="recordName"
-                    type="text"
-                    placeholder="Record Name"
-                    onChange={(e) =>
-                      handleChangeRecordName(
-                        currentUser.uid,
-                        recordKey,
-                        e.target.value
-                      )
-                    }
-                    value={value && value.recordId ? value.recordId : ""}
-                    disabled
-                  />
+                <div className="record-page_record-name">
+                  <span style={{ fontSize: "22px", margin: "0 10px" }}>
+                    {value && value.recordId}
+                  </span>
 
-                  <DropdownButton
-                    as={InputGroup.Append}
-                    variant="outline-secondary"
-                    title="Menu"
-                    id={`input-group-dropdown-${recordKey}`}
-                  >
-                    <Dropdown.Item
-                      className="record-page_delete-text"
+                  <div className="record-page_icons">
+                    <img
+                      src="/delete.svg"
+                      alt="delete"
+                      width="16px"
+                      height="16px"
+                      style={{ margin: "0px 8px", cursor: "pointer" }}
                       onClick={() =>
                         handleDelete("record", { recordUid: recordKey })
                       }
-                    >
-                      Smazat
-                    </Dropdown.Item>
-                  </DropdownButton>
-                </InputGroup>
+                    ></img>
+                  </div>
+                </div>
 
                 <Table responsive hover size="sm">
                   <thead>
@@ -429,7 +414,7 @@ const RecordPage = () => {
                                 alt="edit"
                                 width="15px"
                                 height="15px"
-                                style={{ margin: "0px 8px" }}
+                                style={{ margin: "0px 8px", cursor: "pointer" }}
                                 onClick={() =>
                                   editRow(recordKey, rowKey, value)
                                 }
@@ -439,7 +424,7 @@ const RecordPage = () => {
                                 alt="delete"
                                 width="16px"
                                 height="16px"
-                                style={{ margin: "0px 8px" }}
+                                style={{ margin: "0px 8px", cursor: "pointer" }}
                                 onClick={() =>
                                   handleDelete("row", {
                                     recordUid: recordKey,
