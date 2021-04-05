@@ -514,6 +514,16 @@ const SummaryPage = () => {
       <div className="summary-page_main">
         {loading && <Spinner animation="border" variant="success" />}
         <h3 className="summary-page_page-title">Souhrn docházky a úlovků</h3>
+        <div>
+          <div className="summary-page_history-wrapper">
+            <span className="summary-page_history active">2021</span>
+            <span className="summary-page_history">2020</span>
+            <span className="summary-page_history">2019</span>
+            <span className="summary-page_history">2018</span>
+            <span className="summary-page_history">2017</span>
+            <span className="summary-page_history">2016</span>
+          </div>
+        </div>
         {!!storeState.summaries &&
           Object.entries(storeState.summaries).length === 0 && (
             <span>Zatím nejsou žádné souhrny</span>
@@ -525,18 +535,6 @@ const SummaryPage = () => {
             Object.entries(storeState.summaries).map(([summaryKey, value]) =>
               renderSummaryTable(summaryKey, value)
             )}
-        </div>
-
-        <div>
-          <h3 className="summary-page_page-title">Historie</h3>
-          <hr />
-          <div className="summary-page_history-wrapper">
-            <span className="summary-page_history">2020</span>
-            <span className="summary-page_history">2019</span>
-            <span className="summary-page_history">2018</span>
-            <span className="summary-page_history">2017</span>
-            <span className="summary-page_history">2016</span>
-          </div>
         </div>
 
         <Modal

@@ -351,6 +351,16 @@ const RecordPage = () => {
     <>
       <div className="record-page_main">
         <h3 className="record-page_page-title">Záznamy docházky a úlovků</h3>
+        <div>
+          <div className="record-page_history-wrapper">
+            <span className="record-page_history active">2021</span>
+            <span className="record-page_history">2020</span>
+            <span className="record-page_history">2019</span>
+            <span className="record-page_history">2018</span>
+            <span className="record-page_history">2017</span>
+            <span className="record-page_history">2016</span>
+          </div>
+        </div>
         <Button
           variant="success"
           className="record-page_float-btn"
@@ -405,8 +415,9 @@ const RecordPage = () => {
                     {storeState.records &&
                       storeState.records[recordKey] &&
                       storeState.records[recordKey].data &&
-                      Object.entries(storeState.records[recordKey].data).map(
-                        ([rowKey, value]) => (
+                      Object.entries(storeState.records[recordKey].data)
+                        .reverse()
+                        .map(([rowKey, value]) => (
                           <tr key={rowKey}>
                             <td className="record-page_action-btns">
                               <img
@@ -540,7 +551,7 @@ const RecordPage = () => {
                                 className={`row-${rowKey}`}
                                 id={`row-${rowKey}-pieces`}
                               >
-                                {value.pieces ? value.pieces : ""}
+                                {value.pieces ? value.pieces : "-"}
                               </span>
                             </td>
 
@@ -549,7 +560,7 @@ const RecordPage = () => {
                                 className={`row-${rowKey}`}
                                 id={`row-${rowKey}-kilograms`}
                               >
-                                {value.kilograms ? value.kilograms : ""}
+                                {value.kilograms ? value.kilograms : "-"}
                               </span>
                             </td>
 
@@ -558,28 +569,17 @@ const RecordPage = () => {
                                 className={`row-${rowKey}`}
                                 id={`row-${rowKey}-centimeters`}
                               >
-                                {value.centimeters ? value.centimeters : ""}
+                                {value.centimeters ? value.centimeters : "-"}
                               </span>
                             </td>
                           </tr>
-                        )
-                      )}
+                        ))}
                   </tbody>
                 </Table>
               </div>
             ))}
         </div>
-        <div>
-          <h3 className="record-page_page-title">Historie</h3>
-          <hr />
-          <div className="record-page_history-wrapper">
-            <span className="summary-page_history">2020</span>
-            <span className="summary-page_history">2019</span>
-            <span className="summary-page_history">2018</span>
-            <span className="summary-page_history">2017</span>
-            <span className="summary-page_history">2016</span>
-          </div>
-        </div>
+
         <Modal
           show={showModalDelete}
           onHide={handleDeleteClose}
