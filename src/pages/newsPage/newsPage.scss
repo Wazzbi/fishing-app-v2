@@ -71,6 +71,7 @@ $post-color-bg: rgb(220, 220, 220);
 
 .news-page_post-text-wrapper {
   position: relative;
+  margin-bottom: 10px;
 }
 
 .news-page_post-text-overlay {
@@ -83,7 +84,7 @@ $post-color-bg: rgb(220, 220, 220);
 }
 
 .news-page_post-text {
-  max-height: 250px;
+  max-height: 200px;
   overflow: hidden;
 }
 
@@ -131,7 +132,6 @@ $post-color-bg: rgb(220, 220, 220);
   background: linear-gradient(135deg, #eeeeee 10%, #dddddd 18%, #eeeeee 33%);
   background-size: 3100px 400px;
   height: 400px;
-  margin-bottom: 20px;
   position: relative;
 
   @media screen and (max-width: 500px) {

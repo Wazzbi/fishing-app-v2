@@ -301,6 +301,16 @@ const NewsPage = ({ history }) => {
                 <span>{postValue.title}</span>
               </div>
             </div>
+
+            <div className="news-page_post-text-wrapper">
+              <div
+                id={`${postKey}-post-text`}
+                className="news-page_post-text"
+                dangerouslySetInnerHTML={{ __html: postValue.text }}
+              ></div>
+              <div className="news-page_post-text-overlay"></div>
+            </div>
+
             {postValue && postValue.titleImage && (
               <div className="news-page_animated-background">
                 <LazyLoadImage
@@ -311,15 +321,6 @@ const NewsPage = ({ history }) => {
                 />
               </div>
             )}
-
-            <div className="news-page_post-text-wrapper">
-              <div
-                id={`${postKey}-post-text`}
-                className="news-page_post-text"
-                dangerouslySetInnerHTML={{ __html: postValue.text }}
-              ></div>
-              <div className="news-page_post-text-overlay"></div>
-            </div>
 
             <div className="news-page_post-footer">
               <div className="news-page_post-footer-icon-group-left">
