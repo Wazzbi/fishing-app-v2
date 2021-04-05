@@ -350,6 +350,7 @@ const RecordPage = () => {
   return (
     <>
       <div className="record-page_main">
+        <h3 className="record-page_page-title">Evidence docházky a úlovků</h3>
         <Button
           variant="success"
           className="record-page_float-btn"
@@ -357,7 +358,6 @@ const RecordPage = () => {
         >
           <img src="/plus.svg" alt="" width="30px" height="30px"></img>
         </Button>
-        <br />
         {loading && <Spinner animation="border" variant="success" />}
         {!!storeState.records &&
           Object.entries(storeState.records).length === 0 && (
@@ -369,11 +369,11 @@ const RecordPage = () => {
             Object.entries(storeState.records).map(([recordKey, value]) => (
               <div key={recordKey} className="record-page_table">
                 <div className="record-page_record-name">
-                  <span style={{ fontSize: "22px", margin: "0 10px" }}>
+                  <span className="record-page_title">
                     {value && value.recordId}
                   </span>
 
-                  <div className="record-page_icons">
+                  {/* <div className="record-page_icons">
                     <img
                       src="/delete.svg"
                       alt="delete"
@@ -384,7 +384,7 @@ const RecordPage = () => {
                         handleDelete("record", { recordUid: recordKey })
                       }
                     ></img>
-                  </div>
+                  </div> */}
                 </div>
 
                 <Table responsive hover size="sm">
@@ -568,6 +568,17 @@ const RecordPage = () => {
                 </Table>
               </div>
             ))}
+        </div>
+        <div>
+          <h3 className="record-page_page-title">Historie</h3>
+          <hr />
+          <div className="record-page_history-wrapper">
+            <span className="summary-page_history">2020</span>
+            <span className="summary-page_history">2019</span>
+            <span className="summary-page_history">2018</span>
+            <span className="summary-page_history">2017</span>
+            <span className="summary-page_history">2016</span>
+          </div>
         </div>
         <Modal
           show={showModalDelete}

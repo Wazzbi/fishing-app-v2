@@ -1,7 +1,18 @@
 .record-page_main {
   max-width: 1200px;
-  margin: 0px auto 80px;
+  margin: 24px auto 80px;
   padding: 0 10px;
+
+  @media screen and (max-width: 500px) {
+    h3 {
+      font-size: 1rem;
+    }
+  }
+}
+
+.record-page_page-title {
+  color: #382933;
+  font-weight: 600;
 }
 
 .record-page_float-btn {
@@ -15,6 +26,12 @@
   box-shadow: 3px 3px 5px 0px #c1c1c1;
 }
 
+.record-page_title {
+  font-size: 22px;
+  margin: 0 10px;
+  text-shadow: 1px 1px 1px #69775abf;
+}
+
 .record-page_record-name {
   display: flex;
   justify-content: space-between;
@@ -24,7 +41,7 @@
   padding: 5px 0;
 
   .record-page_icons {
-    background-color: white;
+    background-color: #f7ffedbf;
     border-radius: 50%;
     width: 30px;
     height: 30px;
@@ -32,12 +49,18 @@
     justify-content: center;
     align-items: center;
     margin-right: 10px;
+    box-shadow: inset 1px 1px 1px 1px #69775abf;
   }
 }
 
 .record-page_records {
   display: flex;
   flex-direction: column-reverse;
+  margin-bottom: 50px;
+
+  @media screen and (max-width: 500px) {
+    margin-bottom: 20px;
+  }
 }
 
 .record-page_row-btn {
@@ -80,6 +103,28 @@
 .record-page_note-empty {
   margin-right: 16px;
   padding: 0 5px;
+}
+
+.record-page_history-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+
+.record-page_history {
+  border: 1px solid #382933;
+  color: #382933;
+  width: 75px;
+  text-align: center;
+  border-radius: 20px;
+  padding: 5px 17px;
+  margin: 5px;
+  cursor: pointer;
+  transition: all 300ms ease-in-out;
+
+  &:hover {
+    background-color: #a4b494bf;
+  }
 }
 
 // bootstrap override
