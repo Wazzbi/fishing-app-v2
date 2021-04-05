@@ -15,6 +15,7 @@ import JoditEditor from "jodit-react";
 import { configEditor } from "./constants";
 import Jdenticon from "react-jdenticon";
 import { StoreContext } from "../../store/Store";
+import { useAsync } from "react-async";
 
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -190,7 +191,28 @@ const NewsPage = ({ history }) => {
       if (isMountedRef.current) {
         snapshot.forEach((childSnapshot) => {
           ww = { ...ww, [childSnapshot.key]: childSnapshot.val() };
-          dispatch({
+
+          // přidej titulní obrázek do objektu
+          Object.entries(ww).map(([postKey, postValue]) => {
+            if (postValue.images) {
+              firebaseService
+                .getImageUrl(
+                  postValue.images[0].imageName,
+                  400,
+                  postValue.images[0].imageType
+                )
+                .then((imageUrl) => {
+                  postValue.titleImage = imageUrl;
+
+                  return dispatch({
+                    type: "ADD_POSTS",
+                    payload: { ...storeState.posts, ...ww },
+                  });
+                });
+            }
+          });
+
+          return dispatch({
             type: "ADD_POSTS",
             payload: { ...storeState.posts, ...ww },
           });
@@ -216,9 +238,30 @@ const NewsPage = ({ history }) => {
           if (isMountedRef.current) {
             snapshot.forEach((childSnapshot) => {
               ww = { ...ww, [childSnapshot.key]: childSnapshot.val() };
-              dispatch({
-                type: "ADD_POSTS",
-                payload: { ...storeState.posts, ...ww },
+
+              // přidej titulní obrázek do objektu
+              Object.entries(ww).map(([postKey, postValue]) => {
+                if (postValue.images) {
+                  firebaseService
+                    .getImageUrl(
+                      postValue.images[0].imageName,
+                      400,
+                      postValue.images[0].imageType
+                    )
+                    .then((imageUrl) => {
+                      postValue.titleImage = imageUrl;
+
+                      return dispatch({
+                        type: "ADD_POSTS",
+                        payload: { ...storeState.posts, ...ww },
+                      });
+                    });
+                }
+
+                return dispatch({
+                  type: "ADD_POSTS",
+                  payload: { ...storeState.posts, ...ww },
+                });
               });
             });
           }
@@ -259,6 +302,17 @@ const NewsPage = ({ history }) => {
                 <span>{postValue.title}</span>
               </div>
             </div>
+            {postValue && postValue.titleImage && (
+              <div className="news-page_animated-background">
+                <LazyLoadImage
+                  alt=""
+                  effect="blur"
+                  src={postValue.titleImage}
+                  className="news-page_lazyLoadImage"
+                />
+              </div>
+            )}
+
             <div className="news-page_post-text-wrapper">
               <div
                 id={`${postKey}-post-text`}
