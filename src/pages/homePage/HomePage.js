@@ -15,13 +15,13 @@ const HomePage = () => {
         <div className="home-page_main-sections">
           <Link to={"/record"} className="home-page_main-section-btn">
             <div className="home-page_main-section-btn-first">
-              Evidence docházek a úlovků{" "}
+              Záznamy docházek a úlovků{" "}
             </div>
           </Link>
 
           <Link to={"/summary"} className="home-page_main-section-btn">
             <div className="home-page_main-section-btn-second">
-              Sumář docházek a úlovků{" "}
+              Souhrn docházek a úlovků{" "}
             </div>
           </Link>
 

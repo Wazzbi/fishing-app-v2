@@ -131,6 +131,9 @@ const SummaryPage = () => {
                 finalData[summaryKey] &&
                 finalData[summaryKey][
                   `${row.districtNumber}-${row.subdistrictNumber || 0}`
+                ] &&
+                finalData[summaryKey][
+                  `${row.districtNumber}-${row.subdistrictNumber || 0}`
                 ].fishes &&
                 finalData[summaryKey][
                   `${row.districtNumber}-${row.subdistrictNumber || 0}`
@@ -142,6 +145,9 @@ const SummaryPage = () => {
               const _fishKilograms =
                 finalData &&
                 finalData[summaryKey] &&
+                finalData[summaryKey][
+                  `${row.districtNumber}-${row.subdistrictNumber || 0}`
+                ] &&
                 finalData[summaryKey][
                   `${row.districtNumber}-${row.subdistrictNumber || 0}`
                 ].fishes &&
@@ -507,7 +513,7 @@ const SummaryPage = () => {
     <>
       <div className="summary-page_main">
         {loading && <Spinner animation="border" variant="success" />}
-        <h3 className="summary-page_page-title">Sumář docházky a úlovků</h3>
+        <h3 className="summary-page_page-title">Souhrn docházky a úlovků</h3>
         {!!storeState.summaries &&
           Object.entries(storeState.summaries).length === 0 && (
             <span>Zatím nejsou žádné souhrny</span>

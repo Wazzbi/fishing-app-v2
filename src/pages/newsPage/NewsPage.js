@@ -15,7 +15,6 @@ import JoditEditor from "jodit-react";
 import { configEditor } from "./constants";
 import Jdenticon from "react-jdenticon";
 import { StoreContext } from "../../store/Store";
-import { useAsync } from "react-async";
 
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";

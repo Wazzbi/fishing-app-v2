@@ -350,7 +350,7 @@ const RecordPage = () => {
   return (
     <>
       <div className="record-page_main">
-        <h3 className="record-page_page-title">Evidence docházky a úlovků</h3>
+        <h3 className="record-page_page-title">Záznamy docházky a úlovků</h3>
         <Button
           variant="success"
           className="record-page_float-btn"
