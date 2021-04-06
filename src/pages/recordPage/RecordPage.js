@@ -362,7 +362,7 @@ const RecordPage = () => {
           </div>
         </div>
         <Button
-          variant="success"
+          variant="primary"
           className="record-page_float-btn"
           onClick={() => handleAdd(actualYear)}
         >

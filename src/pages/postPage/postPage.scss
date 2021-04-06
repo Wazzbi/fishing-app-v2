@@ -161,25 +161,31 @@
 }
 
 // override bootstrap
+.modal-header {
+  padding: 1rem 1rem 0 !important;
+}
+
 .modal-dialog {
-  @media screen and (max-width: 500px) {
+  @media screen and (max-width: 750px) {
     margin: 0;
+    max-width: none;
   }
 }
 .modal-dialog-centered {
-  @media screen and (max-width: 500px) {
+  @media screen and (max-width: 750px) {
     min-height: 100% !important;
+    margin: auto !important;
   }
 }
 .modal-content {
-  @media screen and (max-width: 500px) {
+  @media screen and (max-width: 750px) {
     height: 100vh !important;
     background-clip: unset !important;
     border-radius: 0;
   }
 }
 .modal-body {
-  @media screen and (max-width: 500px) {
+  @media screen and (max-width: 750px) {
     padding: 0;
   }
 }
