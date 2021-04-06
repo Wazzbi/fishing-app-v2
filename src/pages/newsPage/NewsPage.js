@@ -298,7 +298,9 @@ const NewsPage = ({ history }) => {
                     {postValue.username} {" | "} {postValue.created}
                   </small>
                 </div>
-                <span>{postValue.title}</span>
+                <span>
+                  <strong>{postValue.title}</strong>
+                </span>
               </div>
             </div>
 
@@ -434,64 +436,73 @@ const NewsPage = ({ history }) => {
           <Modal.Title>Přidat příspěvek</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form onSubmit={handleSubmit}>
-            <Form.Group id="inputImages">{renderInputImageFields()}</Form.Group>
-            <Button
-              variant="success"
-              onClick={() => {
-                setInputImageFieldCounter(inputImageFieldCounter + 1);
-                uploadImages[inputImageFieldCounter] = {};
-                setUploadImages([...uploadImages]);
-              }}
-              disabled={
-                uploadImages.length === 0 ||
-                uploadImages.some((i) => Object.entries(i).length === 0)
-              }
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                width: "30px",
-                height: "30px",
-                marginBottom: "10px",
-              }}
-            >
-              <img src="/plus.svg" alt="" width="15px" height="15px"></img>
-            </Button>
+          <div style={{ padding: "5px" }}>
+            <Form onSubmit={handleSubmit}>
+              <Form.Group id="inputImages">
+                {renderInputImageFields()}
+              </Form.Group>
+              <Button
+                variant="success"
+                onClick={() => {
+                  setInputImageFieldCounter(inputImageFieldCounter + 1);
+                  uploadImages[inputImageFieldCounter] = {};
+                  setUploadImages([...uploadImages]);
+                }}
+                disabled={
+                  uploadImages.length === 0 ||
+                  uploadImages.some((i) => Object.entries(i).length === 0)
+                }
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: "30px",
+                  height: "30px",
+                  marginBottom: "10px",
+                }}
+              >
+                <img src="/plus.svg" alt="" width="15px" height="15px"></img>
+              </Button>
 
-            <Form.Group>
-              <Form.Label>Kategorie</Form.Label>
-              <Form.Control as="select" name="category" required>
-                <option>Info</option>
-                <option>Post</option>
-                <option>Zajímavost</option>
-                <option>Svět</option>
-                <option>CZ</option>
-                <option>SK</option>
-              </Form.Control>
-            </Form.Group>
+              <Form.Group>
+                <Form.Label>Kategorie</Form.Label>
+                <Form.Control as="select" name="category" required>
+                  <option>Info</option>
+                  <option>Post</option>
+                  <option>Zajímavost</option>
+                  <option>Svět</option>
+                  <option>CZ</option>
+                  <option>SK</option>
+                </Form.Control>
+              </Form.Group>
 
-            <Form.Group>
-              <Form.Label>Titul</Form.Label>
-              <Form.Control type="text" name="title" maxLength="60" required />
-            </Form.Group>
+              <Form.Group>
+                <Form.Label>Titul</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="title"
+                  maxLength="60"
+                  required
+                />
+              </Form.Group>
 
-            <Form.Group>
-              <Form.Label>Text příspěvku</Form.Label>
-              <JoditEditor
-                ref={editor}
-                value={text}
-                config={configEditor}
-                tabIndex={1} // tabIndex of textarea
-                onBlur={(newContent) => onEditorChange(newContent)} // preferred to use only this option to update the content for performance reasons
-                onChange={(newContent) => {}}
-              />
-            </Form.Group>
+              <Form.Group>
+                <Form.Label>Text příspěvku</Form.Label>
+                <JoditEditor
+                  ref={editor}
+                  value={text}
+                  config={configEditor}
+                  tabIndex={1} // tabIndex of textarea
+                  onBlur={(newContent) => onEditorChange(newContent)} // preferred to use only this option to update the content for performance reasons
+                  onChange={(newContent) => {}}
+                />
+              </Form.Group>
 
-            <Button variant="success" type="submit">
-              Potvrdit
-            </Button>
-          </Form>
+              <Button variant="success" type="submit">
+                Potvrdit
+              </Button>
+            </Form>
+          </div>
         </Modal.Body>
       </Modal>
     </>

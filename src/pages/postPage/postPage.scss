@@ -1,3 +1,5 @@
+@import "../../styles/variables.scss";
+
 .post-page_main {
   max-width: 800px;
   margin: 20px auto;
@@ -83,7 +85,8 @@
   margin-bottom: 15px;
 
   &:hover {
-    background-image: url("/back-active.svg");
+    // background-image: url("/back-active.svg");
+    background-color: $quaternary;
   }
 }
 
@@ -179,7 +182,7 @@
 }
 .modal-content {
   @media screen and (max-width: 750px) {
-    height: 100vh !important;
+    min-height: 100vh !important;
     background-clip: unset !important;
     border-radius: 0;
   }

@@ -140,7 +140,7 @@ const PostPage = (props) => {
                         alt=""
                         className="post-page_image"
                         onClick={() => handleShow(index)}
-                      ></img>
+                      />
                     </div>
                   ))}
                 </div>
@@ -171,7 +171,7 @@ const PostPage = (props) => {
                           src={imageUrl}
                           alt=""
                           className="post-page_modal-images"
-                        ></img>
+                        />
                       </div>
                     </Carousel.Item>
                   ))}
