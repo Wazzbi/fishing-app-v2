@@ -159,3 +159,27 @@
     transform: rotate(0deg);
   }
 }
+
+// override bootstrap
+.modal-dialog {
+  @media screen and (max-width: 500px) {
+    margin: 0;
+  }
+}
+.modal-dialog-centered {
+  @media screen and (max-width: 500px) {
+    min-height: 100% !important;
+  }
+}
+.modal-content {
+  @media screen and (max-width: 500px) {
+    height: 100vh !important;
+    background-clip: unset !important;
+    border-radius: 0;
+  }
+}
+.modal-body {
+  @media screen and (max-width: 500px) {
+    padding: 0;
+  }
+}
