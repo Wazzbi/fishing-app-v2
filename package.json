@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "autocompleter": "^6.1.0",
+    "blueimp-load-image": "^5.14.0",
     "bootstrap": "^4.6.0",
     "compress.js": "^1.1.2",
     "firebase": "^8.2.8",

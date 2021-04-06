@@ -15,6 +15,7 @@ import JoditEditor from "jodit-react";
 import { configEditor } from "./constants";
 import Jdenticon from "react-jdenticon";
 import { StoreContext } from "../../store/Store";
+import loadImage from "blueimp-load-image";
 
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -131,7 +132,7 @@ const NewsPage = ({ history }) => {
   };
 
   const handleChangeImage = async (e, i) => {
-    const files = [...e.target.files];
+    let files = [...e.target.files];
 
     if (!!files.length) {
       const name = Date.now();
@@ -140,41 +141,93 @@ const NewsPage = ({ history }) => {
           ? files[0].type.slice(files[0].type.indexOf("/") + 1)
           : files[0].type;
 
-      try {
-        let o;
-        let smallImage = await compress.compress(files, {
-          size: 0.5,
-          quality: 0.75,
-          maxWidth: 200,
-          maxHeight: 200,
-          resize: true,
-        });
-        let img1 = smallImage[0];
-        let base64str = img1.data;
-        let imgExt = img1.ext;
-        let blob = Compress.convertBase64ToFile(base64str, imgExt);
-        o = { ...o, min: { blob, name, type, size: 200 } };
+      loadImage(
+        files[0],
+        async (img, data) => {
+          if (data.imageHead && data.exif) {
+            // Reset Exif Orientation data:
+            loadImage.writeExifData(data.imageHead, data, "Orientation", 1);
+            img.toBlob(function (blob) {
+              loadImage.replaceHead(blob, data.imageHead, async (newBlob) => {
+                files = [newBlob];
+                // TODO tento blok se opakuje -> refaktorovat
+                try {
+                  let o;
+                  let smallImage = await compress.compress(files, {
+                    size: 0.5,
+                    quality: 0.75,
+                    maxWidth: 200,
+                    maxHeight: 200,
+                    resize: true,
+                  });
+                  let img1 = smallImage[0];
+                  let base64str = img1.data;
+                  let imgExt = img1.ext;
+                  let blob = Compress.convertBase64ToFile(base64str, imgExt);
+                  o = { ...o, min: { blob, name, type, size: 200 } };
 
-        let bigImage = await compress.compress(files, {
-          size: 1.5,
-          quality: 0.75,
-          maxWidth: 800,
-          maxHeight: 800,
-          resize: true,
-        });
-        img1 = bigImage[0];
-        base64str = img1.data;
-        imgExt = img1.ext;
-        blob = Compress.convertBase64ToFile(base64str, imgExt);
-        o = { ...o, med: { blob, name, type, size: 400 } };
+                  let bigImage = await compress.compress(files, {
+                    size: 1.5,
+                    quality: 0.75,
+                    maxWidth: 800,
+                    maxHeight: 800,
+                    resize: true,
+                  });
+                  img1 = bigImage[0];
+                  base64str = img1.data;
+                  imgExt = img1.ext;
+                  blob = Compress.convertBase64ToFile(base64str, imgExt);
+                  o = { ...o, med: { blob, name, type, size: 400 } };
 
-        uploadImages[i] = o;
-        if (isMountedRef.current) {
-          setUploadImages([...uploadImages]);
-        }
-      } catch (err) {
-        console.error(err);
-      }
+                  uploadImages[i] = o;
+                  if (isMountedRef.current) {
+                    setUploadImages([...uploadImages]);
+                  }
+                } catch (err) {
+                  console.error(err);
+                }
+              });
+            }, "image/jpeg");
+          } else {
+            try {
+              let o;
+              let smallImage = await compress.compress(files, {
+                size: 0.5,
+                quality: 0.75,
+                maxWidth: 200,
+                maxHeight: 200,
+                resize: true,
+              });
+              let img1 = smallImage[0];
+              let base64str = img1.data;
+              let imgExt = img1.ext;
+              let blob = Compress.convertBase64ToFile(base64str, imgExt);
+              o = { ...o, min: { blob, name, type, size: 200 } };
+
+              let bigImage = await compress.compress(files, {
+                size: 1.5,
+                quality: 0.75,
+                maxWidth: 800,
+                maxHeight: 800,
+                resize: true,
+              });
+              img1 = bigImage[0];
+              base64str = img1.data;
+              imgExt = img1.ext;
+              blob = Compress.convertBase64ToFile(base64str, imgExt);
+              o = { ...o, med: { blob, name, type, size: 400 } };
+
+              uploadImages[i] = o;
+              if (isMountedRef.current) {
+                setUploadImages([...uploadImages]);
+              }
+            } catch (err) {
+              console.error(err);
+            }
+          }
+        },
+        { meta: true, orientation: true, canvas: true, maxWidth: 800 }
+      );
     } else {
       // držet pozici kvůli indexu kdyby uživatel chtěl přehrát fotku
       uploadImages[i] = {};
