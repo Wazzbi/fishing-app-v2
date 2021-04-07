@@ -145,6 +145,10 @@ const NewsPage = ({ history }) => {
         files[0],
         async (img, data) => {
           if (data.imageHead && data.exif) {
+            console.log("imageHead: ", data.imageHead);
+            console.log("exif: ", data.exif);
+            // alert(data.imageHead);
+            // alert(data.exif);
             // Reset Exif Orientation data:
             loadImage.writeExifData(data.imageHead, data, "Orientation", 1);
             img.toBlob(function (blob) {
@@ -273,6 +277,44 @@ const NewsPage = ({ history }) => {
     });
   }, [dispatch, storeState.posts]);
 
+  const fetchMorePosts = async (lastPostTimeStamp) => {
+    let ww = {};
+    await firebaseService
+      .getPostsLimited(lastPostTimeStamp)
+      .once("value", (snapshot) => {
+        if (isMountedRef.current) {
+          snapshot.forEach((childSnapshot) => {
+            ww = { ...ww, [childSnapshot.key]: childSnapshot.val() };
+
+            // přidej titulní obrázek do objektu
+            Object.entries(ww).map(([postKey, postValue]) => {
+              if (postValue.images) {
+                firebaseService
+                  .getImageUrl(
+                    postValue.images[0].imageName,
+                    400,
+                    postValue.images[0].imageType
+                  )
+                  .then((imageUrl) => {
+                    postValue.titleImage = imageUrl;
+
+                    return dispatch({
+                      type: "ADD_POSTS",
+                      payload: { ...storeState.posts, ...ww },
+                    });
+                  });
+              }
+
+              return dispatch({
+                type: "ADD_POSTS",
+                payload: { ...storeState.posts, ...ww },
+              });
+            });
+          });
+        }
+      });
+  };
+
   // https://www.npmjs.com/package/react-lazy-load-image-component
   // https://www.npmjs.com/package/react-infinite-scroll-component
   const renderPosts = () => {
@@ -282,48 +324,10 @@ const NewsPage = ({ history }) => {
     let lastPost = postsRender[postsRender.length - 1];
     let lastPostTimeStamp = lastPost[1].timeStamp;
 
-    const fetchMorePosts = async () => {
-      let ww = {};
-      await firebaseService
-        .getPostsLimited(lastPostTimeStamp)
-        .once("value", (snapshot) => {
-          if (isMountedRef.current) {
-            snapshot.forEach((childSnapshot) => {
-              ww = { ...ww, [childSnapshot.key]: childSnapshot.val() };
-
-              // přidej titulní obrázek do objektu
-              Object.entries(ww).map(([postKey, postValue]) => {
-                if (postValue.images) {
-                  firebaseService
-                    .getImageUrl(
-                      postValue.images[0].imageName,
-                      400,
-                      postValue.images[0].imageType
-                    )
-                    .then((imageUrl) => {
-                      postValue.titleImage = imageUrl;
-
-                      return dispatch({
-                        type: "ADD_POSTS",
-                        payload: { ...storeState.posts, ...ww },
-                      });
-                    });
-                }
-
-                return dispatch({
-                  type: "ADD_POSTS",
-                  payload: { ...storeState.posts, ...ww },
-                });
-              });
-            });
-          }
-        });
-    };
-
     return (
       <InfiniteScroll
         dataLength={postsRender.length}
-        next={fetchMorePosts}
+        next={() => fetchMorePosts(lastPostTimeStamp)}
         hasMore={postCount !== postsRender.length}
         loader={
           <div style={{ textAlign: "center" }}>
@@ -367,10 +371,15 @@ const NewsPage = ({ history }) => {
             </div>
 
             {postValue && postValue.titleImage && (
-              <div className="news-page_animated-background">
-                <LazyLoadImage
+              <div>
+                {/* <LazyLoadImage
                   alt=""
-                  effect="blur"
+                  // effect="blur"
+                  src={postValue.titleImage}
+                  className="news-page_lazyLoadImage"
+                /> */}
+                <img
+                  alt=""
                   src={postValue.titleImage}
                   className="news-page_lazyLoadImage"
                 />
