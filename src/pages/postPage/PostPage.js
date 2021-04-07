@@ -105,7 +105,9 @@ const PostPage = (props) => {
           ></Button>
           {post && (
             <div>
-              <p className="post-page_title">{post.title}</p>
+              <p className="post-page_title">
+                <strong>{post.title}</strong>
+              </p>
               <p>
                 <small style={{ color: "#808080", fontFamily: "poppins" }}>
                   {post.username} {" | "} {post.created}

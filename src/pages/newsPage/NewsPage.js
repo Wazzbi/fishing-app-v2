@@ -8,7 +8,7 @@ import React, {
 import "./newsPage.scss";
 import firebaseService from "../../services/firebase/firebase.service";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import "react-lazy-load-image-component/src/effects/blur.css";
+import "react-lazy-load-image-component/src/effects/opacity.css";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { AuthContext } from "../../Auth";
 import JoditEditor from "jodit-react";
@@ -373,14 +373,11 @@ const NewsPage = ({ history }) => {
 
             {postValue && postValue.titleImage && (
               <div>
-                {/* <LazyLoadImage
+                <LazyLoadImage
                   alt=""
-                  // effect="blur"
-                  src={postValue.titleImage}
-                  className="news-page_lazyLoadImage"
-                /> */}
-                <img
-                  alt=""
+                  effect="opacity"
+                  delayTime="0"
+                  threshold="400"
                   src={postValue.titleImage}
                   className="news-page_lazyLoadImage"
                 />
