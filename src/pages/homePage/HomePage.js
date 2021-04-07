@@ -15,13 +15,13 @@ const HomePage = () => {
         <div className="home-page_main-sections">
           <Link to={"/record"} className="home-page_main-section-btn">
             <div className="home-page_main-section-btn-first">
-              Záznamy docházek a úlovků{" "}
+              Záznamy docházek a úlovků
             </div>
           </Link>
 
           <Link to={"/summary"} className="home-page_main-section-btn">
             <div className="home-page_main-section-btn-second">
-              Souhrn docházek a úlovků{" "}
+              Souhrn docházek a úlovků
             </div>
           </Link>
 
@@ -37,10 +37,10 @@ const HomePage = () => {
             <p className="home-page_title">Vítejte na Rybce</p>
             <div className="home-page_title-text-area">
               <p className="home-page_title-text">
-                This is a simple hero unit, a simple jumbotron-style component
-                for calling extra attention to featured content or information.
-                This is a simple hero unit, a simple jumbotron-style component
-                for calling extra attention.
+                Toto je rybářská aplikace RYBKA. Vytvořte si svoje záznamy a
+                souhrny o úlovcích či se podívejte co je nového v rybaření u nás
+                i ve světě. Více informací o možnostech a pravidlech na RYBCE
+                kliknite na číst více.
               </p>
 
               <Button

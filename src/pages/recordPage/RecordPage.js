@@ -49,7 +49,8 @@ const RecordPage = () => {
   const [editRowData, setEditRowData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [storeState, dispatch] = useContext(StoreContext);
-  const [actualYear, setActualYear] = useState(null);
+  const [actualYearRecord, setActualYearRecord] = useState(null);
+  const [actualYear, setActualYear] = useState(2021);
 
   const isMountedRef = useRef(true);
 
@@ -59,6 +60,10 @@ const RecordPage = () => {
     if (isMountedRef.current) {
       setToday(todayISO);
     }
+  };
+
+  const handleActualYear = (year) => {
+    setActualYear(+year);
   };
 
   // validace je dvojená v handleChangeRecord
@@ -338,7 +343,7 @@ const RecordPage = () => {
     todayDate();
     let _currentYear = new Date();
     let currentYear = _currentYear.getFullYear();
-    setActualYear(currentYear);
+    setActualYearRecord(currentYear);
 
     if (!storeState.records) {
       updateData();
@@ -353,18 +358,24 @@ const RecordPage = () => {
         <h3 className="record-page_page-title">Záznamy docházky a úlovků</h3>
         <div>
           <div className="record-page_history-wrapper">
-            <span className="record-page_history active">2021</span>
-            <span className="record-page_history">2020</span>
-            <span className="record-page_history">2019</span>
-            <span className="record-page_history">2018</span>
-            <span className="record-page_history">2017</span>
-            <span className="record-page_history">2016</span>
+            {[2021, 2020, 2019, 2018, 2017, 2016].map((year) => (
+              <button
+                className={
+                  actualYear === year
+                    ? "record-page_history activeYear"
+                    : "record-page_history"
+                }
+                onClick={() => handleActualYear(year)}
+              >
+                {year}
+              </button>
+            ))}
           </div>
         </div>
         <Button
           variant="primary"
           className="record-page_float-btn"
-          onClick={() => handleAdd(actualYear)}
+          onClick={() => handleAdd(actualYearRecord)}
         >
           <img src="/plus.svg" alt="" width="30px" height="30px"></img>
         </Button>

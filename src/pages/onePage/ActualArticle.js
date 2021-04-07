@@ -30,7 +30,9 @@ const ActualArticle = () => {
           ></Button>
 
           <div>
-            <p className="onePage-page_title">Toto je title</p>
+            <p className="onePage-page_title">
+              <strong>Toto je title</strong>
+            </p>
             <p>
               <small style={{ color: "#808080", fontFamily: "poppins" }}>
                 David Novotný {" | "} 31.3.2021 15:38

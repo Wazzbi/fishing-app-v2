@@ -45,11 +45,16 @@ const SummaryPage = () => {
   const [recordsTogether, setRecordsTogether] = useState(null);
   const [loading, setLoading] = useState(false);
   const [storeState, dispatch] = useContext(StoreContext);
+  const [actualYear, setActualYear] = useState(2021);
 
   const isMountedRef = useRef(true);
 
   const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
+  const handleActualYear = (year) => {
+    setActualYear(+year);
   };
 
   const prepareData = useCallback(
@@ -516,12 +521,18 @@ const SummaryPage = () => {
         <h3 className="summary-page_page-title">Souhrn docházky a úlovků</h3>
         <div>
           <div className="summary-page_history-wrapper">
-            <span className="summary-page_history active">2021</span>
-            <span className="summary-page_history">2020</span>
-            <span className="summary-page_history">2019</span>
-            <span className="summary-page_history">2018</span>
-            <span className="summary-page_history">2017</span>
-            <span className="summary-page_history">2016</span>
+            {[2021, 2020, 2019, 2018, 2017, 2016].map((year) => (
+              <button
+                className={
+                  actualYear === year
+                    ? "summary-page_history activeYear"
+                    : "summary-page_history"
+                }
+                onClick={() => handleActualYear(year)}
+              >
+                {year}
+              </button>
+            ))}
           </div>
         </div>
         {!!storeState.summaries &&
