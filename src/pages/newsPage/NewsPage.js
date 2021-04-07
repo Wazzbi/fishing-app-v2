@@ -23,6 +23,7 @@ import Form from "react-bootstrap/Form";
 import Spinner from "react-bootstrap/Spinner";
 
 const Compress = require("compress.js");
+const exifr = require("exifr");
 
 // TODO emoji, odkazy
 // TODO main kontajner udělat squeeze a nakonec s flex-base nebo min-width
@@ -144,12 +145,12 @@ const NewsPage = ({ history }) => {
       loadImage(
         files[0],
         async (img, data) => {
-          if (data.imageHead && data.exif) {
-            console.log("imageHead: ", data.imageHead);
-            console.log("exif: ", data.exif);
-            // alert(data.imageHead);
-            // alert(data.exif);
-            // Reset Exif Orientation data:
+          // když je orientace 6 a 3 (mobil na výšku neb na šířku doleva) -> otoč
+          let orientation = await exifr.orientation(files[0]);
+
+          let changeOrientation = [3, 6].includes(orientation);
+
+          if (data.imageHead && data.exif && changeOrientation) {
             loadImage.writeExifData(data.imageHead, data, "Orientation", 1);
             img.toBlob(function (blob) {
               loadImage.replaceHead(blob, data.imageHead, async (newBlob) => {

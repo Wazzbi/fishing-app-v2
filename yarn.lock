@@ -4611,6 +4611,11 @@ execa@^1.0.0:
     signal-exit "^3.0.0"
     strip-eof "^1.0.0"
 
+exifr@^6.2.0:
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/exifr/-/exifr-6.2.0.tgz#2892ae75b237d2126c48654bed711e5c684ca88c"
+  integrity sha512-ihHjOl8t6NvQUFy6k90axjyj9vJnPIBZpajoF7LjmdA/SYBBLmDSo0YwmnAbwuAtmbL2oBpeqA5wajXqw7x0gg==
+
 exit@^0.1.2:
   version "0.1.2"
   resolved "https://registry.npmjs.org/exit/-/exit-0.1.2.tgz"
