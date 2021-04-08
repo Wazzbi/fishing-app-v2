@@ -37,15 +37,13 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 
 const SummaryPage = () => {
   const { currentUser } = useContext(AuthContext);
-  const [showModalAddSummary, setShowModalAddSummary] = useState(false);
   const [showModalDelete, setShowModalDelete] = useState(false);
-  const [selectedRecords, setSelectedRecords] = useState([]);
-  const [selectedSummary, setSelectedSummary] = useState(null);
   const [onDelete, setOnDelete] = useState(null);
   const [recordsTogether, setRecordsTogether] = useState(null);
   const [loading, setLoading] = useState(false);
   const [storeState, dispatch] = useContext(StoreContext);
-  const [actualYear, setActualYear] = useState(2021);
+  const [actualYearSummary, setActualYearSummary] = useState(null);
+  const [yearHistory, setYearHistory] = useState(null);
 
   const isMountedRef = useRef(true);
 
@@ -54,7 +52,7 @@ const SummaryPage = () => {
   };
 
   const handleActualYear = (year) => {
-    setActualYear(+year);
+    setYearHistory(+year);
   };
 
   const prepareData = useCallback(
@@ -500,6 +498,10 @@ const SummaryPage = () => {
     isMountedRef.current = true;
     localStorage.setItem("lastLocation", "/summary");
     window.scrollTo(0, 0);
+    let _currentYear = new Date();
+    let currentYear = _currentYear.getFullYear();
+    setActualYearSummary(currentYear);
+    setYearHistory(currentYear);
 
     if (!storeState.summaries || !storeState.records) {
       updateData();
@@ -522,19 +524,22 @@ const SummaryPage = () => {
         <h3 className="summary-page_page-title">Souhrn docházky a úlovků</h3>
         <div>
           <div className="summary-page_history-wrapper">
-            {[2021, 2020, 2019, 2018, 2017, 2016].map((year) => (
-              <button
-                key={`year-${year}`}
-                className={
-                  actualYear === year
-                    ? "summary-page_history activeYear"
-                    : "summary-page_history"
-                }
-                onClick={() => handleActualYear(year)}
-              >
-                {year}
-              </button>
-            ))}
+            {
+              // TODO Object.entries(storeState.records).map...
+              [2021, 2020, 2019, 2018, 2017, 2016].map((year) => (
+                <button
+                  key={`year-${year}`}
+                  className={
+                    yearHistory === year
+                      ? "summary-page_history activeYear"
+                      : "summary-page_history"
+                  }
+                  onClick={() => handleActualYear(year)}
+                >
+                  {year}
+                </button>
+              ))
+            }
           </div>
         </div>
         {!!storeState.summaries &&
@@ -545,9 +550,11 @@ const SummaryPage = () => {
         <div className="summary-page_summaries">
           {!!storeState.summaries &&
             !!Object.entries(storeState.summaries).length &&
-            Object.entries(storeState.summaries).map(([summaryKey, value]) =>
-              renderSummaryTable(summaryKey, value)
-            )}
+            Object.entries(storeState.summaries)
+              .filter(([summaryKey, value]) => +summaryKey === +yearHistory)
+              .map(([summaryKey, value]) =>
+                renderSummaryTable(summaryKey, value)
+              )}
         </div>
 
         <Modal

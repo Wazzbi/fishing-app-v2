@@ -50,7 +50,7 @@ const RecordPage = () => {
   const [loading, setLoading] = useState(false);
   const [storeState, dispatch] = useContext(StoreContext);
   const [actualYearRecord, setActualYearRecord] = useState(null);
-  const [actualYear, setActualYear] = useState(2021);
+  const [yearHistory, setYearHistory] = useState(null);
 
   const isMountedRef = useRef(true);
 
@@ -63,7 +63,7 @@ const RecordPage = () => {
   };
 
   const handleActualYear = (year) => {
-    setActualYear(+year);
+    setYearHistory(+year);
   };
 
   // validace je dvojená v handleChangeRecord
@@ -344,6 +344,7 @@ const RecordPage = () => {
     let _currentYear = new Date();
     let currentYear = _currentYear.getFullYear();
     setActualYearRecord(currentYear);
+    setYearHistory(currentYear);
     window.scrollTo(0, 0);
 
     if (!storeState.records) {
@@ -359,19 +360,22 @@ const RecordPage = () => {
         <h3 className="record-page_page-title">Záznamy docházky a úlovků</h3>
         <div>
           <div className="record-page_history-wrapper">
-            {[2021, 2020, 2019, 2018, 2017, 2016].map((year) => (
-              <button
-                key={`year-${year}`}
-                className={
-                  actualYear === year
-                    ? "record-page_history activeYear"
-                    : "record-page_history"
-                }
-                onClick={() => handleActualYear(year)}
-              >
-                {year}
-              </button>
-            ))}
+            {
+              // TODO Object.entries(storeState.records).map...
+              [2021, 2020, 2019, 2018, 2017, 2016].map((year) => (
+                <button
+                  key={`year-${year}`}
+                  className={
+                    yearHistory === year
+                      ? "record-page_history activeYear"
+                      : "record-page_history"
+                  }
+                  onClick={() => handleActualYear(year)}
+                >
+                  {year}
+                </button>
+              ))
+            }
           </div>
         </div>
         <Button
@@ -389,14 +393,16 @@ const RecordPage = () => {
         <div className="record-page_records">
           {!!storeState.records &&
             !!Object.entries(storeState.records).length &&
-            Object.entries(storeState.records).map(([recordKey, value]) => (
-              <div key={recordKey} className="record-page_table">
-                <div className="record-page_record-name">
-                  <span className="record-page_title">
-                    {value && value.recordId}
-                  </span>
+            Object.entries(storeState.records)
+              .filter(([recordKey, value]) => +recordKey === +yearHistory)
+              .map(([recordKey, value]) => (
+                <div key={recordKey} className="record-page_table">
+                  <div className="record-page_record-name">
+                    <span className="record-page_title">
+                      {value && value.recordId}
+                    </span>
 
-                  {/* <div className="record-page_icons">
+                    {/* <div className="record-page_icons">
                     <img
                       src="/delete.svg"
                       alt="delete"
@@ -408,189 +414,195 @@ const RecordPage = () => {
                       }
                     ></img>
                   </div> */}
-                </div>
+                  </div>
 
-                <Table responsive hover size="sm">
-                  <thead>
-                    <tr>
-                      <th>Akce</th>
-                      <th>Pozn.</th>
-                      <th>Datum</th>
-                      <th>Revír</th>
-                      <th>Podrevír</th>
-                      <th>Druh</th>
-                      <th>Ks</th>
-                      <th>Kg</th>
-                      <th>Cm</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {storeState.records &&
-                      storeState.records[recordKey] &&
-                      storeState.records[recordKey].data &&
-                      Object.entries(storeState.records[recordKey].data)
-                        .reverse()
-                        .map(([rowKey, value]) => (
-                          <tr key={rowKey}>
-                            <td className="record-page_action-btns">
-                              <img
-                                src="/edit.svg"
-                                alt="edit"
-                                width="15px"
-                                height="15px"
-                                style={{ margin: "0px 8px", cursor: "pointer" }}
-                                onClick={() =>
-                                  editRow(recordKey, rowKey, value)
-                                }
-                              ></img>
-                              <img
-                                src="/delete.svg"
-                                alt="delete"
-                                width="16px"
-                                height="16px"
-                                style={{ margin: "0px 8px", cursor: "pointer" }}
-                                onClick={() =>
-                                  handleDelete("row", {
-                                    recordUid: recordKey,
-                                    recordRowUid: rowKey,
-                                  })
-                                }
-                              ></img>
-                            </td>
+                  <Table responsive hover size="sm">
+                    <thead>
+                      <tr>
+                        <th>Akce</th>
+                        <th>Pozn.</th>
+                        <th>Datum</th>
+                        <th>Revír</th>
+                        <th>Podrevír</th>
+                        <th>Druh</th>
+                        <th>Ks</th>
+                        <th>Kg</th>
+                        <th>Cm</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {storeState.records &&
+                        storeState.records[recordKey] &&
+                        storeState.records[recordKey].data &&
+                        Object.entries(storeState.records[recordKey].data)
+                          .reverse()
+                          .map(([rowKey, value]) => (
+                            <tr key={rowKey}>
+                              <td className="record-page_action-btns">
+                                <img
+                                  src="/edit.svg"
+                                  alt="edit"
+                                  width="15px"
+                                  height="15px"
+                                  style={{
+                                    margin: "0px 8px",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() =>
+                                    editRow(recordKey, rowKey, value)
+                                  }
+                                ></img>
+                                <img
+                                  src="/delete.svg"
+                                  alt="delete"
+                                  width="16px"
+                                  height="16px"
+                                  style={{
+                                    margin: "0px 8px",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() =>
+                                    handleDelete("row", {
+                                      recordUid: recordKey,
+                                      recordRowUid: rowKey,
+                                    })
+                                  }
+                                ></img>
+                              </td>
 
-                            <td className="record-page_action-btns">
-                              {!!!value.kind ||
-                              !!!value.pieces ||
-                              !!!value.kilograms ? (
-                                <OverlayTrigger
-                                  placement="top"
-                                  overlay={
-                                    <Tooltip id="tooltip-disabled">
-                                      Chybějící povinná data: druh ryby, váha
-                                      nebo počet kusů
-                                    </Tooltip>
-                                  }
-                                >
-                                  <span className="d-inline-block record-page_note">
-                                    <img
-                                      src="/exclamation-red.svg"
-                                      alt="exclamation"
-                                      width="16px"
-                                      height="16px"
-                                    ></img>
+                              <td className="record-page_action-btns">
+                                {!!!value.kind ||
+                                !!!value.pieces ||
+                                !!!value.kilograms ? (
+                                  <OverlayTrigger
+                                    placement="top"
+                                    overlay={
+                                      <Tooltip id="tooltip-disabled">
+                                        Chybějící povinná data: druh ryby, váha
+                                        nebo počet kusů
+                                      </Tooltip>
+                                    }
+                                  >
+                                    <span className="d-inline-block record-page_note">
+                                      <img
+                                        src="/exclamation-red.svg"
+                                        alt="exclamation"
+                                        width="16px"
+                                        height="16px"
+                                      ></img>
+                                    </span>
+                                  </OverlayTrigger>
+                                ) : (
+                                  ""
+                                )}
+                                {!!!value.centimeters ||
+                                !fishKind.some((f) => f === value.kind) ? (
+                                  <OverlayTrigger
+                                    placement="top"
+                                    overlay={
+                                      <Tooltip id="tooltip-disabled">
+                                        Chybějící data: centimetry. Nebo tento
+                                        druh spadá do kategorie Ostatní
+                                      </Tooltip>
+                                    }
+                                  >
+                                    <span className="d-inline-block record-page_note">
+                                      <img
+                                        src="/exclamation-blue.svg"
+                                        alt="exclamation"
+                                        width="16px"
+                                        height="16px"
+                                      ></img>
+                                    </span>
+                                  </OverlayTrigger>
+                                ) : (
+                                  ""
+                                )}
+                                {value.kind &&
+                                value.pieces &&
+                                value.kilograms &&
+                                value.centimeters &&
+                                fishKind.some((f) => f === value.kind) ? (
+                                  <span className="record-page_note-empty">
+                                    -
                                   </span>
-                                </OverlayTrigger>
-                              ) : (
-                                ""
-                              )}
-                              {!!!value.centimeters ||
-                              !fishKind.some((f) => f === value.kind) ? (
-                                <OverlayTrigger
-                                  placement="top"
-                                  overlay={
-                                    <Tooltip id="tooltip-disabled">
-                                      Chybějící data: centimetry. Nebo tento
-                                      druh spadá do kategorie Ostatní
-                                    </Tooltip>
-                                  }
+                                ) : (
+                                  ""
+                                )}
+                              </td>
+
+                              <td className="record-page_date">
+                                <span
+                                  className={`row-${rowKey}`}
+                                  id={`row-${rowKey}-date`}
                                 >
-                                  <span className="d-inline-block record-page_note">
-                                    <img
-                                      src="/exclamation-blue.svg"
-                                      alt="exclamation"
-                                      width="16px"
-                                      height="16px"
-                                    ></img>
-                                  </span>
-                                </OverlayTrigger>
-                              ) : (
-                                ""
-                              )}
-                              {value.kind &&
-                              value.pieces &&
-                              value.kilograms &&
-                              value.centimeters &&
-                              fishKind.some((f) => f === value.kind) ? (
-                                <span className="record-page_note-empty">
-                                  -
+                                  {value.date ? value.date : ""}
                                 </span>
-                              ) : (
-                                ""
-                              )}
-                            </td>
+                              </td>
 
-                            <td className="record-page_date">
-                              <span
-                                className={`row-${rowKey}`}
-                                id={`row-${rowKey}-date`}
-                              >
-                                {value.date ? value.date : ""}
-                              </span>
-                            </td>
+                              <td>
+                                <span
+                                  className={`row-${rowKey}`}
+                                  id={`row-${rowKey}-districtNumber`}
+                                >
+                                  {value.districtNumber
+                                    ? value.districtNumber
+                                    : ""}
+                                </span>
+                              </td>
 
-                            <td>
-                              <span
-                                className={`row-${rowKey}`}
-                                id={`row-${rowKey}-districtNumber`}
-                              >
-                                {value.districtNumber
-                                  ? value.districtNumber
-                                  : ""}
-                              </span>
-                            </td>
+                              <td>
+                                <span
+                                  className={`row-${rowKey}`}
+                                  id={`row-${rowKey}-subdistrictNumber`}
+                                >
+                                  {value.subdistrictNumber
+                                    ? value.subdistrictNumber
+                                    : ""}
+                                </span>
+                              </td>
 
-                            <td>
-                              <span
-                                className={`row-${rowKey}`}
-                                id={`row-${rowKey}-subdistrictNumber`}
-                              >
-                                {value.subdistrictNumber
-                                  ? value.subdistrictNumber
-                                  : ""}
-                              </span>
-                            </td>
+                              <td className="record-page_kind">
+                                <span
+                                  className={`row-${rowKey}`}
+                                  id={`row-${rowKey}-kind`}
+                                >
+                                  {value.kind ? value.kind : ""}
+                                </span>
+                              </td>
 
-                            <td className="record-page_kind">
-                              <span
-                                className={`row-${rowKey}`}
-                                id={`row-${rowKey}-kind`}
-                              >
-                                {value.kind ? value.kind : ""}
-                              </span>
-                            </td>
+                              <td>
+                                <span
+                                  className={`row-${rowKey}`}
+                                  id={`row-${rowKey}-pieces`}
+                                >
+                                  {value.pieces ? value.pieces : "-"}
+                                </span>
+                              </td>
 
-                            <td>
-                              <span
-                                className={`row-${rowKey}`}
-                                id={`row-${rowKey}-pieces`}
-                              >
-                                {value.pieces ? value.pieces : "-"}
-                              </span>
-                            </td>
+                              <td>
+                                <span
+                                  className={`row-${rowKey}`}
+                                  id={`row-${rowKey}-kilograms`}
+                                >
+                                  {value.kilograms ? value.kilograms : "-"}
+                                </span>
+                              </td>
 
-                            <td>
-                              <span
-                                className={`row-${rowKey}`}
-                                id={`row-${rowKey}-kilograms`}
-                              >
-                                {value.kilograms ? value.kilograms : "-"}
-                              </span>
-                            </td>
-
-                            <td>
-                              <span
-                                className={`row-${rowKey}`}
-                                id={`row-${rowKey}-centimeters`}
-                              >
-                                {value.centimeters ? value.centimeters : "-"}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                  </tbody>
-                </Table>
-              </div>
-            ))}
+                              <td>
+                                <span
+                                  className={`row-${rowKey}`}
+                                  id={`row-${rowKey}-centimeters`}
+                                >
+                                  {value.centimeters ? value.centimeters : "-"}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                    </tbody>
+                  </Table>
+                </div>
+              ))}
         </div>
 
         <Modal
