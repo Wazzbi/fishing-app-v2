@@ -31,7 +31,7 @@ const PartnerArticle = () => {
 
           <div>
             <p className="onePage-page_title">
-              <strong>Toto je title</strong>
+              <strong>Pomocte Rybce růst</strong>
             </p>
             <p>
               <small style={{ color: "#808080", fontFamily: "poppins" }}>
@@ -42,7 +42,16 @@ const PartnerArticle = () => {
               <Badge variant="dark">Info</Badge>
             </p>
 
-            <div className="onePage-page_text">Hello world</div>
+            <div className="onePage-page_text">
+              <p>
+                <a href="https://www.patreon.com/rybka">Rybka - Patreon</a>
+              </p>
+              <p>
+                <a href="https://www.buymeacoffee.com/rybka">
+                  Rybka - Buymeacoffee
+                </a>
+              </p>
+            </div>
           </div>
         </div>
       </div>

@@ -1,3 +1,4 @@
+@import "../../styles/variables.scss";
 // TODO identický s postPage teno file kdyžtak zrušit a odkazovat se na styly postPage
 
 .onePage-page_main {
@@ -70,7 +71,8 @@
   margin-bottom: 15px;
 
   &:hover {
-    background-image: url("/back-active.svg");
+    // background-image: url("/back-active.svg");
+    background-color: $quaternary;
   }
 }
 
