@@ -17,7 +17,7 @@ const Navigation = () => {
   let showNavbar = true;
   window.onscroll = function (e) {
     // print "false" if direction is down and "true" if up
-    showNavbar = this.oldScroll > this.scrollY;
+    showNavbar = this.scrollY > 0 ? this.oldScroll > this.scrollY : true;
     this.oldScroll = this.scrollY;
 
     const navbar = document.getElementById("navbar");
