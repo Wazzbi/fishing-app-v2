@@ -59,54 +59,54 @@ const TitleArticle = () => {
               </p>
               <p>
                 <b>Určitá specifikace, které se týkají RYBKY v této fázi:</b>
-                <br />
-                <ul>
-                  <li>
-                    Příspěvky jsou možny vkládat jen ověřenými osobami,
-                    moderátory nebo reprezentanty organizací. Je to tak z důvodů
-                    nešíření{" "}
-                    <HashLink
-                      to="titleArticle#NotAllowedContent"
-                      style={{ color: "blue", textDecoration: "underline" }}
-                    >
-                      nevhodného obsahu
-                    </HashLink>
-                    . Při porušení těchto pravidel může být uživateli zablokován
-                    účet.
-                  </li>
-                </ul>
               </p>
+              <ul>
+                <li>
+                  Příspěvky jsou možny vkládat jen ověřenými osobami, moderátory
+                  nebo reprezentanty organizací. Je to tak z důvodů nešíření{" "}
+                  <HashLink
+                    to="titleArticle#NotAllowedContent"
+                    style={{ color: "blue", textDecoration: "underline" }}
+                  >
+                    nevhodného obsahu
+                  </HashLink>
+                  . Při porušení těchto pravidel může být uživateli zablokován
+                  účet.
+                </li>
+                <li>
+                  Uživateli který opakované reportuje příspěvky, které jsou
+                  obsahově v souladu se zamýšleným obsahem aplikace RYBKA bude v
+                  krajním případě účet smazán
+                </li>
+              </ul>
               <p>
                 <b>Možnosti které jsem zde pro vás připravil:</b>
-                <br />
-                <ul>
-                  <li>
-                    Vytvořte si roční záznam vašich úlovků a docházek, které se
-                    budou automatickypřepisovat do souhrnu který je nutno
-                    předávat rybářskému svazu.
-                  </li>
-                  <li>
-                    Roční souhrny se automaticky generují na základě vašich
-                    zápisů v záznamu. Tento souhrn můžete vyexportovat jako PDF
-                    a poslat elektronicky či poštou na rybářský svaz.
-                  </li>
-                </ul>
               </p>
+              <ul>
+                <li>
+                  Vytvořte si roční záznam vašich úlovků a docházek, které se
+                  budou automatickypřepisovat do souhrnu který je nutno předávat
+                  rybářskému svazu.
+                </li>
+                <li>
+                  Roční souhrny se automaticky generují na základě vašich zápisů
+                  v záznamu. Tento souhrn můžete vyexportovat jako PDF a poslat
+                  elektronicky či poštou na rybářský svaz.
+                </li>
+              </ul>
 
               <hr />
               <h4 id="NotAllowedContent">Nevhodný obsah</h4>
               <div style={{ padding: "10px 0 0" }}>
                 <p>
                   <b>Zde je vydefinováno co je nevhodný obsah:</b>
-                  <ul>
-                    <li>Rasistický context</li>
-                    <li>Sexistický context</li>
-                    <li>Urážení menšin a jiných skupin</li>
-                    <li>
-                      Šíření radikálních politických a náboženských názorů
-                    </li>
-                  </ul>
                 </p>
+                <ul>
+                  <li>Rasistický context</li>
+                  <li>Sexistický context</li>
+                  <li>Urážení menšin a jiných skupin</li>
+                  <li>Šíření radikálních politických a náboženských názorů</li>
+                </ul>
               </div>
             </div>
           </div>

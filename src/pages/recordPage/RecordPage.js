@@ -361,6 +361,7 @@ const RecordPage = () => {
           <div className="record-page_history-wrapper">
             {[2021, 2020, 2019, 2018, 2017, 2016].map((year) => (
               <button
+                key={`year-${year}`}
                 className={
                   actualYear === year
                     ? "record-page_history activeYear"

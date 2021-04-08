@@ -123,6 +123,13 @@ const PostPage = (props) => {
                 <small style={{ color: "#808080", fontFamily: "poppins" }}>
                   99.1k
                 </small>
+                <img
+                  src="/bookmark.svg"
+                  alt=""
+                  height="16px"
+                  width="16px"
+                ></img>
+                <small style={{ color: "#808080" }}>Uložit</small>
               </p>
 
               <div

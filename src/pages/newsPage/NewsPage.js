@@ -404,8 +404,16 @@ const NewsPage = ({ history }) => {
                 <img src="/heart.svg" alt="" height="16px" width="16px"></img>
                 <span style={{ color: "#808080" }}>99.1k</span>
               </div>
-
-              <img src="/right.svg" alt="" height="16px" width="15px"></img>
+              <div className="news-page_post-footer-icon-group-right">
+                <img
+                  src="/bookmark.svg"
+                  alt=""
+                  height="16px"
+                  width="16px"
+                ></img>
+                <img src="/report.svg" alt="" height="16px" width="16px"></img>
+                <img src="/right.svg" alt="" height="16px" width="15px"></img>
+              </div>
             </div>
           </div>
         ))}
