@@ -344,6 +344,7 @@ const RecordPage = () => {
     let _currentYear = new Date();
     let currentYear = _currentYear.getFullYear();
     setActualYearRecord(currentYear);
+    window.scrollTo(0, 0);
 
     if (!storeState.records) {
       updateData();

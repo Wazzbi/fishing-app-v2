@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { AuthContext } from "../Auth";
 import firebaseService from "../services/firebase/firebase.service";
 import { Link, withRouter } from "react-router-dom";
@@ -14,7 +14,20 @@ const Navigation = () => {
 
   const signOut = () => firebaseService.auth().signOut();
 
-  // TODO místo user -> zobrazit jméno zkráceně
+  let showNavbar = true;
+  window.onscroll = function (e) {
+    // print "false" if direction is down and "true" if up
+    console.log(this.oldScroll > this.scrollY);
+    showNavbar = this.oldScroll > this.scrollY;
+    this.oldScroll = this.scrollY;
+
+    const navbar = document.getElementById("navbar");
+    if (showNavbar) {
+      navbar.classList.remove("hidden");
+    } else {
+      navbar.classList.add("hidden");
+    }
+  };
 
   const AppNavbar = () => {
     if (currentUser) {
@@ -23,8 +36,10 @@ const Navigation = () => {
           <Navbar
             expand="lg"
             variant="dark"
-            className="navigation_nav"
+            className="navigation_nav show"
+            id="navbar"
             collapseOnSelect
+            fixed="top"
           >
             <Navbar.Brand as={Link} to={"/home"}>
               <b>Rybka</b>

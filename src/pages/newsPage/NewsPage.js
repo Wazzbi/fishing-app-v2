@@ -327,6 +327,7 @@ const NewsPage = ({ history }) => {
 
     return (
       <InfiniteScroll
+        style={{ overflow: "hidden" }}
         dataLength={postsRender.length}
         next={() => fetchMorePosts(lastPostTimeStamp)}
         hasMore={postCount !== postsRender.length}
@@ -340,7 +341,19 @@ const NewsPage = ({ history }) => {
             <b>Jaj! To je vše</b>
           </p>
         }
-        style={{ overflow: "hidden" }}
+        refreshFunction={init}
+        pullDownToRefresh
+        pullDownToRefreshThreshold={50}
+        pullDownToRefreshContent={
+          <p style={{ textAlign: "center" }}>
+            <b>&#8595; Tahej ještě trochu</b>
+          </p>
+        }
+        releaseToRefreshContent={
+          <p style={{ textAlign: "center" }}>
+            <b>&#8593; Už mě pusť</b>
+          </p>
+        }
       >
         {postsRender.map(([postKey, postValue]) => (
           <div

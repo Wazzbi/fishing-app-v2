@@ -8,6 +8,7 @@ import "./aboutPage.scss";
 const AboutPage = () => {
   useEffect(() => {
     localStorage.setItem("lastLocation", "/about");
+    window.scrollTo(0, 0);
   }, []);
 
   return (

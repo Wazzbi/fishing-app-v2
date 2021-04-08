@@ -499,6 +499,7 @@ const SummaryPage = () => {
   useEffect(() => {
     isMountedRef.current = true;
     localStorage.setItem("lastLocation", "/summary");
+    window.scrollTo(0, 0);
 
     if (!storeState.summaries || !storeState.records) {
       updateData();

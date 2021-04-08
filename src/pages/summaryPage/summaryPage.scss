@@ -1,6 +1,6 @@
 .summary-page_main {
   max-width: 1200px;
-  margin: 24px auto 80px;
+  margin: 80px auto 80px; // +56px navbar
   padding: 0 10px;
 
   @media screen and (max-width: 500px) {

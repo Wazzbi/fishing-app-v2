@@ -7,6 +7,7 @@ import Button from "react-bootstrap/Button";
 const HomePage = () => {
   useEffect(() => {
     localStorage.setItem("lastLocation", "/home");
+    window.scrollTo(0, 0);
   }, []);
 
   return (

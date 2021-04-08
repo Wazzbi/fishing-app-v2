@@ -20,6 +20,7 @@ const UserPage = () => {
 
   useEffect(() => {
     localStorage.setItem("lastLocation", "/user");
+    window.scrollTo(0, 0);
   }, []);
 
   return (
