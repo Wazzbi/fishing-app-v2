@@ -14,20 +14,6 @@ const Navigation = () => {
 
   const signOut = () => firebaseService.auth().signOut();
 
-  let showNavbar = true;
-  window.onscroll = function (e) {
-    // print "false" if direction is down and "true" if up
-    showNavbar = this.scrollY > 0 ? this.oldScroll > this.scrollY : true;
-    this.oldScroll = this.scrollY;
-
-    const navbar = document.getElementById("navbar");
-    if (showNavbar) {
-      navbar.classList.remove("hidden");
-    } else {
-      navbar.classList.add("hidden");
-    }
-  };
-
   const AppNavbar = () => {
     if (currentUser) {
       return (
@@ -35,7 +21,7 @@ const Navigation = () => {
           <Navbar
             expand="lg"
             variant="dark"
-            className="navigation_nav show"
+            className="navigation_nav"
             id="navbar"
             collapseOnSelect
             fixed="top"

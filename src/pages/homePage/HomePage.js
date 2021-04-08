@@ -64,6 +64,21 @@ const HomePage = () => {
           </div>
         </div>
 
+        <div className="home-page_to-mobile">
+          <p className="home-page_card-title">Rybka do mobilu</p>
+          <p className="home-page_card-text">
+            Přidejte si Rybku na plochu vašeho mobilu pro lepší zážitek z
+            používání. Nevíte-li si rady, podívejte se jak na to.
+          </p>
+          <Button
+            className="home-page_ghoust-btn"
+            as={Link}
+            to={"/mobileArticle"}
+          >
+            Číst více
+          </Button>
+        </div>
+
         <div className="home-page_cards">
           <div className="home-page_card">
             <p className="home-page_card-title">

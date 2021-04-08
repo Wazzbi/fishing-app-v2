@@ -21,6 +21,7 @@ import TitleArticle from "./pages/onePage/TitleArticle";
 import PartnerArticle from "./pages/onePage/PartnerArticle";
 import ActualArticle from "./pages/onePage/ActualArticle";
 import AdminPage from "./pages/adminPage/AdminPage";
+import MobileArticle from "./pages/onePage/MobileArticle";
 
 // TODO localStorage je hnusně na každé stránce - určitě to jde udělat globálně
 
@@ -60,6 +61,11 @@ const App = () => {
                 exact
                 path="/actualArticle"
                 component={ActualArticle}
+              />
+              <PrivateRoute
+                exact
+                path="/mobileArticle"
+                component={MobileArticle}
               />
               <PrivateRoute exact path="/user" component={UserPage} />
               <PrivateRoute exact path="/weather" component={WeatherPage} />

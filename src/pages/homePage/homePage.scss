@@ -149,30 +149,12 @@
     border-image: linear-gradient(#3b5249, #a4b494) 0 100%;
     padding: 0 20px 10px 10px;
 
-    .home-page_card-title {
-      font-size: 32px;
-      font-weight: 500;
-      line-height: 36px;
-      color: #3b5249;
-
-      @media only screen and (max-width: 410px) {
-        font-size: 27px;
-        line-height: 32px;
-      }
-    }
-
     .home-page_card-text-wrapper {
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
       flex: 1;
       padding-bottom: 15px;
-    }
-
-    .home-page_card-text {
-      text-align: justify;
-      color: #656565;
-      font-family: "Poppins", sans-serif !important;
     }
 
     .home-page_card-text-btn-wrapper {
@@ -184,5 +166,41 @@
         justify-content: center;
       }
     }
+  }
+}
+
+.home-page_card-title {
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 36px;
+  color: #3b5249;
+
+  @media only screen and (max-width: 410px) {
+    font-size: 27px;
+    line-height: 32px;
+  }
+}
+
+.home-page_card-text {
+  text-align: justify;
+  color: #656565;
+  font-family: "Poppins", sans-serif !important;
+}
+
+.home-page_to-mobile {
+  margin: -40px 30px 40px;
+  padding: 0 40px;
+  background-repeat: no-repeat;
+  background-image: radial-gradient(circle 50px, #e6f1d7 99%, transparent 0),
+    radial-gradient(circle 25px, #e6f1d7 99%, transparent 0),
+    radial-gradient(circle 25px, #e6f1d7 99%, transparent 0),
+    radial-gradient(circle 150px, #e6f1d7 99%, transparent 0);
+  background-size: 100px 100px, 50px 50px, 50px 50px, 300px 300px;
+  background-position: 24px 0px, 140px 90px, 200px 24px, 350px 24px;
+
+  @media only screen and (max-width: 600px) {
+    text-align: center;
+    margin: 20px 0 40px;
+    padding: 0 20px;
   }
 }
