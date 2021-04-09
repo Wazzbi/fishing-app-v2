@@ -111,7 +111,7 @@
   cursor: pointer;
   transition: all 300ms ease-in-out;
 
-  &:hover {
+  &:active {
     background-color: #382933;
     color: #a4b494bf;
   }

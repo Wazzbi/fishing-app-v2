@@ -637,138 +637,146 @@ const RecordPage = () => {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Form
-              onSubmit={!!editRowData ? handleSubmitChange : handleSubmitAdd}
-            >
-              <Form.Group>
-                <Form.Label>Datum</Form.Label>
-                <Form.Control
-                  type="date"
-                  name="date"
-                  defaultValue={
-                    !!editRowData ? editRowData.rowValue.date : today
-                  }
-                />
-              </Form.Group>
+            <div className="record-page_modal">
+              <Form
+                onSubmit={!!editRowData ? handleSubmitChange : handleSubmitAdd}
+              >
+                <Form.Group>
+                  <Form.Label>Datum</Form.Label>
+                  <Form.Control
+                    type="date"
+                    name="date"
+                    defaultValue={
+                      !!editRowData ? editRowData.rowValue.date : today
+                    }
+                  />
+                </Form.Group>
 
-              <Form.Group>
-                <Form.Label>Číslo Revíru</Form.Label>
-                <Form.Control
-                  required
-                  type="number"
-                  name="districtNumber"
-                  id={`${onAdd}form-districtNumber`}
-                  defaultValue={
-                    !!editRowData ? editRowData.rowValue.districtNumber : ""
-                  }
-                  onChange={(e) =>
-                    validator(
-                      "validateDistrictNumber",
-                      e.target.value,
-                      `${onAdd}form-districtNumber`
-                    )
-                  }
-                />
-              </Form.Group>
+                <Form.Group>
+                  <Form.Label>Číslo Revíru</Form.Label>
+                  <Form.Control
+                    required
+                    type="number"
+                    name="districtNumber"
+                    id={`${onAdd}form-districtNumber`}
+                    defaultValue={
+                      !!editRowData ? editRowData.rowValue.districtNumber : ""
+                    }
+                    onChange={(e) =>
+                      validator(
+                        "validateDistrictNumber",
+                        e.target.value,
+                        `${onAdd}form-districtNumber`
+                      )
+                    }
+                  />
+                </Form.Group>
 
-              <Form.Group>
-                <Form.Label>Číslo Podrevíru</Form.Label>
-                <Form.Control
-                  required
-                  type="number"
-                  name="subdistrictNumber"
-                  id={`${onAdd}form-subdistrictNumber`}
-                  defaultValue={
-                    !!editRowData ? editRowData.rowValue.subdistrictNumber : ""
-                  }
-                  onChange={(e) =>
-                    validator(
-                      "validateNoDigits",
-                      e.target.value,
-                      `${onAdd}form-subdistrictNumber`
-                    )
-                  }
-                />
-                <Form.Text className="text-muted">
-                  Pokud podrevíru nemá číslo vyplňte nulu.
-                </Form.Text>
-              </Form.Group>
+                <Form.Group>
+                  <Form.Label>Číslo Podrevíru</Form.Label>
+                  <Form.Control
+                    required
+                    type="number"
+                    name="subdistrictNumber"
+                    id={`${onAdd}form-subdistrictNumber`}
+                    defaultValue={
+                      !!editRowData
+                        ? editRowData.rowValue.subdistrictNumber
+                        : ""
+                    }
+                    onChange={(e) =>
+                      validator(
+                        "validateNoDigits",
+                        e.target.value,
+                        `${onAdd}form-subdistrictNumber`
+                      )
+                    }
+                  />
+                  <Form.Text className="text-muted">
+                    Pokud podrevíru nemá číslo vyplňte nulu.
+                  </Form.Text>
+                </Form.Group>
 
-              <Form.Group>
-                <Form.Label>Druh</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="kind"
-                  id={`${onAdd}form-kind`}
-                  autoComplete="off"
-                  defaultValue={!!editRowData ? editRowData.rowValue.kind : ""}
-                  onChange={() => autocompleterService.do(`${onAdd}form-kind`)}
-                />
-              </Form.Group>
+                <Form.Group>
+                  <Form.Label>Druh</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="kind"
+                    id={`${onAdd}form-kind`}
+                    autoComplete="off"
+                    defaultValue={
+                      !!editRowData ? editRowData.rowValue.kind : ""
+                    }
+                    onChange={() =>
+                      autocompleterService.do(`${onAdd}form-kind`)
+                    }
+                  />
+                </Form.Group>
 
-              <Form.Group>
-                <Form.Label>Kusů</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="pieces"
-                  id={`${onAdd}form-pieces`}
-                  defaultValue={
-                    !!editRowData ? editRowData.rowValue.pieces : ""
-                  }
-                  onChange={(e) =>
-                    validator(
-                      "validateNoDigits",
-                      e.target.value,
-                      `${onAdd}form-pieces`
-                    )
-                  }
-                />
-              </Form.Group>
+                <Form.Group>
+                  <Form.Label>Kusů</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="pieces"
+                    id={`${onAdd}form-pieces`}
+                    defaultValue={
+                      !!editRowData ? editRowData.rowValue.pieces : ""
+                    }
+                    onChange={(e) =>
+                      validator(
+                        "validateNoDigits",
+                        e.target.value,
+                        `${onAdd}form-pieces`
+                      )
+                    }
+                  />
+                </Form.Group>
 
-              <Form.Group>
-                <Form.Label>Váha (Kg)</Form.Label>
-                <Form.Control
-                  type="number"
-                  step=".01"
-                  name="kilograms"
-                  id={`${onAdd}form-kilograms`}
-                  defaultValue={
-                    !!editRowData ? editRowData.rowValue.kilograms : ""
-                  }
-                  onChange={(e) =>
-                    validator(
-                      "validate2Digits",
-                      e.target.value,
-                      `${onAdd}form-kilograms`
-                    )
-                  }
-                />
-              </Form.Group>
+                <Form.Group>
+                  <Form.Label>Váha (Kg)</Form.Label>
+                  <Form.Control
+                    type="number"
+                    step=".01"
+                    name="kilograms"
+                    id={`${onAdd}form-kilograms`}
+                    defaultValue={
+                      !!editRowData ? editRowData.rowValue.kilograms : ""
+                    }
+                    onChange={(e) =>
+                      validator(
+                        "validate2Digits",
+                        e.target.value,
+                        `${onAdd}form-kilograms`
+                      )
+                    }
+                  />
+                </Form.Group>
 
-              <Form.Group>
-                <Form.Label>Délka (Cm)</Form.Label>
-                <Form.Control
-                  type="number"
-                  step=".01"
-                  name="centimeters"
-                  id={`${onAdd}form-centimeters`}
-                  defaultValue={
-                    !!editRowData ? editRowData.rowValue.centimeters : ""
-                  }
-                  onChange={(e) =>
-                    validator(
-                      "validate2Digits",
-                      e.target.value,
-                      `${onAdd}form-centimeters`
-                    )
-                  }
-                />
-              </Form.Group>
+                <Form.Group>
+                  <Form.Label>Délka (Cm)</Form.Label>
+                  <Form.Control
+                    type="number"
+                    step=".01"
+                    name="centimeters"
+                    id={`${onAdd}form-centimeters`}
+                    defaultValue={
+                      !!editRowData ? editRowData.rowValue.centimeters : ""
+                    }
+                    onChange={(e) =>
+                      validator(
+                        "validate2Digits",
+                        e.target.value,
+                        `${onAdd}form-centimeters`
+                      )
+                    }
+                  />
+                </Form.Group>
 
-              <Button variant="success" type="submit">
-                Potvrdit
-              </Button>
-            </Form>
+                <Button variant="success" type="submit">
+                  Potvrdit
+                </Button>
+              </Form>
+            </div>
           </Modal.Body>
         </Modal>
       </div>

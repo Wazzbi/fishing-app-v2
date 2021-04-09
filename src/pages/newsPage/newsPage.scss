@@ -126,6 +126,13 @@ $post-color-bg: rgb(220, 220, 220);
   }
 }
 
+.news-page_modal {
+  padding: 0;
+  @media screen and (max-width: 500px) {
+    padding: 20px;
+  }
+}
+
 .news-page_animated-background {
   margin: 1px;
   animation-duration: 1.25s;

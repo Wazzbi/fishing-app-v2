@@ -16,7 +16,7 @@ const AboutPage = () => {
       <div className="aboutPage-main">
         <div className="aboutPage-container">
           <h4>O aplikaci</h4>
-          <p>ver. 0.1.9</p>
+          <p>ver. 0.1.10</p>
           <br />
           <p>
             Tato aplikace byla vytvořena na podmět mého bratra, rybáře, který my

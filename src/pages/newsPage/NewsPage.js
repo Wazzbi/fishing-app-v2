@@ -517,7 +517,7 @@ const NewsPage = ({ history }) => {
           <Modal.Title>Přidat příspěvek</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div style={{ padding: "5px" }}>
+          <div className="news-page_modal">
             <Form onSubmit={handleSubmit}>
               <Form.Group id="inputImages">
                 {renderInputImageFields()}
