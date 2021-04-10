@@ -2,35 +2,35 @@ import React from "react";
 import Jdenticon from "react-jdenticon";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 
-const Post = ({ postKey, postValue }) => {
+const Post = ({ postKey, postValue, handleChangeRoute }) => {
   return (
     <>
-      <div>
-        <div className="news-page_header">
-          <div className="news-page_header-title">
-            <div className="news-page_header-title-first-row">
-              <Jdenticon size="30" value={postValue.username || ""} />
-              <small>
-                {postValue.username} {" | "} {postValue.created}
-              </small>
+      <div key={postKey} className="news-page_post">
+        <div onClick={() => handleChangeRoute(postKey)}>
+          <div className="news-page_header">
+            <div className="news-page_header-title">
+              <div className="news-page_header-title-first-row">
+                <Jdenticon size="30" value={postValue.username || ""} />
+                <small>
+                  {postValue.username} {" | "} {postValue.created}
+                </small>
+              </div>
+              <span>
+                <strong>{postValue.title}</strong>
+              </span>
             </div>
-            <span>
-              <strong>{postValue.title}</strong>
-            </span>
           </div>
-        </div>
 
-        <div className="news-page_post-text-wrapper">
-          <div
-            id={`${postKey}-post-text`}
-            className="news-page_post-text"
-            dangerouslySetInnerHTML={{ __html: postValue.text }}
-          ></div>
-          <div className="news-page_post-text-overlay"></div>
-        </div>
+          <div className="news-page_post-text-wrapper">
+            <div
+              id={`${postKey}-post-text`}
+              className="news-page_post-text"
+              dangerouslySetInnerHTML={{ __html: postValue.text }}
+            ></div>
+            <div className="news-page_post-text-overlay"></div>
+          </div>
 
-        {postValue && postValue.titleImage && (
-          <div>
+          {postValue && postValue.titleImage && (
             <LazyLoadImage
               alt=""
               effect="opacity"
@@ -39,8 +39,8 @@ const Post = ({ postKey, postValue }) => {
               src={postValue.titleImage}
               className="news-page_lazyLoadImage"
             />
-          </div>
-        )}
+          )}
+        </div>
 
         <div className="news-page_post-footer">
           <div className="news-page_post-footer-icon-group-left">

@@ -190,19 +190,17 @@ const NewsPage = ({ history }) => {
         }
       >
         {postsRender.map(([postKey, postValue]) => (
-          <div
-            key={postKey}
-            className="news-page_post"
-            onClick={() => changeRoute(postKey)}
-          >
-            <Post postKey={postKey} postValue={postValue} />
-          </div>
+          <Post
+            postKey={postKey}
+            postValue={postValue}
+            handleChangeRoute={handleChangeRoute}
+          />
         ))}
       </InfiniteScroll>
     );
   };
 
-  const changeRoute = (postKey) => {
+  const handleChangeRoute = (postKey) => {
     dispatch({ type: "ADD_SELECTED_POST", payload: storeState.posts[postKey] });
     history.push(`/post/${postKey}`);
   };

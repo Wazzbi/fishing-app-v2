@@ -161,6 +161,11 @@ $post-color-bg: rgb(220, 220, 220);
   }
 }
 
+// override lazy-load-image
+span.lazy-load-image-background.lazy-load-image-loaded {
+  display: block !important;
+}
+
 // CKEditor 4 classes
 .marker {
   background-color: #ffff41;
