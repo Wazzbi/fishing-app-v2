@@ -352,7 +352,6 @@ const NewsPage = ({ history }) => {
         show={showReportModal}
         handleClose={handleSetShowReportModal}
         isMountedRef={isMountedRef}
-        currentUserData={currentUserData}
         handleReport={handleReport}
       />
     </>

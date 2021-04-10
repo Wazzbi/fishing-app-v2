@@ -4,6 +4,7 @@ export const initialState = {
   records: null,
   summaries: null,
   newsPageScrollPosition: null,
+  reportedPosts: null,
 };
 
 const Reducer = (state, action) => {

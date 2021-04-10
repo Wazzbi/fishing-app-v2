@@ -7,13 +7,7 @@ import Form from "react-bootstrap/Form";
 
 // TODO některé funkce jako init mít jen v newsPage a ne je spouštět odtud
 
-const ReportPost = ({
-  show,
-  handleClose,
-  isMountedRef,
-  currentUserData,
-  handleReport,
-}) => {
+const ReportPost = ({ show, handleClose, isMountedRef, handleReport }) => {
   const handleSubmit = (event) => {
     if (isMountedRef.current) {
       handleClose();

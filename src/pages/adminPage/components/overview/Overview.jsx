@@ -33,7 +33,7 @@ const Overview = ({ firstname, isMountedRef }) => {
 
                   return dispatch({
                     type: "ADD_REPORTED_POSTS",
-                    payload: { ...storeState.posts, ...ww },
+                    payload: { ...storeState.reportedPosts, ...ww },
                   });
                 });
             }
@@ -41,7 +41,7 @@ const Overview = ({ firstname, isMountedRef }) => {
 
           return dispatch({
             type: "ADD_REPORTED_POSTS",
-            payload: { ...storeState.posts, ...ww },
+            payload: { ...storeState.reportedPosts, ...ww },
           });
         });
       }
@@ -62,103 +62,112 @@ const Overview = ({ firstname, isMountedRef }) => {
 
           <p>Uroveň oprávnění: 3</p>
 
-          <Accordion>
-            <Card>
-              <Accordion.Toggle as={Card.Header} eventKey="0">
-                Reportované příspěvky{" "}
-                <Badge variant="danger">
-                  {storeState &&
-                    storeState.reportedPosts &&
-                    Object.keys(storeState.reportedPosts).length}
-                </Badge>
-              </Accordion.Toggle>
-              <Accordion.Collapse eventKey="0">
-                <Card.Body>
-                  {storeState &&
-                    storeState.reportedPosts &&
-                    Object.entries(storeState.reportedPosts).map(
-                      ([rKey, rValue], index) => (
-                        <Accordion>
-                          <Accordion.Toggle as={Card.Header} eventKey="0">
-                            {rValue.timeStamp}
-                          </Accordion.Toggle>
-                          <Accordion.Collapse eventKey="0">
-                            <Card.Body>
-                              <div>
-                                kategorie reportů: ZDE POLE UNIKÁTNÍCH TYPŮ
-                                KATEGORIÍ
-                              </div>
-                              <Accordion>
-                                <Accordion.Toggle as={Card.Header} eventKey="0">
-                                  Detail reportů: ({rValue.reports.length})
-                                </Accordion.Toggle>
-                                <Accordion.Collapse eventKey="0">
-                                  <Card.Body>
-                                    {rValue.reports.map((r) => (
-                                      <Accordion>
-                                        <Accordion.Toggle
-                                          as={Card.Header}
-                                          eventKey="0"
-                                        >
-                                          {`Detail reportu: ${r.reportCreated}`}
-                                        </Accordion.Toggle>
-                                        <Accordion.Collapse eventKey="0">
-                                          <Card.Body>
-                                            <div>
-                                              Reportováno dne: {r.reportCreated}
-                                            </div>
-                                            <div>
-                                              Reportoval: {r.reportedBy}
-                                            </div>
-                                            <div>
-                                              Kategorie reportu:{" "}
-                                              {r.reportCategory}
-                                            </div>
-                                            <div>
-                                              Poznámka z reportu: {r.reportText}
-                                            </div>
-                                          </Card.Body>
-                                        </Accordion.Collapse>
-                                      </Accordion>
-                                    ))}
-                                  </Card.Body>
-                                </Accordion.Collapse>
-                              </Accordion>
-                              <div style={{ margin: "5px 0" }}>
-                                <Button variant="danger">
-                                  skrýt příspěvek
-                                </Button>{" "}
-                                <Button variant="danger">
-                                  smazat příspěvek
-                                </Button>{" "}
-                                <Button variant="danger">
-                                  zabanovat tvůrce
-                                </Button>{" "}
-                                <Button variant="secondary">
-                                  vidět příspěvek
-                                </Button>
-                              </div>
-                            </Card.Body>
-                          </Accordion.Collapse>
-                        </Accordion>
-                      )
-                    )}
-                </Card.Body>
-              </Accordion.Collapse>
-            </Card>
-            <Card>
-              <Accordion.Toggle as={Card.Header} eventKey="1">
-                Zprávy <Badge variant="danger">24</Badge>
-              </Accordion.Toggle>
-              <Accordion.Collapse eventKey="1">
-                <Card.Body>
-                  <span>zpráva 1</span>
-                  <hr />
-                  <span>zpráva 2</span>
-                </Card.Body>
-              </Accordion.Collapse>
-            </Card>
-          </Accordion>
+          {storeState && storeState.reportedPosts && (
+            <Accordion>
+              <Card>
+                <Accordion.Toggle as={Card.Header} eventKey="0">
+                  Reportované příspěvky{" "}
+                  <Badge variant="danger">
+                    {Object.keys(storeState.reportedPosts).length}
+                  </Badge>
+                </Accordion.Toggle>
+                <Accordion.Collapse eventKey="0">
+                  <Card.Body>
+                    {storeState &&
+                      storeState.reportedPosts &&
+                      Object.entries(storeState.reportedPosts).map(
+                        ([rKey, rValue], index) => (
+                          <Accordion>
+                            <Accordion.Toggle as={Card.Header} eventKey="0">
+                              {rValue.timeStamp}
+                            </Accordion.Toggle>
+                            <Accordion.Collapse eventKey="0">
+                              <Card.Body>
+                                <div>
+                                  kategorie reportů: ZDE POLE UNIKÁTNÍCH TYPŮ
+                                  KATEGORIÍ
+                                </div>
+                                {rValue.reports && rValue.reports.length && (
+                                  <Accordion>
+                                    <Accordion.Toggle
+                                      as={Card.Header}
+                                      eventKey="0"
+                                    >
+                                      Detail reportů: (
+                                      {rValue.reports && rValue.reports.length})
+                                    </Accordion.Toggle>
+                                    <Accordion.Collapse eventKey="0">
+                                      <Card.Body>
+                                        {rValue.reports.map((r) => (
+                                          <Accordion>
+                                            <Accordion.Toggle
+                                              as={Card.Header}
+                                              eventKey="0"
+                                            >
+                                              {`Detail reportu: ${r.reportCreated}`}
+                                            </Accordion.Toggle>
+                                            <Accordion.Collapse eventKey="0">
+                                              <Card.Body>
+                                                <div>
+                                                  Reportováno dne:{" "}
+                                                  {r.reportCreated}
+                                                </div>
+                                                <div>
+                                                  Reportoval: {r.reportedBy}
+                                                </div>
+                                                <div>
+                                                  Kategorie reportu:{" "}
+                                                  {r.reportCategory}
+                                                </div>
+                                                <div>
+                                                  Poznámka z reportu:{" "}
+                                                  {r.reportText}
+                                                </div>
+                                              </Card.Body>
+                                            </Accordion.Collapse>
+                                          </Accordion>
+                                        ))}
+                                      </Card.Body>
+                                    </Accordion.Collapse>
+                                  </Accordion>
+                                )}
+
+                                <div style={{ margin: "5px 0" }}>
+                                  <Button variant="danger">
+                                    skrýt příspěvek
+                                  </Button>{" "}
+                                  <Button variant="danger">
+                                    smazat příspěvek
+                                  </Button>{" "}
+                                  <Button variant="danger">
+                                    zabanovat tvůrce
+                                  </Button>{" "}
+                                  <Button variant="secondary">
+                                    vidět příspěvek
+                                  </Button>
+                                </div>
+                              </Card.Body>
+                            </Accordion.Collapse>
+                          </Accordion>
+                        )
+                      )}
+                  </Card.Body>
+                </Accordion.Collapse>
+              </Card>
+              <Card>
+                <Accordion.Toggle as={Card.Header} eventKey="1">
+                  Zprávy <Badge variant="danger">24</Badge>
+                </Accordion.Toggle>
+                <Accordion.Collapse eventKey="1">
+                  <Card.Body>
+                    <span>zpráva 1</span>
+                    <hr />
+                    <span>zpráva 2</span>
+                  </Card.Body>
+                </Accordion.Collapse>
+              </Card>
+            </Accordion>
+          )}
         </div>
       </div>
     </>
