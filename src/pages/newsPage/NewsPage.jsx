@@ -15,6 +15,7 @@ import { AuthContext } from "../../Auth";
 import { StoreContext } from "../../store/Store";
 
 import AddPost from "./components/addPost/AddPost";
+import ReportPost from "./components/reportPost/ReportPost";
 import Post from "./components/post/Post";
 
 import Button from "react-bootstrap/Button";
@@ -30,14 +31,66 @@ import Spinner from "react-bootstrap/Spinner";
 const NewsPage = ({ history }) => {
   const { currentUserData } = useContext(AuthContext);
   const [show, setShow] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
   const [uploadImages, setUploadImages] = useState([]);
   const [inputImageFieldCounter, setInputImageFieldCounter] = useState(1);
   const [text, setText] = useState("");
   const [storeState, dispatch] = useContext(StoreContext);
   const [postCount, setPostCount] = useState(null);
   const [uploadPostDone, setUploadPostDone] = useState(true);
+  const [reportedPostId, setReportedPostId] = useState(null);
 
   const isMountedRef = useRef(true);
+
+  const handleReport = (reportCategory, reportText) => {
+    // TODO ulož meta data o reportu do postu
+    // TODO ulož meta data o reportu do dat nahlašovatele aby měl disabled alert na tento post (nebo ho odstranit z obrazovky)
+    // find reported post in store
+    const _post = Object.entries(storeState.posts).find(
+      ([postKey, postValue]) => +postKey === +reportedPostId
+    );
+
+    // id of reported pos
+    const reportedPost = _post[0];
+
+    // continue with postValue only
+    const post = _post[1];
+
+    // add report flag podle tohoto zobrazovat příspěvek v admin konzoly
+    post.reportedFlag = true;
+    // add report metadata
+    post.reports = post.reports ? post.reports : [];
+    post.reports = [
+      ...post.reports,
+      {
+        reportCreated: Date.now(),
+        reportedBy: currentUserData.id,
+        reportCategory,
+        reportText,
+      },
+    ];
+
+    // add report data to userData
+    currentUserData.reportsCreated = currentUserData.reportsCreated || [];
+    currentUserData.reportsCreated.push({
+      reportCreated: Date.now(),
+      reportedPost,
+    });
+
+    // add report data to post
+    firebaseService.setPost(post.timeStamp, post);
+    // add report data to reporter
+    firebaseService.setUserData(currentUserData.firebaseId, currentUserData);
+  };
+
+  const handleReportPost = (postKey) => {
+    handleSetShowReportModal(true);
+    setReportedPostId(postKey);
+  };
+
+  const handleSetShowReportModal = (newValue) => {
+    setShowReportModal(newValue);
+  };
 
   const handleSetPostCount = (newValue) => {
     setPostCount(newValue);
@@ -189,13 +242,26 @@ const NewsPage = ({ history }) => {
           </p>
         }
       >
-        {postsRender.map(([postKey, postValue]) => (
-          <Post
-            postKey={postKey}
-            postValue={postValue}
-            handleChangeRoute={handleChangeRoute}
-          />
-        ))}
+        {
+          // odfiltrování reportovaných postů daného uživatele aby na ně nemusel koukat když se mu nelíbí
+          postsRender
+            .filter(
+              ([postKey, postValue]) =>
+                currentUserData &&
+                !currentUserData.reportsCreated.find(
+                  (r) => +r.reportedPost === +postKey
+                )
+            )
+            .map(([postKey, postValue]) => (
+              <Post
+                key={`post-${postKey}`}
+                postKey={postKey}
+                postValue={postValue}
+                handleChangeRoute={handleChangeRoute}
+                handleReportPost={handleReportPost}
+              />
+            ))
+        }
       </InfiniteScroll>
     );
   };
@@ -280,6 +346,14 @@ const NewsPage = ({ history }) => {
         init={init}
         handleSetPostCount={handleSetPostCount}
         currentUserData={currentUserData}
+      />
+
+      <ReportPost
+        show={showReportModal}
+        handleClose={handleSetShowReportModal}
+        isMountedRef={isMountedRef}
+        currentUserData={currentUserData}
+        handleReport={handleReport}
       />
     </>
   );

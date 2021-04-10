@@ -47,6 +47,7 @@ const SignUpPage = ({ history }) => {
                     email: email.value,
                     role,
                     id,
+                    firebaseId: authUser.user.uid,
                   });
                   history.push("/");
                 });

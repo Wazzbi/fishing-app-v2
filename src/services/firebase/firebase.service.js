@@ -115,6 +115,10 @@ class firebaseService {
     return usersRef.orderByChild("username").equalTo(username);
   };
 
+  static getReportedPosts = () => {
+    return postsRef.orderByChild("reportedFlag").equalTo(true);
+  };
+
   static getPostsInit = () => {
     return postsRef.orderByChild("timeStamp").limitToLast(10);
   };
@@ -289,6 +293,18 @@ class firebaseService {
   static setUserSummary = (userUid, summaryUid, summary) => {
     return summaryRef(userUid, summaryUid).set({
       ...summary,
+    });
+  };
+
+  static setPost = (id, post) => {
+    return postRef(id).set({
+      ...post,
+    });
+  };
+
+  static setUserData = (uid, data) => {
+    return user(uid).set({
+      ...data,
     });
   };
 

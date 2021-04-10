@@ -2,7 +2,7 @@ import React from "react";
 import Jdenticon from "react-jdenticon";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 
-const Post = ({ postKey, postValue, handleChangeRoute }) => {
+const Post = ({ postKey, postValue, handleChangeRoute, handleReportPost }) => {
   return (
     <>
       <div key={postKey} className="news-page_post">
@@ -51,7 +51,13 @@ const Post = ({ postKey, postValue, handleChangeRoute }) => {
           </div>
           <div className="news-page_post-footer-icon-group-right">
             <img src="/bookmark.svg" alt="" height="16px" width="16px"></img>
-            <img src="/report.svg" alt="" height="16px" width="16px"></img>
+            <img
+              src="/report.svg"
+              alt=""
+              height="16px"
+              width="16px"
+              onClick={() => handleReportPost(postKey)}
+            ></img>
             <img src="/right.svg" alt="" height="16px" width="15px"></img>
           </div>
         </div>

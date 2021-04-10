@@ -19,6 +19,11 @@ const Reducer = (state, action) => {
         ...state,
         posts: { ...action.payload },
       };
+    case "ADD_REPORTED_POSTS":
+      return {
+        ...state,
+        reportedPosts: { ...action.payload },
+      };
     // RECORDS
     case "ADD_RECORDS":
       return {

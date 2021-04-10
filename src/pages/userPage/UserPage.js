@@ -18,6 +18,10 @@ const UserPage = () => {
     { name: "Tmavé", value: "2" },
   ];
 
+  const date = (d) => {
+    return new Date(d).toISOString().substr(0, 10);
+  };
+
   useEffect(() => {
     localStorage.setItem("lastLocation", "/user");
     window.scrollTo(0, 0);
@@ -70,6 +74,22 @@ const UserPage = () => {
               </ButtonGroup>
             </span>
           </div>
+
+          <br />
+          <h4>Nahlášené příspěvky</h4>
+
+          {currentUserData &&
+            currentUserData.reportsCreated &&
+            currentUserData.reportsCreated.map((report, index) => (
+              <div key={`report-${index}`} className="userPage-flex-row">
+                <span className="userPage-row-title">
+                  {`${date(report.reportCreated)}:`}
+                </span>
+                <span className="userPage-row-value">
+                  {report.reportedPost}
+                </span>
+              </div>
+            ))}
         </div>
       </div>
     </>

@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useRef } from "react";
 import { AuthContext } from "../../Auth";
 import "./adminPage.scss";
 import Overview from "./components/overview/Overview";
@@ -16,6 +16,7 @@ import History from "./components/history/History";
 
 const AdminPage = () => {
   const { currentUserData } = useContext(AuthContext);
+  const isMountedRef = useRef(true);
   const splitFullName =
     currentUserData &&
     currentUserData.username &&
@@ -25,12 +26,14 @@ const AdminPage = () => {
   useEffect(() => {
     localStorage.setItem("lastLocation", "/admin");
     window.scrollTo(0, 0);
+
+    return () => (isMountedRef.current = false);
   }, []);
 
   return (
     <>
       <div className="admin-page_main">
-        <Overview firstname={firstName} />
+        <Overview firstname={firstName} isMountedRef={isMountedRef} />
 
         <Tools />
 
