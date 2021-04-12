@@ -212,58 +212,67 @@ const NewsPage = ({ history }) => {
     let lastPost = postsRender[postsRender.length - 1];
     let lastPostTimeStamp = lastPost[1].timeStamp;
 
-    return (
-      <InfiniteScroll
-        style={{ overflow: "hidden" }}
-        dataLength={postsRender.length}
-        next={() => fetchMorePosts(lastPostTimeStamp)}
-        hasMore={postCount !== postsRender.length}
-        loader={
-          <div style={{ textAlign: "center" }}>
-            <Spinner animation="border" variant="success" />
-          </div>
-        }
-        endMessage={
-          <p style={{ textAlign: "center" }}>
-            <b>Jaj! To je vše</b>
-          </p>
-        }
-        refreshFunction={init}
-        pullDownToRefresh
-        pullDownToRefreshThreshold={50}
-        pullDownToRefreshContent={
-          <p style={{ textAlign: "center" }}>
-            <b>&#8595; Tahej ještě trochu</b>
-          </p>
-        }
-        releaseToRefreshContent={
-          <p style={{ textAlign: "center" }}>
-            <b>&#8593; Už mě pusť</b>
-          </p>
-        }
-      >
-        {
-          // odfiltrování reportovaných postů daného uživatele aby na ně nemusel koukat když se mu nelíbí
-          postsRender
-            .filter(
-              ([postKey, postValue]) =>
-                currentUserData &&
-                !currentUserData.reportsCreated.find(
-                  (r) => +r.reportedPost === +postKey
-                )
-            )
-            .map(([postKey, postValue]) => (
-              <Post
-                key={`post-${postKey}`}
-                postKey={postKey}
-                postValue={postValue}
-                handleChangeRoute={handleChangeRoute}
-                handleReportPost={handleReportPost}
-              />
-            ))
-        }
-      </InfiniteScroll>
-    );
+    // když nejsou posty nic nerenderuj
+    if (postsRender) {
+      return (
+        <InfiniteScroll
+          style={{ overflow: "hidden" }}
+          dataLength={postsRender.length}
+          next={() => fetchMorePosts(lastPostTimeStamp)}
+          hasMore={postCount !== postsRender.length}
+          loader={
+            <div style={{ textAlign: "center" }}>
+              <Spinner animation="border" variant="success" />
+            </div>
+          }
+          endMessage={
+            <p style={{ textAlign: "center" }}>
+              <b>Jaj! To je vše</b>
+            </p>
+          }
+          refreshFunction={init}
+          pullDownToRefresh
+          pullDownToRefreshThreshold={50}
+          pullDownToRefreshContent={
+            <p style={{ textAlign: "center" }}>
+              <b>&#8595; Tahej ještě trochu</b>
+            </p>
+          }
+          releaseToRefreshContent={
+            <p style={{ textAlign: "center" }}>
+              <b>&#8593; Už mě pusť</b>
+            </p>
+          }
+        >
+          {
+            // odfiltrování reportovaných postů daného uživatele aby na ně nemusel koukat když se mu nelíbí
+            postsRender
+              .filter(([postKey, postValue]) => {
+                if (currentUserData && currentUserData.reportsCreated) {
+                  // pokud má uživatel pole reportovaných příspěvků
+                  return !currentUserData.reportsCreated.find(
+                    (r) => +r.reportedPost === +postKey
+                  );
+                } else {
+                  // jinak zobraz vše
+                  return true;
+                }
+              })
+              .map(([postKey, postValue]) => (
+                <Post
+                  key={`post-${postKey}`}
+                  postKey={postKey}
+                  postValue={postValue}
+                  handleChangeRoute={handleChangeRoute}
+                  handleReportPost={handleReportPost}
+                />
+              ))
+          }
+        </InfiniteScroll>
+      );
+    } else {
+      return null;
+    }
   };
 
   const handleChangeRoute = (postKey) => {

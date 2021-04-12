@@ -12,9 +12,7 @@ const LandingPage = ({ history, location }) => {
   const redirect = () => {
     if (lastLocation && lastLocation !== "/" && lastLocation !== "/signup") {
       return history.push(lastLocation);
-    }
-
-    if (currentUser) {
+    } else if (currentUser) {
       setTimeout(() => {
         history.push("/home");
       }, 2000);
@@ -60,8 +58,11 @@ const LandingPage = ({ history, location }) => {
 
   useEffect(() => {
     localStorage.setItem("lastLocation", "/");
-    redirect();
   }, []);
+
+  useEffect(() => {
+    redirect();
+  });
 
   return <Content />;
 };
