@@ -2,6 +2,7 @@
   width: 100vw;
   height: 100vh;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   position: relative;
@@ -11,7 +12,7 @@
 }
 
 .sign-up_form {
-  min-width: 300px;
+  width: 370px;
   background-color: #ffffff91;
   padding: 50px;
   backdrop-filter: blur(8px);
@@ -19,7 +20,7 @@
   background-color: #ffffff91;
 
   @media screen and (max-width: 500px) {
-    max-width: 300px;
+    width: 300px;
     padding: 20px;
   }
 }
