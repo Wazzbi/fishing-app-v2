@@ -1,6 +1,7 @@
 import React from "react";
 import Jdenticon from "react-jdenticon";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import ClampLines from "react-clamp-lines";
 
 const Post = ({ postKey, postValue, handleChangeRoute, handleReportPost }) => {
   return (
@@ -22,12 +23,19 @@ const Post = ({ postKey, postValue, handleChangeRoute, handleReportPost }) => {
           </div>
 
           <div className="news-page_post-text-wrapper">
-            <div
-              id={`${postKey}-post-text`}
-              className="news-page_post-text"
-              dangerouslySetInnerHTML={{ __html: postValue.text }}
-            ></div>
-            <div className="news-page_post-text-overlay"></div>
+            <div id={`${postKey}-post-text`} className="news-page_post-text">
+              <ClampLines
+                text={postValue.text}
+                id="really-unique-id"
+                lines={4}
+                ellipsis="..."
+                moreText="Expand"
+                lessText="Collapse"
+                buttons={false}
+                className="custom-class"
+                innerElement="p"
+              />
+            </div>
           </div>
 
           {postValue && postValue.titleImage && (

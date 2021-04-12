@@ -132,10 +132,7 @@ const PostPage = (props) => {
                 <small style={{ color: "#808080" }}>Uložit</small>
               </p>
 
-              <div
-                className="post-page_text"
-                dangerouslySetInnerHTML={{ __html: post.text }}
-              ></div>
+              <div className="post-page_text">{post.text}</div>
 
               {!!post.images && (
                 <div className="post-page_images-container">

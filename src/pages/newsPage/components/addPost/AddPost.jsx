@@ -222,9 +222,10 @@ const AddPost = ({
     return element;
   };
 
+  // TODO co jsem to změnit na text area tak to posílat stejně jako title a kategorii a toto zrušit
   const onEditorChange = (evt) => {
     if (isMountedRef.current) {
-      handleSetText(evt.srcElement.innerHTML);
+      handleSetText(evt.target.value);
     }
   };
 
@@ -294,13 +295,10 @@ const AddPost = ({
 
               <Form.Group>
                 <Form.Label>Text příspěvku</Form.Label>
-                <JoditEditor
-                  ref={editor}
-                  value={text}
-                  config={configEditor}
-                  tabIndex={1} // tabIndex of textarea
-                  onBlur={(newContent) => onEditorChange(newContent)} // preferred to use only this option to update the content for performance reasons
-                  onChange={(newContent) => {}}
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  onBlur={(newContent) => onEditorChange(newContent)}
                 />
               </Form.Group>
 
