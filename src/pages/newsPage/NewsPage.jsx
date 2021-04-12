@@ -11,6 +11,7 @@ import firebaseService from "../../services/firebase/firebase.service";
 import "react-lazy-load-image-component/src/effects/opacity.css";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { AuthContext } from "../../Auth";
+import { HashLink } from "react-router-hash-link";
 
 import { StoreContext } from "../../store/Store";
 
@@ -307,7 +308,7 @@ const NewsPage = ({ history }) => {
 
   return (
     <>
-      <div className="news-page_main">
+      <div className="news-page_main" id="toTopTarget">
         {!!storeState.posts ? (
           renderPosts()
         ) : (
@@ -315,6 +316,12 @@ const NewsPage = ({ history }) => {
             <Spinner animation="border" variant="success" />
           </div>
         )}
+      </div>
+
+      <div className="news-page_to-top-btn" title="go to top">
+        <HashLink smooth to="news#toTopTarget">
+          <img src="/toTop.svg" alt="" width="30px" height="30px"></img>
+        </HashLink>
       </div>
 
       <Button

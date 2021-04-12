@@ -133,6 +133,14 @@ $post-color-bg: rgb(220, 220, 220);
   }
 }
 
+.news-page_to-top-btn {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  padding: 10px;
+  background-color: #80808059;
+}
+
 .news-page_animated-background {
   margin: 1px;
   animation-duration: 1.25s;

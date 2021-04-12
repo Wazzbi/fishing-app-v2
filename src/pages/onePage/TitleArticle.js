@@ -65,6 +65,7 @@ const TitleArticle = () => {
                   Příspěvky jsou možny vkládat jen ověřenými osobami, moderátory
                   nebo reprezentanty organizací. Je to tak z důvodů nešíření{" "}
                   <HashLink
+                    smooth
                     to="titleArticle#NotAllowedContent"
                     style={{ color: "blue", textDecoration: "underline" }}
                   >
