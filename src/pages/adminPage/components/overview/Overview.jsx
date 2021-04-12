@@ -78,76 +78,90 @@ const Overview = ({ firstname, isMountedRef }) => {
                       Object.entries(storeState.reportedPosts).map(
                         ([rKey, rValue], index) => (
                           <Accordion>
-                            <Accordion.Toggle as={Card.Header} eventKey="0">
-                              {rValue.timeStamp}
-                            </Accordion.Toggle>
-                            <Accordion.Collapse eventKey="0">
-                              <Card.Body>
-                                <div>
-                                  kategorie reportů: ZDE POLE UNIKÁTNÍCH TYPŮ
-                                  KATEGORIÍ
-                                </div>
-                                {rValue.reports && rValue.reports.length && (
-                                  <Accordion>
-                                    <Accordion.Toggle
-                                      as={Card.Header}
-                                      eventKey="0"
-                                    >
-                                      Detail reportů: (
-                                      {rValue.reports && rValue.reports.length})
-                                    </Accordion.Toggle>
-                                    <Accordion.Collapse eventKey="0">
-                                      <Card.Body>
-                                        {rValue.reports.map((r) => (
-                                          <Accordion>
-                                            <Accordion.Toggle
-                                              as={Card.Header}
-                                              eventKey="0"
-                                            >
-                                              {`Detail reportu: ${r.reportCreated}`}
-                                            </Accordion.Toggle>
-                                            <Accordion.Collapse eventKey="0">
-                                              <Card.Body>
-                                                <div>
-                                                  Reportováno dne:{" "}
-                                                  {r.reportCreated}
-                                                </div>
-                                                <div>
-                                                  Reportoval: {r.reportedBy}
-                                                </div>
-                                                <div>
-                                                  Kategorie reportu:{" "}
-                                                  {r.reportCategory}
-                                                </div>
-                                                <div>
-                                                  Poznámka z reportu:{" "}
-                                                  {r.reportText}
-                                                </div>
-                                              </Card.Body>
-                                            </Accordion.Collapse>
-                                          </Accordion>
-                                        ))}
-                                      </Card.Body>
-                                    </Accordion.Collapse>
-                                  </Accordion>
-                                )}
+                            <Card>
+                              <Accordion.Toggle
+                                as={Card.Header}
+                                eventKey={`reportId-${index}`}
+                              >
+                                {`Příspěvek: ${rValue.timeStamp}`}
+                              </Accordion.Toggle>
+                              <Accordion.Collapse
+                                eventKey={`reportId-${index}`}
+                              >
+                                <Card.Body>
+                                  <div>
+                                    kategorie reportů: ZDE POLE UNIKÁTNÍCH TYPŮ
+                                    KATEGORIÍ
+                                  </div>
+                                  {rValue.reports && rValue.reports.length && (
+                                    <Accordion>
+                                      <Card>
+                                        <Accordion.Toggle
+                                          as={Card.Header}
+                                          eventKey="0"
+                                        >
+                                          Detail reportů: (
+                                          {rValue.reports &&
+                                            rValue.reports.length}
+                                          )
+                                        </Accordion.Toggle>
+                                        <Accordion.Collapse eventKey="0">
+                                          <Card.Body>
+                                            {rValue.reports.map((r) => (
+                                              <Accordion>
+                                                <Card>
+                                                  <Accordion.Toggle
+                                                    as={Card.Header}
+                                                    eventKey="0"
+                                                  >
+                                                    {`Detail reportu: ${r.reportCreated}`}
+                                                  </Accordion.Toggle>
+                                                  <Accordion.Collapse eventKey="0">
+                                                    <Card.Body>
+                                                      <div>
+                                                        Reportováno dne:{" "}
+                                                        {r.reportCreated}
+                                                      </div>
+                                                      <div>
+                                                        Reportoval:{" "}
+                                                        {r.reportedBy}
+                                                      </div>
+                                                      <div>
+                                                        Kategorie reportu:{" "}
+                                                        {r.reportCategory}
+                                                      </div>
+                                                      <div>
+                                                        Poznámka z reportu:{" "}
+                                                        {r.reportText}
+                                                      </div>
+                                                    </Card.Body>
+                                                  </Accordion.Collapse>
+                                                </Card>
+                                              </Accordion>
+                                            ))}
+                                          </Card.Body>
+                                        </Accordion.Collapse>
+                                      </Card>
+                                    </Accordion>
+                                  )}
 
-                                <div style={{ margin: "5px 0" }}>
-                                  <Button variant="danger">
-                                    skrýt příspěvek
-                                  </Button>{" "}
-                                  <Button variant="danger">
-                                    smazat příspěvek
-                                  </Button>{" "}
-                                  <Button variant="danger">
-                                    zabanovat tvůrce
-                                  </Button>{" "}
-                                  <Button variant="secondary">
-                                    vidět příspěvek
-                                  </Button>
-                                </div>
-                              </Card.Body>
-                            </Accordion.Collapse>
+                                  <div style={{ margin: "5px 0" }}>
+                                    <Button variant="danger">
+                                      skrýt příspěvek
+                                    </Button>{" "}
+                                    <Button variant="danger">
+                                      smazat příspěvek
+                                    </Button>{" "}
+                                    <Button variant="danger">
+                                      zabanovat tvůrce
+                                    </Button>{" "}
+                                    <Button variant="secondary">
+                                      vidět příspěvek
+                                    </Button>
+                                  </div>
+                                </Card.Body>
+                              </Accordion.Collapse>
+                            </Card>
                           </Accordion>
                         )
                       )}
@@ -163,6 +177,18 @@ const Overview = ({ firstname, isMountedRef }) => {
                     <span>zpráva 1</span>
                     <hr />
                     <span>zpráva 2</span>
+                  </Card.Body>
+                </Accordion.Collapse>
+              </Card>
+              <Card>
+                <Accordion.Toggle as={Card.Header} eventKey="2">
+                  Události <Badge variant="danger">2</Badge>
+                </Accordion.Toggle>
+                <Accordion.Collapse eventKey="2">
+                  <Card.Body>
+                    <span>Nový uživatel xyz</span>
+                    <hr />
+                    <span>Nový uživatel xyz123</span>
                   </Card.Body>
                 </Accordion.Collapse>
               </Card>
