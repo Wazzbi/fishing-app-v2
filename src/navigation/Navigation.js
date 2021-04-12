@@ -10,7 +10,7 @@ import Nav from "react-bootstrap/Nav";
 import Button from "react-bootstrap/Button";
 
 const Navigation = () => {
-  const { currentUser } = useContext(AuthContext);
+  const { currentUser, currentUserData } = useContext(AuthContext);
 
   const signOut = () => firebaseService.auth().signOut();
 
@@ -53,9 +53,13 @@ const Navigation = () => {
                 <Nav.Link as={Link} to={"/about"}>
                   O aplikaci
                 </Nav.Link>
-                <Nav.Link as={Link} to={"/admin"}>
-                  Admin
-                </Nav.Link>
+                {currentUserData && currentUserData.role === "admin" ? (
+                  <Nav.Link as={Link} to={"/admin"}>
+                    Admin
+                  </Nav.Link>
+                ) : (
+                  ""
+                )}
               </Nav>
 
               <Button className="navigation_btn" onClick={signOut}>

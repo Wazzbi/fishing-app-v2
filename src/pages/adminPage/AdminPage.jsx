@@ -14,7 +14,7 @@ import History from "./components/history/History";
 // TODO měnění rolí pro uživatele
 // TODO zde zobrazovat zprávy od uživatelů
 
-const AdminPage = () => {
+const AdminPage = ({ history }) => {
   const { currentUserData } = useContext(AuthContext);
   const isMountedRef = useRef(true);
   const splitFullName =
@@ -30,17 +30,28 @@ const AdminPage = () => {
     return () => (isMountedRef.current = false);
   }, []);
 
+  useEffect(() => {
+    // nepostit uživatele bez oprávnění na page admin
+    if (currentUserData && currentUserData.role === "user") {
+      history.push("/home");
+    }
+  });
+
   return (
     <>
-      <div className="admin-page_main">
-        <Overview firstname={firstName} isMountedRef={isMountedRef} />
+      {currentUserData && currentUserData.role !== "user" ? (
+        <div className="admin-page_main">
+          <Overview firstname={firstName} isMountedRef={isMountedRef} />
 
-        <Tools />
+          <Tools />
 
-        <Visits />
+          <Visits />
 
-        <History />
-      </div>
+          <History />
+        </div>
+      ) : (
+        ""
+      )}
     </>
   );
 };
