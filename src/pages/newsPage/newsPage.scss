@@ -13,7 +13,7 @@ $post-color-bg: rgb(220, 220, 220);
 
 .news-page_main {
   max-width: 600px;
-  height: 100vh;
+  // height: 100vh;
   margin: auto;
   display: flex;
   flex-direction: column;
@@ -22,7 +22,7 @@ $post-color-bg: rgb(220, 220, 220);
 
 .news-page_post {
   border-radius: 5px;
-  margin: 20px 0;
+  margin: 10px 0 20px;
   cursor: pointer;
   background-color: white;
   padding: 5px 15px 0;
@@ -139,6 +139,25 @@ $post-color-bg: rgb(220, 220, 220);
   left: 0;
   padding: 10px;
   background-color: #80808059;
+}
+
+.news-page_topic-bar {
+  margin: 10px 3px 0px;
+  display: flex;
+  justify-content: space-between;
+  overflow-x: auto;
+}
+
+.news-page_topic-btn {
+  padding: 5px 10px;
+  border-radius: 20px;
+  background-color: transparent;
+  border: 1px solid #382933;
+  color: #382933;
+
+  @media screen and (max-width: 500px) {
+    margin-right: 10px;
+  }
 }
 
 .news-page_animated-background {

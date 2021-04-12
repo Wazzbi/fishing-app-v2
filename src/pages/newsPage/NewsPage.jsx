@@ -235,16 +235,42 @@ const NewsPage = ({ history }) => {
           pullDownToRefresh
           pullDownToRefreshThreshold={50}
           pullDownToRefreshContent={
-            <p style={{ textAlign: "center" }}>
+            <p
+              style={{ textAlign: "center", paddingTop: "50px" }}
+              id="toTopTarget"
+            >
               <b>&#8595; Tahej ještě trochu</b>
             </p>
           }
           releaseToRefreshContent={
-            <p style={{ textAlign: "center" }}>
+            <p style={{ textAlign: "center", paddingTop: "50px" }}>
               <b>&#8593; Už mě pusť</b>
             </p>
           }
         >
+          {
+            <div className="news-page_topic-bar">
+              {
+                // TODO zfunkčnit jako history v records
+                [
+                  "Vše",
+                  "Aktuálně",
+                  "Oblíbené",
+                  "Vybavení",
+                  "CZ",
+                  "Svět",
+                  "Příroda",
+                ].map((topic) => (
+                  <button
+                    key={`topic-${topic}`}
+                    className="news-page_topic-btn"
+                  >
+                    {topic}
+                  </button>
+                ))
+              }
+            </div>
+          }
           {
             // odfiltrování reportovaných postů daného uživatele aby na ně nemusel koukat když se mu nelíbí
             postsRender
@@ -308,7 +334,7 @@ const NewsPage = ({ history }) => {
 
   return (
     <>
-      <div className="news-page_main" id="toTopTarget">
+      <div className="news-page_main">
         {!!storeState.posts ? (
           renderPosts()
         ) : (
