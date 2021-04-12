@@ -134,7 +134,7 @@ $post-color-bg: rgb(220, 220, 220);
 }
 
 .news-page_topic-bar {
-  margin: 10px 3px 0px;
+  padding: 25px 3px 10px;
   display: flex;
   justify-content: space-between;
   overflow-x: auto;
@@ -148,7 +148,7 @@ $post-color-bg: rgb(220, 220, 220);
   color: #382933;
 
   @media screen and (max-width: 500px) {
-    margin-right: 10px;
+    margin-right: 5px;
   }
 }
 
