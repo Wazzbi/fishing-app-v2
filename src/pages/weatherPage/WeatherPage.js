@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import "./weatherPage.scss";
+import saveLastPathService from "../../services/utils/saveLastPath.service";
 
 // TODO počasí na oblíbených místech
 // TODO nejlepší počasí v daný den na rybářských místech top 3
@@ -7,7 +8,7 @@ import "./weatherPage.scss";
 
 const WeatherPage = () => {
   useEffect(() => {
-    localStorage.setItem("lastLocation", "/weather");
+    saveLastPathService.setWithExpiry("lastLocation", "/weather");
     window.scrollTo(0, 0);
   }, []);
 

@@ -11,6 +11,7 @@ import autocompleterService from "../../services/utils/autocompleter.service";
 import { AuthContext } from "../../Auth";
 import "./recordPage.scss";
 import { StoreContext } from "../../store/Store";
+import saveLastPathService from "../../services/utils/saveLastPath.service";
 
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
@@ -339,7 +340,7 @@ const RecordPage = () => {
 
   useEffect(() => {
     isMountedRef.current = true;
-    localStorage.setItem("lastLocation", "/record");
+    saveLastPathService.setWithExpiry("lastLocation", "/record");
     todayDate();
     let _currentYear = new Date();
     let currentYear = _currentYear.getFullYear();

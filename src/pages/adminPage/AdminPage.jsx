@@ -5,6 +5,7 @@ import Overview from "./components/overview/Overview";
 import Tools from "./components/tools/Tools";
 import Visits from "./components/visits/Visits";
 import History from "./components/history/History";
+import saveLastPathService from "../../services/utils/saveLastPath.service";
 
 // TODO podle stupně role (moderátor, admin) povolit různé akce
 // TODO seznam nahlášených příspěvků + oznamovatel
@@ -24,7 +25,7 @@ const AdminPage = ({ history }) => {
   const firstName = splitFullName && splitFullName[0];
 
   useEffect(() => {
-    localStorage.setItem("lastLocation", "/admin");
+    saveLastPathService.setWithExpiry("lastLocation", "/admin");
     window.scrollTo(0, 0);
 
     return () => (isMountedRef.current = false);

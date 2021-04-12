@@ -12,6 +12,7 @@ import "react-lazy-load-image-component/src/effects/opacity.css";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { AuthContext } from "../../Auth";
 import { HashLink } from "react-router-hash-link";
+import saveLastPathService from "../../services/utils/saveLastPath.service";
 
 import { StoreContext } from "../../store/Store";
 
@@ -256,7 +257,7 @@ const NewsPage = ({ history }) => {
                   "Vše",
                   "Aktuálně",
                   "Oblíbené",
-                  "Vybavení",
+                  "Sledované",
                   "CZ",
                   "Svět",
                   "Příroda",
@@ -318,7 +319,7 @@ const NewsPage = ({ history }) => {
 
   useEffect(() => {
     isMountedRef.current = true;
-    localStorage.setItem("lastLocation", "/news");
+    saveLastPathService.setWithExpiry("lastLocation", "/news");
 
     firebaseService.getPostsCount().then((r) => {
       if (isMountedRef.current) {

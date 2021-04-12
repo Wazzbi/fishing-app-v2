@@ -3,6 +3,8 @@ import firebaseService from "../../services/firebase/firebase.service";
 import "./postPage.scss";
 import { Link } from "react-router-dom";
 import { StoreContext } from "../../store/Store";
+import Jdenticon from "react-jdenticon";
+import saveLastPathService from "../../services/utils/saveLastPath.service";
 
 import Modal from "react-bootstrap/Modal";
 import Carousel from "react-bootstrap/Carousel";
@@ -68,7 +70,7 @@ const PostPage = (props) => {
   }, [params]);
 
   useEffect(() => {
-    localStorage.setItem("lastLocation", `/post/${params.id}`);
+    saveLastPathService.setWithExpiry("lastLocation", `/post/${params.id}`);
     if (!post) {
       if (storeState.selectedPost) {
         setPost(storeState.selectedPost);
@@ -108,8 +110,15 @@ const PostPage = (props) => {
               <p className="post-page_title">
                 <strong>{post.title}</strong>
               </p>
-              <p>
-                <small style={{ color: "#808080", fontFamily: "poppins" }}>
+              <p style={{ display: "flex", alignItems: "center" }}>
+                <Jdenticon size="30" value={post.userId.toString() || ""} />
+                <small
+                  style={{
+                    color: "#808080",
+                    fontFamily: "poppins",
+                    marginLeft: "10px",
+                  }}
+                >
                   {post.username} {" | "} {post.created}
                 </small>
               </p>

@@ -12,6 +12,7 @@ import { StoreContext } from "../../store/Store";
 import { fishKind } from "../../constants";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import saveLastPathService from "../../services/utils/saveLastPath.service";
 
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
@@ -496,7 +497,7 @@ const SummaryPage = () => {
 
   useEffect(() => {
     isMountedRef.current = true;
-    localStorage.setItem("lastLocation", "/summary");
+    saveLastPathService.setWithExpiry("lastLocation", "/summary");
     window.scrollTo(0, 0);
     let _currentYear = new Date();
     let currentYear = _currentYear.getFullYear();

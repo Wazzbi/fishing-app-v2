@@ -1,12 +1,13 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./homePage.scss";
+import saveLastPathService from "../../services/utils/saveLastPath.service";
 
 import Button from "react-bootstrap/Button";
 
 const HomePage = () => {
   useEffect(() => {
-    localStorage.setItem("lastLocation", "/home");
+    saveLastPathService.setWithExpiry("lastLocation", "/home");
     window.scrollTo(0, 0);
   }, []);
 

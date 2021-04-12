@@ -1,13 +1,14 @@
 import React, { useContext, useEffect } from "react";
 import { AuthContext } from "../../Auth";
 import "./landingPage.scss";
+import saveLastPathService from "../../services/utils/saveLastPath.service";
 
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 
 const LandingPage = ({ history, location }) => {
   const { currentUser } = useContext(AuthContext);
-  const lastLocation = localStorage.getItem("lastLocation");
+  const lastLocation = saveLastPathService.getWithExpiry("lastLocation");
 
   const redirect = () => {
     if (lastLocation && lastLocation !== "/" && lastLocation !== "/signup") {
@@ -57,7 +58,7 @@ const LandingPage = ({ history, location }) => {
   };
 
   useEffect(() => {
-    localStorage.setItem("lastLocation", "/");
+    saveLastPathService.setWithExpiry("lastLocation", "/");
   }, []);
 
   useEffect(() => {

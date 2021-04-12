@@ -2,6 +2,7 @@ import React, { useCallback, useState, useEffect } from "react";
 import firebaseService from "../../services/firebase/firebase.service";
 import "./signUpPage.scss";
 import { Link } from "react-router-dom";
+import saveLastPathService from "../../services/utils/saveLastPath.service";
 
 import Toast from "react-bootstrap/Toast";
 import Col from "react-bootstrap/Col";
@@ -65,12 +66,12 @@ const SignUpPage = ({ history }) => {
   );
 
   const goToLandingPage = () => {
-    localStorage.setItem("lastLocation", "/");
+    saveLastPathService.setWithExpiry("lastLocation", "/");
     history.push("/");
   };
 
   useEffect(() => {
-    localStorage.setItem("lastLocation", "/");
+    saveLastPathService.setWithExpiry("lastLocation", "/");
   }, []);
 
   return (

@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import "./onePage.scss";
 import { Link } from "react-router-dom";
+import saveLastPathService from "../../services/utils/saveLastPath.service";
 
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
@@ -11,7 +12,7 @@ import Button from "react-bootstrap/Button";
 
 const ActualArticle = () => {
   useEffect(() => {
-    localStorage.setItem("lastLocation", `/actualArticle`);
+    saveLastPathService.setWithExpiry("lastLocation", "/actualArticle");
     // nasty react...
     // https://stackoverflow.com/questions/58431946/why-does-my-react-router-link-bring-me-to-the-middle-of-a-page
     window.scrollTo(0, 0);

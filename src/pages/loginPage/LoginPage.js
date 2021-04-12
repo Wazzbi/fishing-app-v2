@@ -2,6 +2,7 @@ import React, { useCallback, useContext, useState, useEffect } from "react";
 import { Redirect } from "react-router-dom";
 import { AuthContext } from "../../Auth.js";
 import firebaseService from "../../services/firebase/firebase.service";
+import saveLastPathService from "../../services/utils/saveLastPath.service";
 import { Link } from "react-router-dom";
 import "./loginPage.scss";
 
@@ -30,14 +31,14 @@ const LoginPage = ({ history }) => {
   );
 
   const goToLandingPage = () => {
-    localStorage.setItem("lastLocation", "/");
+    saveLastPathService.setWithExpiry("lastLocation", "/");
     history.push("/");
   };
 
   const { currentUser } = useContext(AuthContext);
 
   useEffect(() => {
-    localStorage.setItem("lastLocation", "/login");
+    saveLastPathService.setWithExpiry("lastLocation", "/login");
   }, []);
 
   return currentUser ? (

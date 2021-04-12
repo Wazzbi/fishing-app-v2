@@ -11,7 +11,10 @@ const Post = ({ postKey, postValue, handleChangeRoute, handleReportPost }) => {
           <div className="news-page_header">
             <div className="news-page_header-title">
               <div className="news-page_header-title-first-row">
-                <Jdenticon size="30" value={postValue.username || ""} />
+                <Jdenticon
+                  size="30"
+                  value={postValue.userId.toString() || ""}
+                />
                 <small>
                   {postValue.username} {" | "} {postValue.created}
                 </small>
