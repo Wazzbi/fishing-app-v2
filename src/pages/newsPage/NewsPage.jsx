@@ -232,43 +232,59 @@ const NewsPage = ({ history }) => {
               <b>Jaj! To je vše</b>
             </p>
           }
-          refreshFunction={init}
-          pullDownToRefresh
-          pullDownToRefreshThreshold={50}
-          pullDownToRefreshContent={
-            <p
-              style={{ textAlign: "center", paddingTop: "50px" }}
-              id="toTopTarget"
-            >
-              <b>&#8595; Tahej ještě trochu</b>
-            </p>
-          }
-          releaseToRefreshContent={
-            <p style={{ textAlign: "center", paddingTop: "50px" }}>
-              <b>&#8593; Už mě pusť</b>
-            </p>
-          }
+          // refreshFunction={init}
+          // pullDownToRefresh
+          // pullDownToRefreshThreshold={50}
+          // pullDownToRefreshContent={
+          //   <p
+          //     style={{ textAlign: "center", paddingTop: "50px" }}
+          //     id="toTopTarget"
+          //   >
+          //     <b>&#8595; Tahej ještě trochu</b>
+          //   </p>
+          // }
+          // releaseToRefreshContent={
+          //   <p style={{ textAlign: "center", paddingTop: "50px" }}>
+          //     <b>&#8593; Už mě pusť</b>
+          //   </p>
+          // }
         >
           {
             <div className="news-page_topic-bar">
+              <div
+                className="news-page_refresh-btn-mobile"
+                style={{
+                  position: "relative",
+                  paddingRight: "5px",
+                  marginRight: "7px",
+                }}
+              >
+                <div
+                  style={{
+                    position: "absolute",
+                    borderRight: "1px solid #cccccc",
+                    top: "10px",
+                    bottom: "15px",
+                    right: "0",
+                  }}
+                ></div>
+                <button className="news-page_topic-btn">
+                  <img src="/refresh.svg" alt="" width="16" height="16"></img>
+                </button>
+              </div>
+
               {
                 // TODO zfunkčnit jako history v records
-                [
-                  "Vše",
-                  "Aktuálně",
-                  "Oblíbené",
-                  "Sledované",
-                  "CZ",
-                  "Svět",
-                  "Příroda",
-                ].map((topic) => (
-                  <button
-                    key={`topic-${topic}`}
-                    className="news-page_topic-btn"
-                  >
-                    {topic}
-                  </button>
-                ))
+                ["Vše", "Aktuálně", "Oblíbené", "Sledované", "CZ"].map(
+                  (topic) => (
+                    <button
+                      key={`topic-${topic}`}
+                      className="news-page_topic-btn"
+                    >
+                      {topic}
+                    </button>
+                  )
+                )
               }
             </div>
           }
@@ -335,6 +351,10 @@ const NewsPage = ({ history }) => {
 
   return (
     <>
+      <div
+        id="toTopTarget"
+        style={{ position: "absolute", top: "-50px" }}
+      ></div>
       <div className="news-page_main">
         {!!storeState.posts ? (
           renderPosts()

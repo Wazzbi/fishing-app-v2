@@ -24,7 +24,7 @@ const ReportPost = ({ show, handleClose, isMountedRef, handleReport }) => {
         onHide={handleClose}
         backdrop="static"
         keyboard={false}
-        animation={false}
+        animation={true}
         centered
       >
         <Modal.Header closeButton>
