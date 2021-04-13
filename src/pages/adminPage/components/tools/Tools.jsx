@@ -7,8 +7,10 @@ import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
 
+// TODO opakovaný admin post -> udělat to nějak lépe
+
 const Tools = ({ isMountedRef, storeState, dispatch }) => {
-  const handleUnBlockUser = (firebaseId) => {
+  const handleUnBlockUser = (firebaseId, userId) => {
     firebaseService
       .deleteFromBlockedUser(firebaseId)
       .then(() => {
@@ -16,6 +18,25 @@ const Tools = ({ isMountedRef, storeState, dispatch }) => {
           type: "REMOVE_BLOCKED_USER",
           payload: firebaseId,
         });
+      })
+      .then(() => {
+        const adminNote = {
+          noteId: Date.now(),
+          case: "User UNBLOCKED",
+          detail: {
+            user: userId,
+          },
+        };
+
+        firebaseService
+          .createAdminNote(adminNote)
+          .then(() => {
+            dispatch({
+              type: "ADD_ADMIN_NOTE",
+              payload: adminNote,
+            });
+          })
+          .catch((err) => console.error);
       })
       .catch((err) => console.log(err));
   };
@@ -73,7 +94,10 @@ const Tools = ({ isMountedRef, storeState, dispatch }) => {
                                   variant="success"
                                   size="sm"
                                   onClick={() =>
-                                    handleUnBlockUser(value.firebaseId)
+                                    handleUnBlockUser(
+                                      value.firebaseId,
+                                      value.id
+                                    )
                                   }
                                 >
                                   Odblokovat
@@ -89,7 +113,7 @@ const Tools = ({ isMountedRef, storeState, dispatch }) => {
             </Card>
             <Card>
               <Accordion.Toggle as={Card.Header} eventKey="1">
-                Click me!
+                Najít uživatele
               </Accordion.Toggle>
               <Accordion.Collapse eventKey="1">
                 <Card.Body>Hello! I'm another body</Card.Body>

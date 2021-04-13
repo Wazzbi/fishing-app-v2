@@ -15,6 +15,13 @@ const ReportedPostsAccordion = ({ storeState, deletePost, banUser }) => {
     return date.toLocaleDateString();
   };
 
+  // http://localhost:3000
+  const base_url = window.location.origin;
+  // http://localhost:3000/#/post/1618337548665
+  const openReportedPost = (postId) => {
+    window.open(`${base_url}/#/post/${postId}`);
+  };
+
   return (
     <>
       <Card>
@@ -40,6 +47,9 @@ const ReportedPostsAccordion = ({ storeState, deletePost, banUser }) => {
                       </Accordion.Toggle>
                       <Accordion.Collapse eventKey={`reportId-${index}`}>
                         <Card.Body>
+                          <p>
+                            Příspěvek patří: {rValue.userId} ({rValue.username})
+                          </p>
                           <p>
                             Kategorie reportů:
                             {rValue &&
@@ -92,7 +102,10 @@ const ReportedPostsAccordion = ({ storeState, deletePost, banUser }) => {
                                                   </tr>
                                                   <tr>
                                                     <td>Reportoval:</td>
-                                                    <td>{r.reportedBy}</td>
+                                                    <td>
+                                                      {r.reportedBy} (
+                                                      {r.reportedByName})
+                                                    </td>
                                                   </tr>
                                                   <tr>
                                                     <td>Kategorie reportu:</td>
@@ -127,20 +140,24 @@ const ReportedPostsAccordion = ({ storeState, deletePost, banUser }) => {
                               size="sm"
                               onClick={() => deletePost(rKey, rValue.userId)}
                             >
-                              smazat příspěvek
+                              Smazat příspěvek
                             </Button>{" "}
                             <Button
                               variant="danger"
                               size="sm"
                               onClick={() => banUser(rKey, rValue.userId)}
                             >
-                              smazat & zabanovat tvůrce
+                              Smazat & zabanovat tvůrce
                             </Button>{" "}
-                            <Button variant="secondary" size="sm">
-                              vidět příspěvek
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              onClick={() => openReportedPost(rValue.timeStamp)}
+                            >
+                              Vidět příspěvek
                             </Button>{" "}
                             <Button variant="success" size="sm">
-                              příspěvek je v pořádku
+                              Příspěvek je v pořádku
                             </Button>
                           </div>
                         </Card.Body>

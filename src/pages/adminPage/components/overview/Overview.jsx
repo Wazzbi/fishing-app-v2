@@ -9,6 +9,7 @@ import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 
 // TODO získat z firebase seznam postů s reportFlagem
+// TODO ban / unban do historie
 
 const Overview = ({
   firstname,
@@ -17,7 +18,7 @@ const Overview = ({
   dispatch,
   currentUserData,
 }) => {
-  const deletePost = (id, creator) => {
+  const deletePost = (id, user) => {
     firebaseService.deletePost(id).then(() => {
       const filterReportedPosts =
         storeState &&
@@ -36,7 +37,7 @@ const Overview = ({
         noteId: Date.now(),
         case: "Reported Post DELETED",
         detail: {
-          creator,
+          user,
         },
       };
 
@@ -86,6 +87,24 @@ const Overview = ({
             type: "ADD_BLOCKED_USER",
             payload: user[0],
           });
+
+          const adminNote = {
+            noteId: Date.now(),
+            case: "User BLOCKED",
+            detail: {
+              user: userId,
+            },
+          };
+
+          firebaseService
+            .createAdminNote(adminNote)
+            .then(() => {
+              dispatch({
+                type: "ADD_ADMIN_NOTE",
+                payload: adminNote,
+              });
+            })
+            .catch((err) => console.error);
         });
       }
     });

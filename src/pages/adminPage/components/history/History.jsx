@@ -1,4 +1,5 @@
 import React from "react";
+import Table from "react-bootstrap/Table";
 
 const History = ({ storeState }) => {
   const convertToDate = (dateString) => {
@@ -14,12 +15,12 @@ const History = ({ storeState }) => {
             <strong>Historie událostí</strong>
           </p>
 
-          <table>
+          <Table size="sm">
             <thead>
               <tr>
                 <th>Datum</th>
                 <th>Případ</th>
-                <th>Detail</th>
+                <th>Uživatel</th>
               </tr>
             </thead>
             <tbody>
@@ -29,19 +30,15 @@ const History = ({ storeState }) => {
                   .reverse()
                   .map(([noteKey, noteValue]) => (
                     <tr>
-                      <td style={{ paddingRight: "30px" }}>
-                        {convertToDate(noteValue.noteId)}
-                      </td>
-                      <td style={{ paddingRight: "30px" }}>{noteValue.case}</td>
-                      <td style={{ paddingRight: "30px" }}>
-                        {noteValue &&
-                          noteValue.detail &&
-                          noteValue.detail.creator}
+                      <td>{convertToDate(noteValue.noteId)}</td>
+                      <td>{noteValue.case}</td>
+                      <td>
+                        {noteValue && noteValue.detail && noteValue.detail.user}
                       </td>
                     </tr>
                   ))}
             </tbody>
-          </table>
+          </Table>
         </div>
       </div>
     </>

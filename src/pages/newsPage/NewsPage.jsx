@@ -67,6 +67,7 @@ const NewsPage = ({ history }) => {
       {
         reportCreated: Date.now(),
         reportedBy: currentUserData.id,
+        reportedByName: currentUserData.username,
         reportCategory,
         reportText,
       },
