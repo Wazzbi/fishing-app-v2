@@ -1,6 +1,7 @@
 import React, { useEffect, useContext, useCallback } from "react";
-import { StoreContext } from "../../../../store/Store";
+
 import firebaseService from "../../../../services/firebase/firebase.service";
+import ReportedPostsAccordion from "./components/ReportedPostsAccordion";
 
 import Accordion from "react-bootstrap/Accordion";
 import Card from "react-bootstrap/Card";
@@ -9,8 +10,60 @@ import Button from "react-bootstrap/Button";
 
 // TODO získat z firebase seznam postů s reportFlagem
 
-const Overview = ({ firstname, isMountedRef }) => {
-  const [storeState, dispatch] = useContext(StoreContext);
+const Overview = ({ firstname, isMountedRef, storeState, dispatch }) => {
+  const deletePost = (id) => {
+    firebaseService.deletePost(id).then(() => {
+      const filterReportedPosts =
+        storeState &&
+        storeState.reportedPosts &&
+        Object.entries(storeState.reportedPosts).filter(
+          ([rKey, rValue]) => +rKey !== +id
+        );
+      const filterPosts =
+        storeState &&
+        storeState.posts &&
+        Object.entries(storeState.posts).filter(
+          ([rKey, rValue]) => +rKey !== +id
+        );
+
+      const adminNote = {
+        noteId: Date.now(),
+        case: "Reported Post DELETED",
+        detail: {
+          postId: id,
+        },
+      };
+
+      firebaseService
+        .createAdminNote(adminNote)
+        .then(() => {
+          dispatch({
+            type: "ADD_ADMIN_NOTE",
+            payload: adminNote,
+          });
+        })
+        .catch((err) => console.error);
+
+      // nemaž v POSTS když nejsou načtený (např při refresh admin page)
+      return storeState.posts
+        ? [
+            dispatch({
+              type: "ADD_REPORTED_POSTS",
+              payload: { ...Object.fromEntries(filterReportedPosts) },
+            }),
+            dispatch({
+              type: "ADD_POSTS",
+              payload: { ...Object.fromEntries(filterPosts) },
+            }),
+          ]
+        : [
+            dispatch({
+              type: "ADD_REPORTED_POSTS",
+              payload: { ...Object.fromEntries(filterReportedPosts) },
+            }),
+          ];
+    });
+  };
 
   const getReportedPosts = useCallback(() => {
     let ww = {};
@@ -48,8 +101,26 @@ const Overview = ({ firstname, isMountedRef }) => {
     });
   }, [dispatch, storeState.posts]);
 
+  const createAccordion = () => {};
+
   useEffect(() => {
     getReportedPosts();
+
+    if (!storeState.adminNotes) {
+      let ww = {};
+      firebaseService.getAdminNotes().once("value", (snapshot) => {
+        if (isMountedRef.current) {
+          snapshot.forEach((childSnapshot) => {
+            ww = { ...ww, [childSnapshot.key]: childSnapshot.val() };
+          });
+
+          return dispatch({
+            type: "ADD_ADMIN_NOTES",
+            payload: { ...ww },
+          });
+        }
+      });
+    }
   }, []);
 
   return (
@@ -64,110 +135,10 @@ const Overview = ({ firstname, isMountedRef }) => {
 
           {storeState && storeState.reportedPosts && (
             <Accordion>
-              <Card>
-                <Accordion.Toggle as={Card.Header} eventKey="0">
-                  Reportované příspěvky{" "}
-                  <Badge variant="danger">
-                    {Object.keys(storeState.reportedPosts).length}
-                  </Badge>
-                </Accordion.Toggle>
-                <Accordion.Collapse eventKey="0">
-                  <Card.Body>
-                    {storeState &&
-                      storeState.reportedPosts &&
-                      Object.entries(storeState.reportedPosts).map(
-                        ([rKey, rValue], index) => (
-                          <Accordion>
-                            <Card>
-                              <Accordion.Toggle
-                                as={Card.Header}
-                                eventKey={`reportId-${index}`}
-                              >
-                                {`Příspěvek: ${rValue.timeStamp}`}
-                              </Accordion.Toggle>
-                              <Accordion.Collapse
-                                eventKey={`reportId-${index}`}
-                              >
-                                <Card.Body>
-                                  <div>
-                                    kategorie reportů: ZDE POLE UNIKÁTNÍCH TYPŮ
-                                    KATEGORIÍ
-                                  </div>
-                                  {rValue.reports && rValue.reports.length && (
-                                    <Accordion>
-                                      <Card>
-                                        <Accordion.Toggle
-                                          as={Card.Header}
-                                          eventKey="0"
-                                        >
-                                          Detail reportů: (
-                                          {rValue.reports &&
-                                            rValue.reports.length}
-                                          )
-                                        </Accordion.Toggle>
-                                        <Accordion.Collapse eventKey="0">
-                                          <Card.Body>
-                                            {rValue.reports.map((r) => (
-                                              <Accordion>
-                                                <Card>
-                                                  <Accordion.Toggle
-                                                    as={Card.Header}
-                                                    eventKey="0"
-                                                  >
-                                                    {`Detail reportu: ${r.reportCreated}`}
-                                                  </Accordion.Toggle>
-                                                  <Accordion.Collapse eventKey="0">
-                                                    <Card.Body>
-                                                      <div>
-                                                        Reportováno dne:{" "}
-                                                        {r.reportCreated}
-                                                      </div>
-                                                      <div>
-                                                        Reportoval:{" "}
-                                                        {r.reportedBy}
-                                                      </div>
-                                                      <div>
-                                                        Kategorie reportu:{" "}
-                                                        {r.reportCategory}
-                                                      </div>
-                                                      <div>
-                                                        Poznámka z reportu:{" "}
-                                                        {r.reportText}
-                                                      </div>
-                                                    </Card.Body>
-                                                  </Accordion.Collapse>
-                                                </Card>
-                                              </Accordion>
-                                            ))}
-                                          </Card.Body>
-                                        </Accordion.Collapse>
-                                      </Card>
-                                    </Accordion>
-                                  )}
-
-                                  <div style={{ margin: "5px 0" }}>
-                                    <Button variant="danger">
-                                      skrýt příspěvek
-                                    </Button>{" "}
-                                    <Button variant="danger">
-                                      smazat příspěvek
-                                    </Button>{" "}
-                                    <Button variant="danger">
-                                      zabanovat tvůrce
-                                    </Button>{" "}
-                                    <Button variant="secondary">
-                                      vidět příspěvek
-                                    </Button>
-                                  </div>
-                                </Card.Body>
-                              </Accordion.Collapse>
-                            </Card>
-                          </Accordion>
-                        )
-                      )}
-                  </Card.Body>
-                </Accordion.Collapse>
-              </Card>
+              <ReportedPostsAccordion
+                storeState={storeState}
+                deletePost={deletePost}
+              />
               <Card>
                 <Accordion.Toggle as={Card.Header} eventKey="1">
                   Zprávy <Badge variant="danger">24</Badge>

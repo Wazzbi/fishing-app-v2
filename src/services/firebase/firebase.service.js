@@ -50,6 +50,9 @@ const postRef = (id) => appl.database().ref(`posts/${id}`);
 const postImageRef = (name, size, type) =>
   appl.storage().ref(`images/${name}/${name}-${size}.${type}`);
 
+// *** ADMIN notes***
+const adminNotesRef = appl.database().ref("adminNotes/");
+
 // TODO přejmenovat metody podle CRUD
 class firebaseService {
   // TODO toto může být jen export konstant...
@@ -121,6 +124,10 @@ class firebaseService {
 
   static getPostsInit = () => {
     return postsRef.orderByChild("timeStamp").limitToLast(10);
+  };
+
+  static getAdminNotes = () => {
+    return adminNotesRef.orderByChild("noteId").limitToLast(50);
   };
 
   static getPostsLimited = (timeStamp) => {
@@ -246,6 +253,14 @@ class firebaseService {
       );
   };
 
+  static createAdminNote = (note) => {
+    return adminNotesRef
+      .child(note.noteId)
+      .set(note, (err) =>
+        console.log(err ? "error while pushing" : "successful push")
+      );
+  };
+
   static createUserRecordRow = (userUid, recordUid, props, rowId) => {
     const {
       date,
@@ -319,6 +334,10 @@ class firebaseService {
 
   static deleteUserSummary = (userUid, summaryUid) => {
     return summaryRef(userUid, summaryUid).remove();
+  };
+
+  static deletePost = (id) => {
+    return postRef(id).remove();
   };
 }
 

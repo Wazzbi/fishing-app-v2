@@ -5,6 +5,7 @@ export const initialState = {
   summaries: null,
   newsPageScrollPosition: null,
   reportedPosts: null,
+  adminNotes: null,
 };
 
 const Reducer = (state, action) => {
@@ -133,6 +134,22 @@ const Reducer = (state, action) => {
       return {
         ...state,
         newsPageScrollPosition: action.payload,
+      };
+
+    // ADMIN
+    case "ADD_ADMIN_NOTES":
+      return {
+        ...state,
+        adminNotes: action.payload,
+      };
+
+    case "ADD_ADMIN_NOTE":
+      return {
+        ...state,
+        adminNotes: {
+          ...state.adminNotes,
+          [action.payload.noteId]: action.payload,
+        },
       };
 
     default:

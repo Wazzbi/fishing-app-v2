@@ -1,5 +1,6 @@
 import React, { useEffect, useContext, useRef } from "react";
 import { AuthContext } from "../../Auth";
+import { StoreContext } from "../../store/Store";
 import "./adminPage.scss";
 import Overview from "./components/overview/Overview";
 import Tools from "./components/tools/Tools";
@@ -16,6 +17,7 @@ import saveLastPathService from "../../services/utils/saveLastPath.service";
 // TODO zde zobrazovat zprávy od uživatelů
 
 const AdminPage = ({ history }) => {
+  const [storeState, dispatch] = useContext(StoreContext);
   const { currentUserData } = useContext(AuthContext);
   const isMountedRef = useRef(true);
   const splitFullName =
@@ -42,13 +44,18 @@ const AdminPage = ({ history }) => {
     <>
       {currentUserData && currentUserData.role !== "user" ? (
         <div className="admin-page_main">
-          <Overview firstname={firstName} isMountedRef={isMountedRef} />
+          <Overview
+            firstname={firstName}
+            isMountedRef={isMountedRef}
+            storeState={storeState}
+            dispatch={dispatch}
+          />
 
           <Tools />
 
           <Visits />
 
-          <History />
+          <History storeState={storeState} />
         </div>
       ) : (
         ""

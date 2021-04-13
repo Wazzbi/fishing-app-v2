@@ -264,7 +264,7 @@ const NewsPage = ({ history }) => {
                     position: "absolute",
                     borderRight: "1px solid #cccccc",
                     top: "10px",
-                    bottom: "15px",
+                    bottom: "10px",
                     right: "0",
                   }}
                 ></div>
@@ -288,30 +288,41 @@ const NewsPage = ({ history }) => {
               }
             </div>
           }
-          {
-            // odfiltrování reportovaných postů daného uživatele aby na ně nemusel koukat když se mu nelíbí
-            postsRender
-              .filter(([postKey, postValue]) => {
-                if (currentUserData && currentUserData.reportsCreated) {
-                  // pokud má uživatel pole reportovaných příspěvků
-                  return !currentUserData.reportsCreated.find(
-                    (r) => +r.reportedPost === +postKey
-                  );
-                } else {
-                  // jinak zobraz vše
-                  return true;
-                }
-              })
-              .map(([postKey, postValue]) => (
-                <Post
-                  key={`post-${postKey}`}
-                  postKey={postKey}
-                  postValue={postValue}
-                  handleChangeRoute={handleChangeRoute}
-                  handleReportPost={handleReportPost}
-                />
-              ))
-          }
+          {postsRender
+
+            .filter(([postKey, postValue]) => {
+              // odfiltrování reportovaných postů daného uživatele aby na ně nemusel koukat když se mu nelíbí
+              if (currentUserData && currentUserData.reportsCreated) {
+                // pokud má uživatel pole reportovaných příspěvků
+                return !currentUserData.reportsCreated.find(
+                  (r) => +r.reportedPost === +postKey
+                );
+              } else {
+                // jinak zobraz vše
+                return true;
+              }
+            })
+            .filter(([postKey, postValue]) => {
+              // odfiltrování reportovaných postů více než 3*
+              if (
+                postValue &&
+                postValue.reportedFlag &&
+                !!postValue.reports.length
+              ) {
+                return postValue.reports.length <= 3;
+              } else {
+                return true;
+              }
+            })
+            .map(([postKey, postValue]) => (
+              <Post
+                key={`post-${postKey}`}
+                postKey={postKey}
+                postValue={postValue}
+                handleChangeRoute={handleChangeRoute}
+                handleReportPost={handleReportPost}
+              />
+            ))}
         </InfiniteScroll>
       );
     } else {
