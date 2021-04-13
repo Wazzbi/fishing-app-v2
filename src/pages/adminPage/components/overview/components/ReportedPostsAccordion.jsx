@@ -36,8 +36,9 @@ const ReportedPostsAccordion = ({ storeState, deletePost, banUser }) => {
             <Accordion>
               {storeState &&
                 storeState.reportedPosts &&
-                Object.entries(storeState.reportedPosts).map(
-                  ([rKey, rValue], index) => (
+                Object.entries(storeState.reportedPosts)
+                  .reverse()
+                  .map(([rKey, rValue], index) => (
                     <Card>
                       <Accordion.Toggle
                         as={Card.Header}
@@ -163,8 +164,7 @@ const ReportedPostsAccordion = ({ storeState, deletePost, banUser }) => {
                         </Card.Body>
                       </Accordion.Collapse>
                     </Card>
-                  )
-                )}
+                  ))}
             </Accordion>
           </Card.Body>
         </Accordion.Collapse>
