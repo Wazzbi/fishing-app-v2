@@ -289,7 +289,6 @@ const NewsPage = ({ history }) => {
             </div>
           }
           {postsRender
-
             .filter(([postKey, postValue]) => {
               // odfiltrování reportovaných postů daného uživatele aby na ně nemusel koukat když se mu nelíbí
               if (currentUserData && currentUserData.reportsCreated) {

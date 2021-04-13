@@ -6,6 +6,7 @@ export const initialState = {
   newsPageScrollPosition: null,
   reportedPosts: null,
   adminNotes: null,
+  blockedUsers: null,
 };
 
 const Reducer = (state, action) => {
@@ -149,6 +150,36 @@ const Reducer = (state, action) => {
         adminNotes: {
           ...state.adminNotes,
           [action.payload.noteId]: action.payload,
+        },
+      };
+
+    case "ADD_BLOCKED_USERS":
+      return {
+        ...state,
+        blockedUsers: action.payload,
+      };
+
+    case "ADD_BLOCKED_USER":
+      return {
+        ...state,
+        blockedUsers: {
+          ...state.blockedUsers,
+          [action.payload.firebaseId]: action.payload,
+        },
+      };
+
+    case "REMOVE_BLOCKED_USER":
+      const _blockedUsers =
+        state &&
+        state.blockedUsers &&
+        Object.entries(state.blockedUsers).filter(
+          ([key, value]) => key !== action.payload
+        );
+      const blockedUsers = Object.fromEntries(_blockedUsers);
+      return {
+        ...state,
+        blockedUsers: {
+          ...blockedUsers,
         },
       };
 

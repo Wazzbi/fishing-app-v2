@@ -147,6 +147,21 @@ const UserPage = ({ history }) => {
                 </span>
               </div>
             ))}
+
+          <br />
+          <h4>Moje Reportované příspěvky</h4>
+          {currentUserData &&
+            currentUserData.reportsCreated &&
+            currentUserData.reportsCreated.map((report, index) => (
+              <div key={`report-${index}`} className="userPage-flex-row">
+                <span className="userPage-row-title">
+                  {`${date(report.reportCreated)}:`}
+                </span>
+                <span className="userPage-row-value">
+                  {report.reportedPost}
+                </span>
+              </div>
+            ))}
         </div>
       </div>
       <Modal

@@ -53,6 +53,9 @@ const postImageRef = (name, size, type) =>
 // *** ADMIN notes***
 const adminNotesRef = appl.database().ref("adminNotes/");
 
+// *** BLACKLIST ***
+const blockedUsersRef = appl.database().ref("blockedUsers/");
+
 // TODO přejmenovat metody podle CRUD
 class firebaseService {
   // TODO toto může být jen export konstant...
@@ -112,6 +115,23 @@ class firebaseService {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  static getBlockedUsers = async () => {
+    try {
+      const snapshot = await blockedUsersRef.get();
+      if (snapshot.exists()) {
+        return snapshot.val();
+      } else {
+        console.log("No data available");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  static getUser = (id) => {
+    return usersRef.orderByChild("id").equalTo(id);
   };
 
   static checkUserExists = (username) => {
@@ -323,7 +343,15 @@ class firebaseService {
     });
   };
 
+  static setBlockedUser = (firebaseId, userObject) => {
+    return blockedUsersRef.child(firebaseId).set(userObject);
+  };
+
   // *** DELETE ***
+  static deleteFromBlockedUser = (firebaseId) => {
+    return blockedUsersRef.child(firebaseId).remove();
+  };
+
   static deleteUserRecord = (userUid, recordUid) => {
     return recordRef(userUid, recordUid).remove();
   };

@@ -5,7 +5,7 @@ import Card from "react-bootstrap/Card";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 
-const ReportedPostsAccordion = ({ storeState, deletePost }) => {
+const ReportedPostsAccordion = ({ storeState, deletePost, banUser }) => {
   function onlyUniqueCategories(report, index, self) {
     return self.indexOf(report) === index;
   }
@@ -125,12 +125,16 @@ const ReportedPostsAccordion = ({ storeState, deletePost }) => {
                             <Button
                               variant="danger"
                               size="sm"
-                              onClick={() => deletePost(rKey)}
+                              onClick={() => deletePost(rKey, rValue.userId)}
                             >
                               smazat příspěvek
                             </Button>{" "}
-                            <Button variant="danger" size="sm">
-                              zabanovat tvůrce
+                            <Button
+                              variant="danger"
+                              size="sm"
+                              onClick={() => banUser(rKey, rValue.userId)}
+                            >
+                              smazat & zabanovat tvůrce
                             </Button>{" "}
                             <Button variant="secondary" size="sm">
                               vidět příspěvek

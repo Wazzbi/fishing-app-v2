@@ -10,8 +10,14 @@ import Button from "react-bootstrap/Button";
 
 // TODO získat z firebase seznam postů s reportFlagem
 
-const Overview = ({ firstname, isMountedRef, storeState, dispatch }) => {
-  const deletePost = (id) => {
+const Overview = ({
+  firstname,
+  isMountedRef,
+  storeState,
+  dispatch,
+  currentUserData,
+}) => {
+  const deletePost = (id, creator) => {
     firebaseService.deletePost(id).then(() => {
       const filterReportedPosts =
         storeState &&
@@ -30,7 +36,7 @@ const Overview = ({ firstname, isMountedRef, storeState, dispatch }) => {
         noteId: Date.now(),
         case: "Reported Post DELETED",
         detail: {
-          postId: id,
+          creator,
         },
       };
 
@@ -62,6 +68,26 @@ const Overview = ({ firstname, isMountedRef, storeState, dispatch }) => {
               payload: { ...Object.fromEntries(filterReportedPosts) },
             }),
           ];
+    });
+  };
+
+  /**
+   * (un)ban user & erase reported post
+   */
+  const banUser = (postId, userId) => {
+    firebaseService.getUser(userId).once("value", (snapshot) => {
+      const user = Object.entries(snapshot.val()).map(([key, value]) => value);
+
+      const firebaseId = user && user[0] && user[0].firebaseId;
+      if (!!firebaseId) {
+        firebaseService.setBlockedUser(firebaseId, user[0]).then(() => {
+          deletePost(postId, userId);
+          dispatch({
+            type: "ADD_BLOCKED_USER",
+            payload: user[0],
+          });
+        });
+      }
     });
   };
 
@@ -101,8 +127,6 @@ const Overview = ({ firstname, isMountedRef, storeState, dispatch }) => {
     });
   }, [dispatch, storeState.posts]);
 
-  const createAccordion = () => {};
-
   useEffect(() => {
     getReportedPosts();
 
@@ -138,6 +162,7 @@ const Overview = ({ firstname, isMountedRef, storeState, dispatch }) => {
               <ReportedPostsAccordion
                 storeState={storeState}
                 deletePost={deletePost}
+                banUser={banUser}
               />
               <Card>
                 <Accordion.Toggle as={Card.Header} eventKey="1">

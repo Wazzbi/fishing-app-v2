@@ -25,8 +25,9 @@ const History = ({ storeState }) => {
             <tbody>
               {storeState &&
                 storeState.adminNotes &&
-                Object.entries(storeState.adminNotes).map(
-                  ([noteKey, noteValue]) => (
+                Object.entries(storeState.adminNotes)
+                  .reverse()
+                  .map(([noteKey, noteValue]) => (
                     <tr>
                       <td style={{ paddingRight: "30px" }}>
                         {convertToDate(noteValue.noteId)}
@@ -35,11 +36,10 @@ const History = ({ storeState }) => {
                       <td style={{ paddingRight: "30px" }}>
                         {noteValue &&
                           noteValue.detail &&
-                          noteValue.detail.postId}
+                          noteValue.detail.creator}
                       </td>
                     </tr>
-                  )
-                )}
+                  ))}
             </tbody>
           </table>
         </div>
