@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext, useCallback } from "react";
 import firebaseService from "../../services/firebase/firebase.service";
-import "./postPage.scss";
+import "./blockedPage.scss";
 import { Link } from "react-router-dom";
 import { StoreContext } from "../../store/Store";
 import Jdenticon from "react-jdenticon";
@@ -101,14 +101,14 @@ const BlockedPage = (props) => {
 
   return (
     <>
-      <div className="post-page_main">
-        <div className="post-page-post">
+      <div className="blocked-page_main">
+        <div className="blocked-page-post">
           <h3 style={{ color: "red", textAlign: "center" }}>
             Blokovaný příspěvek
           </h3>
           {post && (
             <div>
-              <p className="post-page_title">
+              <p className="blocked-page_title">
                 <strong>{post.title}</strong>
               </p>
               <p style={{ display: "flex", alignItems: "center" }}>
@@ -123,7 +123,7 @@ const BlockedPage = (props) => {
                   {post.username} {" | "} {post.created}
                 </small>
               </p>
-              <p className="post-page_icons-group">
+              <p className="blocked-page_icons-group">
                 <Badge variant="dark">{post.category}</Badge>
                 <img src="/comment.svg" alt="" height="15px" width="15px"></img>
                 <small style={{ color: "#808080", fontFamily: "poppins" }}>
@@ -142,19 +142,19 @@ const BlockedPage = (props) => {
                 <small style={{ color: "#808080" }}>Uložit</small>
               </p>
 
-              <div className="post-page_text">{post.text}</div>
+              <div className="blocked-page_text">{post.text}</div>
 
               {!!post.images && (
-                <div className="post-page_images-container">
+                <div className="blocked-page_images-container">
                   {post.images.map((image, index) => (
                     <div
                       key={`image-${index}`}
-                      className="post-page_animated-background"
+                      className="blocked-page_animated-background"
                     >
                       <img
                         src={images[index]}
                         alt=""
-                        className="post-page_image"
+                        className="blocked-page_image"
                         onClick={() => handleShow(index)}
                       />
                     </div>
@@ -169,7 +169,7 @@ const BlockedPage = (props) => {
             onHide={handleClose}
             animation={false}
             size="lg"
-            contentClassName="post-page_modal-images-modal"
+            contentClassName="blocked-page_modal-images-modal"
             centered
           >
             <Modal.Header closeButton></Modal.Header>
@@ -186,7 +186,7 @@ const BlockedPage = (props) => {
                         <img
                           src={imageUrl}
                           alt=""
-                          className="post-page_modal-images"
+                          className="blocked-page_modal-images"
                         />
                       </div>
                     </Carousel.Item>
