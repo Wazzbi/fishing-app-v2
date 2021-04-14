@@ -134,11 +134,26 @@
   }
 }
 
+.record-page_error-toast {
+  position: fixed;
+  right: 15px;
+  top: 75px;
+
+  @media screen and (max-width: 500px) {
+    display: flex;
+    justify-content: center;
+    position: fixed;
+    right: 0px;
+    left: 0;
+    top: 60px;
+  }
+}
+
 .record-page_modal {
   padding: 0;
-  @media screen and (max-width: 500px) {
-    padding: 20px;
-  }
+  // @media screen and (max-width: 500px) {
+  //   padding: 20px;
+  // }
 }
 
 // bootstrap override

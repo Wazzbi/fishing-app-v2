@@ -73,6 +73,16 @@ const UserPage = ({ history }) => {
               {currentUserData && currentUserData.role}
             </span>
           </div>
+          <div className="userPage-flex-row">
+            <span className="userPage-row-title">Stav účtu:</span>
+            <span className="userPage-row-value">
+              {currentUserData && currentUserData.blockedUser ? (
+                <span style={{ color: "red" }}>Uživatel je zablokovaný</span>
+              ) : (
+                <span>Účet je v cajku ;-)</span>
+              )}
+            </span>
+          </div>
           <br />
           <h4>Nastavení</h4>
           <div className="userPage-flex-row">
@@ -107,7 +117,7 @@ const UserPage = ({ history }) => {
 
           <br />
           <h4>Příspěvky</h4>
-          <Tabs defaultActiveKey="profile" id="uncontrolled-tab-example">
+          <Tabs defaultActiveKey="home" id="uncontrolled-tab-example">
             <Tab eventKey="home" title="Vytvořené">
               {currentUserData &&
                 currentUserData.reportsCreated &&

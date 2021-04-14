@@ -17,7 +17,7 @@ const Navigation = () => {
   const AppNavbar = () => {
     if (currentUser) {
       return (
-        <>
+        <div style={{ position: "relative" }}>
           <Navbar
             expand="lg"
             variant="dark"
@@ -48,7 +48,15 @@ const Navigation = () => {
                   Počasí
                 </Nav.Link>
                 <Nav.Link as={Link} to={"/user"}>
-                  Účet
+                  <span
+                    className={
+                      currentUserData && currentUserData.blockedUser
+                        ? "navigation_notofication-dot-account"
+                        : ""
+                    }
+                  >
+                    Účet
+                  </span>
                 </Nav.Link>
                 <Nav.Link as={Link} to={"/about"}>
                   O aplikaci
@@ -67,7 +75,14 @@ const Navigation = () => {
               </Button>
             </Navbar.Collapse>
           </Navbar>
-        </>
+          <div
+            className={
+              currentUserData && currentUserData.blockedUser
+                ? "navigation_notofication-dot"
+                : ""
+            }
+          ></div>
+        </div>
       );
     }
 

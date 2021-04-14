@@ -140,6 +140,14 @@ const Tools = ({ isMountedRef, storeState, dispatch, currentUserData }) => {
                 <Card.Body>Hello! I'm another body</Card.Body>
               </Accordion.Collapse>
             </Card>
+            <Card>
+              <Accordion.Toggle as={Card.Header} eventKey="3">
+                Blokované příspěvky
+              </Accordion.Toggle>
+              <Accordion.Collapse eventKey="3">
+                <Card.Body>Hello! I'm another body</Card.Body>
+              </Accordion.Collapse>
+            </Card>
           </Accordion>
         </div>
       </div>

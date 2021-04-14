@@ -19,9 +19,11 @@ import { StoreContext } from "../../store/Store";
 import AddPost from "./components/addPost/AddPost";
 import ReportPost from "./components/reportPost/ReportPost";
 import Post from "./components/post/Post";
-
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
+import Toast from "react-bootstrap/Toast";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 // TODO emoji, odkazy
 // TODO main kontajner udělat squeeze a nakonec s flex-base nebo min-width
@@ -41,12 +43,17 @@ const NewsPage = ({ history }) => {
   const [postCount, setPostCount] = useState(null);
   const [uploadPostDone, setUploadPostDone] = useState(true);
   const [reportedPostId, setReportedPostId] = useState(null);
+  const [showError, setShowError] = useState(false);
 
   const isMountedRef = useRef(true);
 
   const handleReport = (reportCategory, reportText) => {
     // TODO ulož meta data o reportu do postu
     // TODO ulož meta data o reportu do dat nahlašovatele aby měl disabled alert na tento post (nebo ho odstranit z obrazovky)
+    // TODO udělat showError všude jako tady
+    if (currentUserData && currentUserData.blockedUser) {
+      return setShowError(true);
+    }
     // find reported post in store
     const _post = Object.entries(storeState.posts).find(
       ([postKey, postValue]) => +postKey === +reportedPostId
@@ -335,6 +342,10 @@ const NewsPage = ({ history }) => {
     history.push(`/post/${postKey}`);
   };
 
+  const handleError = (errorMessage) => {
+    setShowError(true);
+  };
+
   useEffect(() => {
     window.addEventListener("scroll", storePosition);
 
@@ -361,7 +372,7 @@ const NewsPage = ({ history }) => {
   }, [init, storeState.posts]);
 
   return (
-    <>
+    <div style={{ position: "relative" }}>
       <div
         id="toTopTarget"
         style={{ position: "absolute", top: "-50px" }}
@@ -420,6 +431,7 @@ const NewsPage = ({ history }) => {
         init={init}
         handleSetPostCount={handleSetPostCount}
         currentUserData={currentUserData}
+        handleError={handleError}
       />
 
       <ReportPost
@@ -428,7 +440,29 @@ const NewsPage = ({ history }) => {
         isMountedRef={isMountedRef}
         handleReport={handleReport}
       />
-    </>
+
+      <div className="news-page_error-toast">
+        <Row>
+          <Col>
+            <Toast
+              style={{ backgroundColor: "lightpink" }}
+              onClose={() => setShowError(false)}
+              show={showError}
+              delay={30000}
+              autohide
+            >
+              <Toast.Header>
+                <strong className="mr-auto">Upozornění</strong>
+              </Toast.Header>
+              <Toast.Body>
+                Uživatel nemá povolení. Změny nebudou uloženy. Zkontrolujte
+                status svého účtu nebo kontaktujte podporu.
+              </Toast.Body>
+            </Toast>
+          </Col>
+        </Row>
+      </div>
+    </div>
   );
 };
 

@@ -50,3 +50,18 @@
   top: 50px;
   width: 300px;
 }
+
+.sign-up_error-toast {
+  position: fixed;
+  right: 15px;
+  top: 15px;
+
+  @media screen and (max-width: 500px) {
+    display: flex;
+    justify-content: center;
+    position: fixed;
+    right: 0;
+    left: 0;
+    top: 5px;
+  }
+}

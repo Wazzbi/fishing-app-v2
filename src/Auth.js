@@ -18,9 +18,25 @@ export const AuthProvider = ({ children }) => {
 
       firebaseService
         .getUserData(user && user.uid)
-        .then((res) =>
-          res ? setCurrentUserData(res) : setCurrentUserData(null)
-        );
+        // .then((res) =>
+        //   res ? setCurrentUserData(res) : setCurrentUserData(null)
+        // )
+        .then((res) => {
+          firebaseService
+            .getBlockedUser(user && user.uid)
+            .once("value", (snapshot) => {
+              let response =
+                snapshot &&
+                snapshot.val() &&
+                Object.entries(snapshot.val()).map(([key, value]) => value);
+              if (!!response) {
+                setCurrentUserData({ ...res, blockedUser: true });
+              } else {
+                setCurrentUserData({ ...res, blockedUser: false });
+              }
+            });
+        })
+        .catch((err) => console.error(err));
     });
   }, []);
 

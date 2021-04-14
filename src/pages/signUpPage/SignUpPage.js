@@ -6,10 +6,12 @@ import saveLastPathService from "../../services/utils/saveLastPath.service";
 
 import Toast from "react-bootstrap/Toast";
 import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
 //TODO toast jen jeden
+// TODO toas notifikace udělat jako servisu je to i v jiných stránkách (hledat "upozornění")
 // TODO styly zde a log in jsou stejné -> sloučit aby se nenačítali dvakrát
 
 const SignUpPage = ({ history }) => {
@@ -51,6 +53,10 @@ const SignUpPage = ({ history }) => {
                     firebaseId: authUser.user.uid,
                   });
                   history.push("/");
+                })
+                .catch((err) => {
+                  setError(err);
+                  setShowB(true);
                 });
             } catch (error) {
               setError(error);
@@ -60,7 +66,8 @@ const SignUpPage = ({ history }) => {
             setShow(true);
             checkUsersArray = [];
           }
-        });
+        })
+        .catch((err) => console.error(err));
     },
     [history]
   );
@@ -122,38 +129,42 @@ const SignUpPage = ({ history }) => {
           </div>
         </Form>
       </div>
-      <div className="sign-up_notification">
-        {error && (
+      <div className="sign-up_error-toast">
+        {showB && (
+          <Row>
+            <Col>
+              <Toast
+                style={{ backgroundColor: "lightpink" }}
+                onClose={() => setShowB(false)}
+                show={showB}
+                delay={30000}
+                autohide
+              >
+                <Toast.Header>
+                  <strong className="mr-auto">Upozornění</strong>
+                </Toast.Header>
+                <Toast.Body>Tento email je již zabraný.</Toast.Body>
+              </Toast>
+            </Col>
+          </Row>
+        )}
+
+        {show && (
           <Col style={{ width: "100%" }}>
             <Toast
               style={{ backgroundColor: "lightpink" }}
-              onClose={() => setShowB(false)}
-              show={showB}
+              onClose={() => setShow(false)}
+              show={show}
               delay={5000}
               autohide
             >
               <Toast.Header>
                 <strong className="mr-auto">Upozornění</strong>
               </Toast.Header>
-              <Toast.Body>Tento email je již zabraný</Toast.Body>
+              <Toast.Body>Uživatelské jméno je zabrané</Toast.Body>
             </Toast>
           </Col>
         )}
-
-        <Col style={{ width: "100%" }}>
-          <Toast
-            style={{ backgroundColor: "lightpink" }}
-            onClose={() => setShow(false)}
-            show={show}
-            delay={5000}
-            autohide
-          >
-            <Toast.Header>
-              <strong className="mr-auto">Upozornění</strong>
-            </Toast.Header>
-            <Toast.Body>Uživatelské jméno je zabrané</Toast.Body>
-          </Toast>
-        </Col>
       </div>
     </div>
   );

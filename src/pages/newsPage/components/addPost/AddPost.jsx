@@ -27,6 +27,7 @@ const AddPost = ({
   init,
   handleSetPostCount,
   currentUserData,
+  handleError,
 }) => {
   const editor = useRef(null);
   const compress = new Compress();
@@ -77,19 +78,33 @@ const AddPost = ({
           postId
         )
         .then(() => {
-          firebaseService.createImage(imageArray).then(() => {
-            if (isMountedRef.current) {
-              handleSetUploadImages([]);
-              handleSetText(null);
+          firebaseService
+            .createImage(imageArray)
+            .then(() => {
+              if (isMountedRef.current) {
+                handleSetUploadImages([]);
+                handleSetText(null);
+                handleSetUploadPostDone(true);
+                init();
+                firebaseService.getPostsCount().then((r) => {
+                  if (isMountedRef.current) {
+                    handleSetPostCount(r);
+                  }
+                });
+              }
+            })
+            .catch((err) => {
               handleSetUploadPostDone(true);
-              init();
-              firebaseService.getPostsCount().then((r) => {
-                if (isMountedRef.current) {
-                  handleSetPostCount(r);
-                }
-              });
-            }
-          });
+              handleError(
+                "Uživatel nemá povolen zápis. Kontaktujte podporu aplikace RYBKA"
+              );
+            });
+        })
+        .catch((err) => {
+          handleSetUploadPostDone(true);
+          handleError(
+            "Uživatel nemá povolen zápis. Kontaktujte podporu aplikace RYBKA"
+          );
         });
     }
   };

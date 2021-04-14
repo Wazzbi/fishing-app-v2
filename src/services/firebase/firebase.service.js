@@ -151,6 +151,10 @@ class firebaseService {
     return usersRef.orderByChild("id").equalTo(id);
   };
 
+  static getBlockedUser = (firebaseId) => {
+    return blockedUsersRef.orderByChild("firebaseId").equalTo(firebaseId);
+  };
+
   static checkUserExists = (username) => {
     return usersRef.orderByChild("username").equalTo(username);
   };

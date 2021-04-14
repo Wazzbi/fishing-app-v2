@@ -24,6 +24,9 @@ import Dropdown from "react-bootstrap/Dropdown";
 import Spinner from "react-bootstrap/Spinner";
 import Tooltip from "react-bootstrap/Tooltip";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Toast from "react-bootstrap/Toast";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 import { fishKind } from "../../constants";
 
@@ -52,6 +55,7 @@ const RecordPage = () => {
   const [storeState, dispatch] = useContext(StoreContext);
   const [actualYearRecord, setActualYearRecord] = useState(null);
   const [yearHistory, setYearHistory] = useState(null);
+  const [showError, setShowError] = useState(false);
 
   const isMountedRef = useRef(true);
 
@@ -211,11 +215,9 @@ const RecordPage = () => {
         payload: { recordUid: editRowData.recordUid, updatedRecord },
       });
 
-      firebaseService.setUserRecord(
-        currentUser.uid,
-        editRowData.recordUid,
-        updatedRecord
-      );
+      firebaseService
+        .setUserRecord(currentUser.uid, editRowData.recordUid, updatedRecord)
+        .catch((err) => setShowError(true));
 
       setEditRowData(null);
     }
@@ -224,12 +226,9 @@ const RecordPage = () => {
   const addRowAndRefresh = (recordUid, props) => {
     if (isMountedRef.current) {
       const rowId = Date.now();
-      firebaseService.createUserRecordRow(
-        currentUser.uid,
-        recordUid,
-        props,
-        rowId
-      );
+      firebaseService
+        .createUserRecordRow(currentUser.uid, recordUid, props, rowId)
+        .catch((err) => setShowError(true));
       dispatch({
         type: "ADD_RECORD_ROW",
         payload: { recordUid, rowId, props },
@@ -780,6 +779,27 @@ const RecordPage = () => {
             </div>
           </Modal.Body>
         </Modal>
+        <div className="record-page_error-toast">
+          <Row>
+            <Col>
+              <Toast
+                style={{ backgroundColor: "lightpink" }}
+                onClose={() => setShowError(false)}
+                show={showError}
+                delay={30000}
+                autohide
+              >
+                <Toast.Header>
+                  <strong className="mr-auto">Upozornění</strong>
+                </Toast.Header>
+                <Toast.Body>
+                  Uživatel nemá povolení. Změny nebudou uloženy. Zkontrolujte
+                  status svého účtu nebo kontaktujte podporu.
+                </Toast.Body>
+              </Toast>
+            </Col>
+          </Row>
+        </div>
       </div>
     </>
   );

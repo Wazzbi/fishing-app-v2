@@ -30,6 +30,37 @@
   }
 }
 
+.navigation_notofication-dot {
+  display: none;
+  position: fixed;
+  top: 12px;
+  right: 35px;
+  width: 15px;
+  height: 15px;
+  background: linear-gradient(311deg, red, #ff6b6b);
+  z-index: 1050;
+  border-radius: 50%;
+
+  @media screen and (max-width: 990px) {
+    display: block;
+  }
+}
+
+.navigation_notofication-dot-account {
+  position: relative;
+  &::after {
+    content: " ";
+    display: inline;
+    background: linear-gradient(311deg, red, #ff6b6b);
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+    position: absolute;
+    top: -5px;
+    right: -16px;
+  }
+}
+
 // hamburger
 .navbar-dark .navbar-toggler {
   border-color: transparent !important;
