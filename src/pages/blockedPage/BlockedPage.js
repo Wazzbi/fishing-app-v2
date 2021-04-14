@@ -16,7 +16,7 @@ import Button from "react-bootstrap/Button";
 // TODO pořdná animace než se načtou obr a pak modal
 // TODO effect cleanUp
 
-const BlockedPage = (props, history) => {
+const BlockedPage = (props) => {
   const { currentUserData } = useContext(AuthContext);
 
   const params = props.match.params; // id postu
@@ -95,7 +95,7 @@ const BlockedPage = (props, history) => {
   useEffect(() => {
     // nepostit uživatele bez oprávnění na page admin
     if (currentUserData && currentUserData.role === "user") {
-      history.push("/home");
+      props.history.push("/home");
     }
   });
 
