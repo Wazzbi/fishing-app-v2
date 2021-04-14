@@ -20,18 +20,18 @@ const Reducer = (state, action) => {
     case "ADD_POSTS":
       return {
         ...state,
-        posts: { ...state.posts, ...action.payload },
+        posts: { ...action.payload },
       };
     case "ADD_REPORTED_POSTS":
       return {
         ...state,
-        reportedPosts: { ...state.reportedPosts, ...action.payload },
+        reportedPosts: { ...action.payload },
       };
     // RECORDS
     case "ADD_RECORDS":
       return {
         ...state,
-        records: { ...state.records, ...action.payload },
+        records: { ...action.payload },
       };
     case "ADD_RECORD":
       return {
@@ -141,7 +141,7 @@ const Reducer = (state, action) => {
     case "ADD_ADMIN_NOTES":
       return {
         ...state,
-        adminNotes: { ...state.adminNotes, ...action.payload },
+        adminNotes: { ...action.payload },
       };
 
     case "ADD_ADMIN_NOTE":
@@ -156,7 +156,7 @@ const Reducer = (state, action) => {
     case "ADD_BLOCKED_USERS":
       return {
         ...state,
-        blockedUsers: { ...state.blockedUsers, ...action.payload },
+        blockedUsers: { ...action.payload },
       };
 
     case "ADD_BLOCKED_USER":
@@ -175,11 +175,11 @@ const Reducer = (state, action) => {
         Object.entries(state.blockedUsers).filter(
           ([key, value]) => key !== action.payload
         );
-      const __blockedUsers = Object.fromEntries(_blockedUsers);
+      const blockedUsers = Object.fromEntries(_blockedUsers);
       return {
         ...state,
         blockedUsers: {
-          ...__blockedUsers,
+          ...blockedUsers,
         },
       };
 

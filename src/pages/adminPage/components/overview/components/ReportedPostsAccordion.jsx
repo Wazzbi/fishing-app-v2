@@ -142,16 +142,16 @@ const ReportedPostsAccordion = ({ storeState, deletePost, banUser }) => {
                             <Button
                               variant="danger"
                               size="sm"
-                              onClick={() => deletePost(rKey, rValue.userId)}
+                              onClick={() => deletePost(rKey, rValue)}
                             >
-                              Smazat příspěvek
+                              Blokovat příspěvek
                             </Button>{" "}
                             <Button
                               variant="danger"
                               size="sm"
-                              onClick={() => banUser(rKey, rValue.userId)}
+                              onClick={() => banUser(rKey, rValue)}
                             >
-                              Smazat & zabanovat tvůrce
+                              Blokovat & zabanovat tvůrce
                             </Button>{" "}
                             <Button
                               variant="secondary"

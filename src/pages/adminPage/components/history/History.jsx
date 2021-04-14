@@ -35,7 +35,14 @@ const History = ({ storeState }) => {
                       <td>{convertToDate(noteValue.noteId)}</td>
                       <td>{noteValue.case}</td>
                       <td>
-                        {noteValue && noteValue.detail && noteValue.detail.user}
+                        {noteValue &&
+                          noteValue.detail &&
+                          noteValue.detail.userId}{" "}
+                        (
+                        {noteValue &&
+                          noteValue.detail &&
+                          noteValue.detail.username}
+                        )
                       </td>
                       <td>
                         {noteValue &&

@@ -35,11 +35,14 @@ const Overview = ({
 
       const base_url = window.location.origin;
 
+      console.log("filterReportedPosts: ", filterReportedPosts);
+
       const adminNote = {
         noteId: Date.now(),
-        case: "Reported Post DELETED",
+        case: "Reported Post BLOCKED",
         detail: {
-          user,
+          username: user.username,
+          userId: user.userId,
           postUrl: `${base_url}/#/blockedPost/${id}`,
           solverId: currentUserData.id,
           solverName: currentUserData.username,
@@ -80,24 +83,26 @@ const Overview = ({
   /**
    * (un)ban user & erase reported post
    */
-  const banUser = (postId, userId) => {
-    firebaseService.getUser(userId).once("value", (snapshot) => {
-      const user = Object.entries(snapshot.val()).map(([key, value]) => value);
+  const banUser = (postId, user) => {
+    console.log("user:", user);
+    firebaseService.getUser(user.userId).once("value", (snapshot) => {
+      const _user = Object.entries(snapshot.val()).map(([key, value]) => value);
 
-      const firebaseId = user && user[0] && user[0].firebaseId;
+      const firebaseId = _user && _user[0] && _user[0].firebaseId;
       if (!!firebaseId) {
-        firebaseService.setBlockedUser(firebaseId, user[0]).then(() => {
-          deletePost(postId, userId);
+        firebaseService.setBlockedUser(firebaseId, _user[0]).then(() => {
+          deletePost(postId, user);
           dispatch({
             type: "ADD_BLOCKED_USER",
-            payload: user[0],
+            payload: _user[0],
           });
 
           const adminNote = {
             noteId: Date.now(),
             case: "User BLOCKED",
             detail: {
-              user: userId,
+              userId: user.userId,
+              username: user.username,
               solverId: currentUserData.id,
               solverName: currentUserData.username,
             },
