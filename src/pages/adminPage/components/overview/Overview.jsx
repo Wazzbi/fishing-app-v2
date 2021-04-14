@@ -35,8 +35,6 @@ const Overview = ({
 
       const base_url = window.location.origin;
 
-      console.log("filterReportedPosts: ", filterReportedPosts);
-
       const adminNote = {
         noteId: Date.now(),
         case: "Reported Post BLOCKED",
@@ -84,25 +82,28 @@ const Overview = ({
    * (un)ban user & erase reported post
    */
   const banUser = (postId, user) => {
-    console.log("user:", user);
+    const base_url = window.location.origin;
     firebaseService.getUser(user.userId).once("value", (snapshot) => {
-      const _user = Object.entries(snapshot.val()).map(([key, value]) => value);
+      let _users = Object.entries(snapshot.val()).map(([key, value]) => value);
+      // přidat do objektu zabanvané osoby i post kvůli kterému dostal ban
+      _users[0].postUrl = `${base_url}/#/blockedPost/${postId}`;
 
-      const firebaseId = _user && _user[0] && _user[0].firebaseId;
+      const firebaseId = _users && _users[0] && _users[0].firebaseId;
       if (!!firebaseId) {
-        firebaseService.setBlockedUser(firebaseId, _user[0]).then(() => {
+        firebaseService.setBlockedUser(firebaseId, _users[0]).then(() => {
           deletePost(postId, user);
           dispatch({
             type: "ADD_BLOCKED_USER",
-            payload: _user[0],
+            payload: _users[0],
           });
 
           const adminNote = {
             noteId: Date.now(),
             case: "User BLOCKED",
             detail: {
-              userId: user.userId,
               username: user.username,
+              userId: user.userId,
+              postUrl: `${base_url}/#/blockedPost/${postId}`,
               solverId: currentUserData.id,
               solverName: currentUserData.username,
             },
@@ -196,7 +197,16 @@ const Overview = ({
             />
             <Card>
               <Accordion.Toggle as={Card.Header} eventKey="1">
-                Zprávy <Badge variant="danger">24</Badge>
+                <div
+                  style={{
+                    width: "120px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <span>Zprávy</span> <Badge variant="danger">24</Badge>
+                </div>
               </Accordion.Toggle>
               <Accordion.Collapse eventKey="1">
                 <Card.Body>
@@ -208,7 +218,16 @@ const Overview = ({
             </Card>
             <Card>
               <Accordion.Toggle as={Card.Header} eventKey="2">
-                Události <Badge variant="danger">2</Badge>
+                <div
+                  style={{
+                    width: "120px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <span>Události</span> <Badge variant="danger">2</Badge>
+                </div>
               </Accordion.Toggle>
               <Accordion.Collapse eventKey="2">
                 <Card.Body>

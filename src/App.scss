@@ -10,3 +10,11 @@
   justify-content: center;
   align-items: center;
 }
+
+// bootstrap override
+th {
+  position: sticky;
+  top: 1px;
+  background-color: #fff;
+  box-shadow: 0 1px #dee2e6, 0 -1px #dee2e6;
+}

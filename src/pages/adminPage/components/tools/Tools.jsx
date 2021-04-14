@@ -10,7 +10,7 @@ import Table from "react-bootstrap/Table";
 // TODO opakovaný admin post -> udělat to nějak lépe
 
 const Tools = ({ isMountedRef, storeState, dispatch, currentUserData }) => {
-  const handleUnBlockUser = (firebaseId, userId) => {
+  const handleUnBlockUser = (firebaseId, user) => {
     firebaseService
       .deleteFromBlockedUser(firebaseId)
       .then(() => {
@@ -20,11 +20,15 @@ const Tools = ({ isMountedRef, storeState, dispatch, currentUserData }) => {
         });
       })
       .then(() => {
+        const base_url = window.location.origin;
+
         const adminNote = {
           noteId: Date.now(),
           case: "User UNBLOCKED",
           detail: {
-            user: userId,
+            username: user.username,
+            userId: user.id,
+            postUrl: user.postUrl,
             solverId: currentUserData.id,
             solverName: currentUserData.username,
           },
@@ -79,6 +83,7 @@ const Tools = ({ isMountedRef, storeState, dispatch, currentUserData }) => {
                         <th>ID</th>
                         <th>Uživatelské jméno</th>
                         <th>Email</th>
+                        <th>Odkaz na příspěvek</th>
                         <th>Akce</th>
                       </tr>
                     </thead>
@@ -92,14 +97,20 @@ const Tools = ({ isMountedRef, storeState, dispatch, currentUserData }) => {
                               <td>{value.username}</td>
                               <td>{value.email}</td>
                               <td>
+                                <a
+                                  href={value.postUrl}
+                                  style={{ color: "blue" }}
+                                  target="_blank"
+                                >
+                                  odkaz
+                                </a>
+                              </td>
+                              <td>
                                 <Button
                                   variant="success"
                                   size="sm"
                                   onClick={() =>
-                                    handleUnBlockUser(
-                                      value.firebaseId,
-                                      value.id
-                                    )
+                                    handleUnBlockUser(value.firebaseId, value)
                                   }
                                 >
                                   Odblokovat
