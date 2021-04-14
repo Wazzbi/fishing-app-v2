@@ -8,6 +8,8 @@ import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Button from "react-bootstrap/Button";
 import ToggleButton from "react-bootstrap/ToggleButton";
 import Modal from "react-bootstrap/Modal";
+import Tabs from "react-bootstrap/Tabs";
+import Tab from "react-bootstrap/Tab";
 
 // TODO change password z předešlé verze v gitu
 // TODO GET data tady a né v Auth.js ...
@@ -104,64 +106,51 @@ const UserPage = ({ history }) => {
           </div>
 
           <br />
-          <h4>Vytvořené příspěvky</h4>
-          {currentUserData &&
-            currentUserData.reportsCreated &&
-            currentUserData.reportsCreated.map((report, index) => (
-              <div key={`report-${index}`} className="userPage-flex-row">
-                <span className="userPage-row-title">
-                  {`${date(report.reportCreated)}:`}
-                </span>
-                <span className="userPage-row-value">
-                  {report.reportedPost}
-                </span>
-              </div>
-            ))}
-
-          <br />
-          <h4>Uložené příspěvky</h4>
-          {currentUserData &&
-            currentUserData.reportsCreated &&
-            currentUserData.reportsCreated.map((report, index) => (
-              <div key={`report-${index}`} className="userPage-flex-row">
-                <span className="userPage-row-title">
-                  {`${date(report.reportCreated)}:`}
-                </span>
-                <span className="userPage-row-value">
-                  {report.reportedPost}
-                </span>
-              </div>
-            ))}
-
-          <br />
-          <h4>Nahlášené příspěvky</h4>
-          {currentUserData &&
-            currentUserData.reportsCreated &&
-            currentUserData.reportsCreated.map((report, index) => (
-              <div key={`report-${index}`} className="userPage-flex-row">
-                <span className="userPage-row-title">
-                  {`${date(report.reportCreated)}:`}
-                </span>
-                <span className="userPage-row-value">
-                  {report.reportedPost}
-                </span>
-              </div>
-            ))}
-
-          <br />
-          <h4>Moje Reportované příspěvky</h4>
-          {currentUserData &&
-            currentUserData.reportsCreated &&
-            currentUserData.reportsCreated.map((report, index) => (
-              <div key={`report-${index}`} className="userPage-flex-row">
-                <span className="userPage-row-title">
-                  {`${date(report.reportCreated)}:`}
-                </span>
-                <span className="userPage-row-value">
-                  {report.reportedPost}
-                </span>
-              </div>
-            ))}
+          <h4>Příspěvky</h4>
+          <Tabs defaultActiveKey="profile" id="uncontrolled-tab-example">
+            <Tab eventKey="home" title="Vytvořené">
+              {currentUserData &&
+                currentUserData.reportsCreated &&
+                currentUserData.reportsCreated.map((report, index) => (
+                  <div key={`report-${index}`} className="userPage-flex-row">
+                    <span className="userPage-row-title">
+                      {`${date(report.reportCreated)}:`}
+                    </span>
+                    <span className="userPage-row-value">
+                      {report.reportedPost}
+                    </span>
+                  </div>
+                ))}
+            </Tab>
+            <Tab eventKey="profile" title="Uložené">
+              {currentUserData &&
+                currentUserData.reportsCreated &&
+                currentUserData.reportsCreated.map((report, index) => (
+                  <div key={`report-${index}`} className="userPage-flex-row">
+                    <span className="userPage-row-title">
+                      {`${date(report.reportCreated)}:`}
+                    </span>
+                    <span className="userPage-row-value">
+                      {report.reportedPost}
+                    </span>
+                  </div>
+                ))}
+            </Tab>
+            <Tab eventKey="contact" title="Nahlášené">
+              {currentUserData &&
+                currentUserData.reportsCreated &&
+                currentUserData.reportsCreated.map((report, index) => (
+                  <div key={`report-${index}`} className="userPage-flex-row">
+                    <span className="userPage-row-title">
+                      {`${date(report.reportCreated)}:`}
+                    </span>
+                    <span className="userPage-row-value">
+                      {report.reportedPost}
+                    </span>
+                  </div>
+                ))}
+            </Tab>
+          </Tabs>
         </div>
       </div>
       <Modal

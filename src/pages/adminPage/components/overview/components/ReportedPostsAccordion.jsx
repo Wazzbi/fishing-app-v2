@@ -5,7 +5,12 @@ import Card from "react-bootstrap/Card";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 
-const ReportedPostsAccordion = ({ storeState, deletePost, banUser }) => {
+const ReportedPostsAccordion = ({
+  storeState,
+  deletePost,
+  banUser,
+  freePost,
+}) => {
   function onlyUniqueCategories(report, index, self) {
     return self.indexOf(report) === index;
   }
@@ -169,7 +174,11 @@ const ReportedPostsAccordion = ({ storeState, deletePost, banUser }) => {
                             >
                               Vidět příspěvek
                             </Button>{" "}
-                            <Button variant="success" size="sm">
+                            <Button
+                              variant="success"
+                              size="sm"
+                              onClick={() => freePost(rValue)}
+                            >
                               Příspěvek je v pořádku
                             </Button>
                           </div>

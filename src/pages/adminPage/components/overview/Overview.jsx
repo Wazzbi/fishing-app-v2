@@ -10,6 +10,7 @@ import Button from "react-bootstrap/Button";
 
 // TODO získat z firebase seznam postů s reportFlagem
 // TODO ban / unban do historie
+// TODO notifikace ADD_ADMIN_NOTE je na několika místech -> udělat servisu nebo něco
 
 const Overview = ({
   firstname,
@@ -18,6 +19,52 @@ const Overview = ({
   dispatch,
   currentUserData,
 }) => {
+  const freePost = (post) => {
+    console.log(post);
+    // zruš flag který filtruje reportované příspěvky
+    post.reportedFlag = false;
+    // reset report in post
+    firebaseService
+      .setPost(post.timeStamp, post)
+      .catch((err) => console.log(err));
+
+    const filterReportedPosts =
+      storeState &&
+      storeState.reportedPosts &&
+      Object.entries(storeState.reportedPosts).filter(
+        ([rKey, rValue]) => +rKey !== +post.timeStamp
+      );
+
+    dispatch({
+      type: "ADD_REPORTED_POSTS",
+      payload: { ...Object.fromEntries(filterReportedPosts) },
+    });
+
+    const base_url = window.location.origin;
+
+    const adminNote = {
+      noteId: Date.now(),
+      case: "Reported Post FREE",
+      detail: {
+        username: post.username,
+        userId: post.userId,
+        postUrl: `${base_url}/#/post/${post.timeStamp}`,
+        solverId: currentUserData.id,
+        solverName: currentUserData.username,
+      },
+    };
+
+    firebaseService
+      .createAdminNote(adminNote)
+      .then(() => {
+        dispatch({
+          type: "ADD_ADMIN_NOTE",
+          payload: adminNote,
+        });
+      })
+      .catch((err) => console.error(err));
+  };
+
   const deletePost = (id, user) => {
     firebaseService.deletePost(id).then(() => {
       const filterReportedPosts =
@@ -194,6 +241,7 @@ const Overview = ({
               storeState={storeState}
               deletePost={deletePost}
               banUser={banUser}
+              freePost={freePost}
             />
             <Card>
               <Accordion.Toggle as={Card.Header} eventKey="1">
