@@ -33,11 +33,16 @@ const Overview = ({
           ([rKey, rValue]) => +rKey !== +id
         );
 
+      const base_url = window.location.origin;
+
       const adminNote = {
         noteId: Date.now(),
         case: "Reported Post DELETED",
         detail: {
           user,
+          postUrl: `${base_url}/#/blockedPost/${id}`,
+          solverId: currentUserData.id,
+          solverName: currentUserData.username,
         },
       };
 
@@ -93,6 +98,8 @@ const Overview = ({
             case: "User BLOCKED",
             detail: {
               user: userId,
+              solverId: currentUserData.id,
+              solverName: currentUserData.username,
             },
           };
 
@@ -176,39 +183,37 @@ const Overview = ({
 
           <p>Uroveň oprávnění: 3</p>
 
-          {storeState && storeState.reportedPosts && (
-            <Accordion>
-              <ReportedPostsAccordion
-                storeState={storeState}
-                deletePost={deletePost}
-                banUser={banUser}
-              />
-              <Card>
-                <Accordion.Toggle as={Card.Header} eventKey="1">
-                  Zprávy <Badge variant="danger">24</Badge>
-                </Accordion.Toggle>
-                <Accordion.Collapse eventKey="1">
-                  <Card.Body>
-                    <span>zpráva 1</span>
-                    <hr />
-                    <span>zpráva 2</span>
-                  </Card.Body>
-                </Accordion.Collapse>
-              </Card>
-              <Card>
-                <Accordion.Toggle as={Card.Header} eventKey="2">
-                  Události <Badge variant="danger">2</Badge>
-                </Accordion.Toggle>
-                <Accordion.Collapse eventKey="2">
-                  <Card.Body>
-                    <span>Nový uživatel xyz</span>
-                    <hr />
-                    <span>Nový uživatel xyz123</span>
-                  </Card.Body>
-                </Accordion.Collapse>
-              </Card>
-            </Accordion>
-          )}
+          <Accordion>
+            <ReportedPostsAccordion
+              storeState={storeState}
+              deletePost={deletePost}
+              banUser={banUser}
+            />
+            <Card>
+              <Accordion.Toggle as={Card.Header} eventKey="1">
+                Zprávy <Badge variant="danger">24</Badge>
+              </Accordion.Toggle>
+              <Accordion.Collapse eventKey="1">
+                <Card.Body>
+                  <span>zpráva 1</span>
+                  <hr />
+                  <span>zpráva 2</span>
+                </Card.Body>
+              </Accordion.Collapse>
+            </Card>
+            <Card>
+              <Accordion.Toggle as={Card.Header} eventKey="2">
+                Události <Badge variant="danger">2</Badge>
+              </Accordion.Toggle>
+              <Accordion.Collapse eventKey="2">
+                <Card.Body>
+                  <span>Nový uživatel xyz</span>
+                  <hr />
+                  <span>Nový uživatel xyz123</span>
+                </Card.Body>
+              </Accordion.Collapse>
+            </Card>
+          </Accordion>
         </div>
       </div>
     </>

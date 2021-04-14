@@ -9,7 +9,7 @@ import Table from "react-bootstrap/Table";
 
 // TODO opakovaný admin post -> udělat to nějak lépe
 
-const Tools = ({ isMountedRef, storeState, dispatch }) => {
+const Tools = ({ isMountedRef, storeState, dispatch, currentUserData }) => {
   const handleUnBlockUser = (firebaseId, userId) => {
     firebaseService
       .deleteFromBlockedUser(firebaseId)
@@ -25,6 +25,8 @@ const Tools = ({ isMountedRef, storeState, dispatch }) => {
           case: "User UNBLOCKED",
           detail: {
             user: userId,
+            solverId: currentUserData.id,
+            solverName: currentUserData.username,
           },
         };
 

@@ -21,6 +21,8 @@ const History = ({ storeState }) => {
                 <th>Datum</th>
                 <th>Případ</th>
                 <th>Uživatel</th>
+                <th>Odkaz na příspěvek</th>
+                <th>Řešitel</th>
               </tr>
             </thead>
             <tbody>
@@ -34,6 +36,29 @@ const History = ({ storeState }) => {
                       <td>{noteValue.case}</td>
                       <td>
                         {noteValue && noteValue.detail && noteValue.detail.user}
+                      </td>
+                      <td>
+                        {noteValue &&
+                          noteValue.detail &&
+                          noteValue.detail.postUrl && (
+                            <a
+                              href={noteValue.detail.postUrl}
+                              target="_blank"
+                              style={{ color: "blue" }}
+                            >
+                              odkaz
+                            </a>
+                          )}
+                      </td>
+                      <td>
+                        {noteValue &&
+                          noteValue.detail &&
+                          noteValue.detail.solverId}{" "}
+                        (
+                        {noteValue &&
+                          noteValue.detail &&
+                          noteValue.detail.solverName}
+                        )
                       </td>
                     </tr>
                   ))}

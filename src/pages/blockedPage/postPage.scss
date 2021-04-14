@@ -1,0 +1,197 @@
+@import "../../styles/variables.scss";
+
+// TODO stejný jako postPage až na box-shadow: 1px 1px 5px 0px red;
+
+.post-page_main {
+  max-width: 800px;
+  margin: 76px auto 20px; // +56 navbar
+}
+
+.post-page-post {
+  padding: 20px;
+  margin: 0 5px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 1px 1px 5px 0px red;
+
+  .modal-header {
+    border-bottom: none;
+  }
+
+  @media screen and (max-width: 500px) {
+    padding: 10px;
+  }
+}
+
+.post-page_title {
+  font-size: 2rem;
+  line-height: 45px;
+
+  @media screen and (max-width: 500px) {
+    font-size: 1.5rem;
+    line-height: 30px;
+    margin-bottom: 10px;
+  }
+}
+
+.post-page_image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.post-page_images-container {
+  width: 100%;
+  min-height: 120px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+  border-top: 2px solid #e0e0e0;
+}
+
+.post-page_modal-images {
+  width: 100%;
+  height: 80vh;
+  object-fit: contain;
+}
+
+.post-page_modal-images-modal {
+  background-color: #333333;
+  min-height: 300px;
+
+  // bootstrap override
+  .close {
+    color: white;
+    opacity: 1;
+  }
+
+  .modal-header {
+    border-bottom: none;
+  }
+}
+
+.post-page_back-btn-icon {
+  transition: all 250ms;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url("/back.svg");
+  background-size: 20px;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-bottom: 15px;
+
+  &:hover {
+    // background-image: url("/back-active.svg");
+    background-color: $quaternary;
+  }
+}
+
+.post-page_icons-group {
+  display: flex;
+  align-items: center;
+  img {
+    margin: 0 5px 0 10px;
+  }
+}
+
+.post-page_text {
+  overflow: hidden;
+  white-space: pre-wrap;
+}
+
+.post-page_animated-background {
+  margin: 1px;
+  animation-duration: 1.25s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-name: placeHolderShimmer;
+  animation-timing-function: linear;
+  background: darkgray;
+  background: linear-gradient(135deg, #eeeeee 10%, #dddddd 18%, #eeeeee 33%);
+  background-size: 800px 104px;
+  min-height: 100px;
+  position: relative;
+}
+
+@keyframes placeHolderShimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+.loader {
+  position: relative;
+  overflow: hidden;
+  transform: rotate(0deg);
+}
+
+.loader::before {
+  content: "";
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  top: 45%;
+  left: 44%;
+  transform: translate(0, -50%);
+
+  z-index: -1;
+  background: url("/loading.svg");
+  background-repeat: no-repeat;
+  background-origin: border-box;
+
+  animation-duration: 1.25s;
+  animation-iteration-count: infinite;
+  animation-name: spinner;
+
+  @media screen and (max-width: 500px) {
+    left: 36%;
+  }
+}
+
+@keyframes spinner {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+// override bootstrap
+// .modal-header {
+//   padding: 1rem 1rem 0 !important;
+// }
+
+// .modal-dialog {
+//   @media screen and (max-width: 750px) {
+//     margin: 0;
+//     max-width: none;
+//   }
+// }
+// .modal-dialog-centered {
+//   @media screen and (max-width: 750px) {
+//     min-height: 100% !important;
+//     margin: auto !important;
+//   }
+// }
+// .modal-content {
+//   @media screen and (max-width: 750px) {
+//     min-height: 100vh !important;
+//     background-clip: unset !important;
+//     border-radius: 0;
+//   }
+// }
+// .modal-body {
+//   @media screen and (max-width: 750px) {
+//     padding: 0;
+//   }
+// }

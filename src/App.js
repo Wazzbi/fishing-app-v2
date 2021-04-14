@@ -15,6 +15,7 @@ import UserPage from "./pages/userPage/UserPage";
 import WeatherPage from "./pages/weatherPage/WeatherPage";
 import AboutPage from "./pages/aboutPage/AboutPage";
 import PostPage from "./pages/postPage/PostPage";
+import BlockedPage from "./pages/blockedPage/BlockedPage";
 import Store from "./store/Store";
 import ForgotPasswordPage from "./pages/forgotPasswordPage/ForgotPasswordPage";
 import TitleArticle from "./pages/onePage/TitleArticle";
@@ -47,6 +48,11 @@ const App = () => {
               <PrivateRoute exact path="/summary" component={SummaryPage} />
               <PrivateRoute exact path="/news" component={NewsPage} />
               <PrivateRoute exact path="/post/:id" component={PostPage} />
+              <PrivateRoute
+                exact
+                path="/blockedPost/:id"
+                component={BlockedPage}
+              />
               <PrivateRoute
                 exact
                 path="/titleArticle"

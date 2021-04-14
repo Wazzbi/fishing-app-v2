@@ -28,7 +28,10 @@ const ReportedPostsAccordion = ({ storeState, deletePost, banUser }) => {
         <Accordion.Toggle as={Card.Header} eventKey="0">
           Reportované příspěvky{" "}
           <Badge variant="danger">
-            {Object.keys(storeState.reportedPosts).length}
+            {(storeState &&
+              storeState.reportedPosts &&
+              Object.keys(storeState.reportedPosts).length) ||
+              0}
           </Badge>
         </Accordion.Toggle>
         <Accordion.Collapse eventKey="0">

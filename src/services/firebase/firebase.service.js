@@ -56,6 +56,10 @@ const adminNotesRef = appl.database().ref("adminNotes/");
 // *** BLACKLIST ***
 const blockedUsersRef = appl.database().ref("blockedUsers/");
 
+// *** BlockedPost API ***
+const blockedPostsRef = appl.database().ref(`blockedPosts/`);
+const blockedPostRef = (id) => appl.database().ref(`blockedPosts/${id}`);
+
 // TODO přejmenovat metody podle CRUD
 class firebaseService {
   // TODO toto může být jen export konstant...
@@ -107,6 +111,19 @@ class firebaseService {
   static getPost = async (id) => {
     try {
       const snapshot = await postRef(id).get();
+      if (snapshot.exists()) {
+        return snapshot.val();
+      } else {
+        console.log("No data available");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  static getBlockedPost = async (id) => {
+    try {
+      const snapshot = await blockedPostRef(id).get();
       if (snapshot.exists()) {
         return snapshot.val();
       } else {
@@ -365,6 +382,11 @@ class firebaseService {
   };
 
   static deletePost = (id) => {
+    this.getPost(id)
+      .then((post) => {
+        blockedPostsRef.child(id).set(post);
+      })
+      .catch((err) => console.log(err));
     return postRef(id).remove();
   };
 }

@@ -56,6 +56,7 @@ const AdminPage = ({ history }) => {
             isMountedRef={isMountedRef}
             storeState={storeState}
             dispatch={dispatch}
+            currentUserData={currentUserData}
           />
 
           <Visits />
