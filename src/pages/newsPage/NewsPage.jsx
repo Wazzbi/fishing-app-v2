@@ -50,7 +50,6 @@ const NewsPage = ({ history }) => {
   const handleReport = (reportCategory, reportText) => {
     // TODO ulož meta data o reportu do postu
     // TODO ulož meta data o reportu do dat nahlašovatele aby měl disabled alert na tento post (nebo ho odstranit z obrazovky)
-    // TODO udělat showError všude jako tady
     if (currentUserData && currentUserData.blockedUser) {
       return setShowError(true);
     }
@@ -342,7 +341,7 @@ const NewsPage = ({ history }) => {
     history.push(`/post/${postKey}`);
   };
 
-  const handleError = (errorMessage) => {
+  const handleError = () => {
     setShowError(true);
   };
 
@@ -387,35 +386,37 @@ const NewsPage = ({ history }) => {
         )}
       </div>
 
-      <div className="news-page_to-top-btn" title="go to top">
-        <HashLink smooth to="news#toTopTarget">
+      <HashLink smooth to="news#toTopTarget">
+        <div className="news-page_to-top-btn" title="go to top">
           <img src="/toTop.svg" alt="" width="30px" height="30px"></img>
-        </HashLink>
-      </div>
+        </div>
+      </HashLink>
 
-      <Button
-        variant="primary"
-        className="news-page_float-btn"
-        onClick={handleShow}
-        disabled={!uploadPostDone}
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        {uploadPostDone ? (
-          <img src="/plus.svg" alt="" width="30px" height="30px"></img>
-        ) : (
-          <Spinner
-            as="span"
-            animation="border"
-            role="status"
-            aria-hidden="true"
-            style={{ width: "30px", height: "30px" }}
-          />
-        )}
-      </Button>
+      {currentUserData && !currentUserData.blockedUser && (
+        <Button
+          variant="primary"
+          className="news-page_float-btn"
+          onClick={handleShow}
+          disabled={!uploadPostDone}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {uploadPostDone ? (
+            <img src="/plus.svg" alt="" width="30px" height="30px"></img>
+          ) : (
+            <Spinner
+              as="span"
+              animation="border"
+              role="status"
+              aria-hidden="true"
+              style={{ width: "30px", height: "30px" }}
+            />
+          )}
+        </Button>
+      )}
 
       <AddPost
         show={show}

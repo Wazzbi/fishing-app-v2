@@ -77,7 +77,10 @@ const UserPage = ({ history }) => {
             <span className="userPage-row-title">Stav účtu:</span>
             <span className="userPage-row-value">
               {currentUserData && currentUserData.blockedUser ? (
-                <span style={{ color: "red" }}>Uživatel je zablokovaný</span>
+                <span style={{ color: "red" }}>
+                  Uživatel je zablokovaný. Nená oprávnění dělat příspěvky a
+                  reportovat. Pro více informací kontaktujte podporu.
+                </span>
               ) : (
                 <span>Účet je v cajku ;-)</span>
               )}

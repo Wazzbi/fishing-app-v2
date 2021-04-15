@@ -35,6 +35,10 @@ const AddPost = ({
   const handleSubmit = (event) => {
     if (isMountedRef.current) {
       handleClose();
+
+      if (currentUserData && currentUserData.blockedUser) {
+        return handleError();
+      }
       handleSetInputImageFieldCounter(1);
       handleSetUploadPostDone(false);
       event.preventDefault();
@@ -95,16 +99,12 @@ const AddPost = ({
             })
             .catch((err) => {
               handleSetUploadPostDone(true);
-              handleError(
-                "Uživatel nemá povolen zápis. Kontaktujte podporu aplikace RYBKA"
-              );
+              handleError();
             });
         })
         .catch((err) => {
           handleSetUploadPostDone(true);
-          handleError(
-            "Uživatel nemá povolen zápis. Kontaktujte podporu aplikace RYBKA"
-          );
+          handleError();
         });
     }
   };
