@@ -1,4 +1,10 @@
-import React, { useEffect, useContext, useRef, useCallback } from "react";
+import React, {
+  useEffect,
+  useContext,
+  useRef,
+  useCallback,
+  useState,
+} from "react";
 import { AuthContext } from "../../Auth";
 import { StoreContext } from "../../store/Store";
 import "./adminPage.scss";
@@ -20,12 +26,19 @@ import firebaseService from "../../services/firebase/firebase.service";
 const AdminPage = ({ history }) => {
   const [storeState, dispatch] = useContext(StoreContext);
   const { currentUserData } = useContext(AuthContext);
+  const [searchUser, setSearchUser] = useState(null);
+
   const isMountedRef = useRef(true);
   const splitFullName =
     currentUserData &&
     currentUserData.username &&
     currentUserData.username.split(" ");
   const firstName = splitFullName && splitFullName[0];
+
+  const convertToDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+  };
 
   const getReportedPosts = useCallback(() => {
     let ww = {};
@@ -97,6 +110,19 @@ const AdminPage = ({ history }) => {
     });
   };
 
+  const getUser = (event) => {
+    event.preventDefault();
+    const { userId } = event.target.elements;
+    firebaseService.getUser(userId.value).once("value", (snapshot) => {
+      const users =
+        snapshot &&
+        snapshot.val() &&
+        Object.entries(snapshot.val()).map(([key, value]) => value);
+      const user = users && users[0];
+      setSearchUser(user);
+    });
+  };
+
   useEffect(() => {
     getReportedPosts();
 
@@ -129,6 +155,7 @@ const AdminPage = ({ history }) => {
             storeState={storeState}
             dispatch={dispatch}
             currentUserData={currentUserData}
+            convertToDate={convertToDate}
           />
 
           <Tools
@@ -136,6 +163,9 @@ const AdminPage = ({ history }) => {
             storeState={storeState}
             dispatch={dispatch}
             currentUserData={currentUserData}
+            getUser={getUser}
+            searchUser={searchUser}
+            convertToDate={convertToDate}
           />
 
           <Visits />

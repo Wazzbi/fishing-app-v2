@@ -10,15 +10,11 @@ const ReportedPostsAccordion = ({
   deletePost,
   banUser,
   freePost,
+  convertToDate,
 }) => {
   function onlyUniqueCategories(report, index, self) {
     return self.indexOf(report) === index;
   }
-
-  const convertToDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString();
-  };
 
   // http://localhost:3000
   const base_url = window.location.origin;

@@ -18,6 +18,7 @@ const Overview = ({
   storeState,
   dispatch,
   currentUserData,
+  convertToDate,
 }) => {
   const freePost = (post) => {
     console.log(post);
@@ -134,10 +135,11 @@ const Overview = ({
       let _users = Object.entries(snapshot.val()).map(([key, value]) => value);
       // přidat do objektu zabanvané osoby i post kvůli kterému dostal ban
       _users[0].postUrl = `${base_url}/#/blockedPost/${postId}`;
+      _users[0].blockedUser = true;
 
       const firebaseId = _users && _users[0] && _users[0].firebaseId;
       if (!!firebaseId) {
-        firebaseService.setBlockedUser(firebaseId, _users[0]).then(() => {
+        firebaseService.setUserData(firebaseId, _users[0]).then(() => {
           deletePost(postId, user);
           dispatch({
             type: "ADD_BLOCKED_USER",

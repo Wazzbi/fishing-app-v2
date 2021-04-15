@@ -53,9 +53,6 @@ const postImageRef = (name, size, type) =>
 // *** ADMIN notes***
 const adminNotesRef = appl.database().ref("adminNotes/");
 
-// *** BLACKLIST ***
-const blockedUsersRef = appl.database().ref("blockedUsers/");
-
 // *** BlockedPost API ***
 const blockedPostsRef = appl.database().ref(`blockedPosts/`);
 const blockedPostRef = (id) => appl.database().ref(`blockedPosts/${id}`);
@@ -136,7 +133,10 @@ class firebaseService {
 
   static getBlockedUsers = async () => {
     try {
-      const snapshot = await blockedUsersRef.get();
+      const snapshot = await usersRef
+        .orderByChild("blockedUser")
+        .equalTo(true)
+        .get();
       if (snapshot.exists()) {
         return snapshot.val();
       } else {
@@ -148,11 +148,7 @@ class firebaseService {
   };
 
   static getUser = (id) => {
-    return usersRef.orderByChild("id").equalTo(id);
-  };
-
-  static getBlockedUser = (firebaseId) => {
-    return blockedUsersRef.orderByChild("firebaseId").equalTo(firebaseId);
+    return usersRef.orderByChild("id").equalTo(+id);
   };
 
   static checkUserExists = (username) => {
@@ -392,14 +388,7 @@ class firebaseService {
     });
   };
 
-  static setBlockedUser = (firebaseId, userObject) => {
-    return blockedUsersRef.child(firebaseId).set(userObject);
-  };
-
   // *** DELETE ***
-  static deleteFromBlockedUser = (firebaseId) => {
-    return blockedUsersRef.child(firebaseId).remove();
-  };
 
   static deleteUserRecord = (userUid, recordUid) => {
     return recordRef(userUid, recordUid).remove();

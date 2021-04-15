@@ -6,13 +6,23 @@ import Card from "react-bootstrap/Card";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
+import Form from "react-bootstrap/Form";
+import Col from "react-bootstrap/Col";
 
 // TODO opakovaný admin post -> udělat to nějak lépe
 
-const Tools = ({ isMountedRef, storeState, dispatch, currentUserData }) => {
+const Tools = ({
+  isMountedRef,
+  storeState,
+  dispatch,
+  currentUserData,
+  getUser,
+  searchUser,
+  convertToDate,
+}) => {
   const handleUnBlockUser = (firebaseId, user) => {
     firebaseService
-      .deleteFromBlockedUser(firebaseId)
+      .setUserData(firebaseId, { ...user, blockedUser: false })
       .then(() => {
         return dispatch({
           type: "REMOVE_BLOCKED_USER",
@@ -129,22 +139,164 @@ const Tools = ({ isMountedRef, storeState, dispatch, currentUserData }) => {
                 Najít uživatele
               </Accordion.Toggle>
               <Accordion.Collapse eventKey="1">
-                <Card.Body>Hello! I'm another body</Card.Body>
+                <Card.Body>
+                  <Form onSubmit={(e) => getUser(e)}>
+                    <Form.Row>
+                      <Form.Group as={Col} controlId="formUserId">
+                        <Form.Label>Uživatel (ID)</Form.Label>
+                        <Form.Control type="number" name="userId" />
+                      </Form.Group>
+                      <Form.Group as={Col} controlId="formBasicCheckbox">
+                        <Button
+                          variant="success"
+                          type="submit"
+                          style={{
+                            position: "absolute",
+                            bottom: "0",
+                          }}
+                        >
+                          Najít
+                        </Button>
+                      </Form.Group>
+                    </Form.Row>
+                  </Form>
+
+                  {searchUser && (
+                    <>
+                      <hr />
+                      <div style={{ display: "flex" }}>
+                        <div style={{ flex: "1", paddingRight: "20px" }}>
+                          <table>
+                            <tbody>
+                              <tr>
+                                <td className="admin-page_search-user-key">
+                                  Uživatelské jméno:
+                                </td>
+                                <td>{searchUser.username}</td>
+                              </tr>
+                              <tr>
+                                <td className="admin-page_search-user-key">
+                                  ID:
+                                </td>
+                                <td>{searchUser.id}</td>
+                              </tr>
+                              <tr>
+                                <td className="admin-page_search-user-key">
+                                  Firebase ID:
+                                </td>
+                                <td>{searchUser.firebaseId}</td>
+                              </tr>
+                              <tr>
+                                <td className="admin-page_search-user-key">
+                                  Email:
+                                </td>
+                                <td>{searchUser.email}</td>
+                              </tr>
+                              <tr>
+                                <td className="admin-page_search-user-key">
+                                  Role:
+                                </td>
+                                <td>{searchUser.role}</td>
+                              </tr>
+                              <tr>
+                                <td className="admin-page_search-user-key">
+                                  Status uživatele:
+                                </td>
+                                <td>
+                                  {searchUser.blockedUser ? (
+                                    <span style={{ color: "red" }}>
+                                      Zablokovaný
+                                    </span>
+                                  ) : (
+                                    <span style={{ color: "#00cc00" }}>
+                                      V pořádku
+                                    </span>
+                                  )}
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+
+                          <hr />
+                          <div>
+                            {/** TODO musí znovu provolat i načtení daného uživatele aby se změnil status, role... */}
+                            <Button variant="success" size="sm">
+                              Změnit roly
+                            </Button>{" "}
+                            <Button variant="danger" size="sm">
+                              Zablokovat
+                            </Button>{" "}
+                            <Button variant="secondary" size="sm">
+                              Poslat zprávu
+                            </Button>
+                          </div>
+                        </div>
+                        <div style={{ flex: "1" }}>
+                          <Accordion>
+                            <Card>
+                              <Accordion.Toggle as={Card.Header} eventKey="0">
+                                Reportoval (
+                                {(searchUser &&
+                                  searchUser.reportsCreated &&
+                                  searchUser.reportsCreated.length) ||
+                                  0}
+                                )
+                              </Accordion.Toggle>
+                              <Accordion.Collapse eventKey="0">
+                                <Card.Body>
+                                  <div
+                                    style={{
+                                      height: "150px",
+                                      overflow: "auto",
+                                    }}
+                                  >
+                                    {searchUser &&
+                                      searchUser.reportsCreated &&
+                                      searchUser.reportsCreated.map(
+                                        (report) => (
+                                          <div
+                                            style={{
+                                              marginBottom: "5px",
+                                            }}
+                                          >
+                                            {convertToDate(
+                                              report.reportCreated
+                                            )}{" "}
+                                            :{" "}
+                                            <a
+                                              href="#"
+                                              style={{ color: "blue" }}
+                                            >
+                                              {report.reportedPost}
+                                            </a>
+                                          </div>
+                                        )
+                                      )}
+                                  </div>
+                                </Card.Body>
+                              </Accordion.Collapse>
+                            </Card>
+                            <Card>
+                              <Accordion.Toggle as={Card.Header} eventKey="1">
+                                Příspěvky
+                              </Accordion.Toggle>
+                              <Accordion.Collapse eventKey="1">
+                                <Card.Body>Hello! I'm another body</Card.Body>
+                              </Accordion.Collapse>
+                            </Card>
+                          </Accordion>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </Card.Body>
               </Accordion.Collapse>
             </Card>
             <Card>
               <Accordion.Toggle as={Card.Header} eventKey="2">
-                Změnit roly uživatele
-              </Accordion.Toggle>
-              <Accordion.Collapse eventKey="2">
-                <Card.Body>Hello! I'm another body</Card.Body>
-              </Accordion.Collapse>
-            </Card>
-            <Card>
-              <Accordion.Toggle as={Card.Header} eventKey="3">
                 Blokované příspěvky
               </Accordion.Toggle>
-              <Accordion.Collapse eventKey="3">
+              <Accordion.Collapse eventKey="2">
                 <Card.Body>Hello! I'm another body</Card.Body>
               </Accordion.Collapse>
             </Card>
