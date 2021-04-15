@@ -168,7 +168,35 @@ class firebaseService {
   };
 
   static getAdminNotes = () => {
-    return adminNotesRef.orderByChild("noteId").limitToLast(50);
+    return adminNotesRef.orderByChild("noteId").limitToLast(100);
+  };
+
+  static getAdminNotesFiltered = (criterium, value) => {
+    switch (criterium) {
+      case "date":
+        let startOfTheDay = `${value}000000`;
+        let endOfTheDay = (+startOfTheDay + 86399999).toString();
+        return adminNotesRef
+          .orderByChild("noteId")
+          .startAt(`${value}000000`)
+          .endAt(endOfTheDay);
+        break;
+      case "case":
+        return adminNotesRef
+          .orderByChild("case")
+          .equalTo(value)
+          .limitToLast(100);
+        break;
+      case "userId":
+        return adminNotesRef.orderByChild("detail/userId").equalTo(+value);
+        break;
+      case "solverId":
+        return adminNotesRef.orderByChild("detail/solverId").equalTo(+value);
+        break;
+
+      default:
+        break;
+    }
   };
 
   static getPostsLimited = (timeStamp) => {

@@ -23,7 +23,7 @@ const Tools = ({ isMountedRef, storeState, dispatch, currentUserData }) => {
         const base_url = window.location.origin;
 
         const adminNote = {
-          noteId: Date.now(),
+          noteId: Date.now().toString(),
           case: "User UNBLOCKED",
           detail: {
             username: user.username,

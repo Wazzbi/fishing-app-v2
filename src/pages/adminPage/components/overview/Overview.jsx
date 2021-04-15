@@ -43,7 +43,7 @@ const Overview = ({
     const base_url = window.location.origin;
 
     const adminNote = {
-      noteId: Date.now(),
+      noteId: Date.now().toString(),
       case: "Reported Post FREE",
       detail: {
         username: post.username,
@@ -83,7 +83,7 @@ const Overview = ({
       const base_url = window.location.origin;
 
       const adminNote = {
-        noteId: Date.now(),
+        noteId: Date.now().toString(),
         case: "Reported Post BLOCKED",
         detail: {
           username: user.username,
@@ -145,7 +145,7 @@ const Overview = ({
           });
 
           const adminNote = {
-            noteId: Date.now(),
+            noteId: Date.now().toString(),
             case: "User BLOCKED",
             detail: {
               username: user.username,
@@ -169,62 +169,6 @@ const Overview = ({
       }
     });
   };
-
-  const getReportedPosts = useCallback(() => {
-    let ww = {};
-    firebaseService.getReportedPosts().once("value", (snapshot) => {
-      if (isMountedRef.current) {
-        snapshot.forEach((childSnapshot) => {
-          ww = { ...ww, [childSnapshot.key]: childSnapshot.val() };
-
-          // přidej titulní obrázek do objektu
-          Object.entries(ww).map(([postKey, postValue]) => {
-            if (postValue.images) {
-              firebaseService
-                .getImageUrl(
-                  postValue.images[0].imageName,
-                  400,
-                  postValue.images[0].imageType
-                )
-                .then((imageUrl) => {
-                  postValue.titleImage = imageUrl;
-
-                  return dispatch({
-                    type: "ADD_REPORTED_POSTS",
-                    payload: { ...storeState.reportedPosts, ...ww },
-                  });
-                });
-            }
-          });
-
-          return dispatch({
-            type: "ADD_REPORTED_POSTS",
-            payload: { ...storeState.reportedPosts, ...ww },
-          });
-        });
-      }
-    });
-  }, [dispatch, storeState.posts]);
-
-  useEffect(() => {
-    getReportedPosts();
-
-    if (!storeState.adminNotes) {
-      let ww = {};
-      firebaseService.getAdminNotes().once("value", (snapshot) => {
-        if (isMountedRef.current) {
-          snapshot.forEach((childSnapshot) => {
-            ww = { ...ww, [childSnapshot.key]: childSnapshot.val() };
-          });
-
-          return dispatch({
-            type: "ADD_ADMIN_NOTES",
-            payload: { ...ww },
-          });
-        }
-      });
-    }
-  }, []);
 
   return (
     <>

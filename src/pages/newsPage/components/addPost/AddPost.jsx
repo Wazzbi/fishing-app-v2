@@ -36,6 +36,7 @@ const AddPost = ({
     if (isMountedRef.current) {
       handleClose();
 
+      // toto je jen backup - tlačítko na přidání příspěvku je skované pokud TRUE
       if (currentUserData && currentUserData.blockedUser) {
         return handleError();
       }
