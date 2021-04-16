@@ -7,7 +7,7 @@ import Button from "react-bootstrap/Button";
 
 const ReportedPostsAccordion = ({
   storeState,
-  deletePost,
+  blockPost,
   banUser,
   freePost,
   convertToDate,
@@ -29,14 +29,22 @@ const ReportedPostsAccordion = ({
         <Accordion.Toggle as={Card.Header} eventKey="0">
           <div
             style={{
-              width: "120px",
+              width: "220px",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
             }}
           >
-            <span>Reporty</span>
-            <Badge variant="danger">
+            <span>Reporty - příspěvky</span>
+            <Badge
+              variant={
+                storeState &&
+                storeState.reportedPosts &&
+                !!Object.keys(storeState.reportedPosts).length
+                  ? "danger"
+                  : "secondary"
+              }
+            >
               {(storeState &&
                 storeState.reportedPosts &&
                 Object.keys(storeState.reportedPosts).length) ||
@@ -152,7 +160,7 @@ const ReportedPostsAccordion = ({
                             <Button
                               variant="danger"
                               size="sm"
-                              onClick={() => deletePost(rKey, rValue)}
+                              onClick={() => blockPost(rKey, rValue)}
                             >
                               Blokovat příspěvek
                             </Button>{" "}

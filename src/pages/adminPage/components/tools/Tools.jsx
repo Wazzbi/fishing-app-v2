@@ -23,6 +23,20 @@ const Tools = ({
   handleUnBlockUser,
   changeSearchUserProp,
 }) => {
+  // TODO toto do util service
+  const capitalize = (s) => {
+    if (typeof s !== "string") return "";
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  };
+
+  const blockReasons = {
+    repeatTroube: "Opakovaná porušování pravidel",
+    offender: "Napadání ostatních uživatelů",
+    repeatFalseReport: "Opakované nahlašování OK příspěvků",
+  };
+
+  const roles = ["user", "moderator", "partner", "admin"];
+
   useEffect(() => {
     if (!storeState.blockedUsers) {
       firebaseService.getBlockedUsers().then((blockedUsers) => {
@@ -60,7 +74,7 @@ const Tools = ({
                         <th>ID</th>
                         <th>Uživatelské jméno</th>
                         <th>Email</th>
-                        <th>Akce pozn.</th>
+                        <th>Příspěvek</th>
                         <th>Akce</th>
                       </tr>
                     </thead>
@@ -74,16 +88,14 @@ const Tools = ({
                               <td>{value.username}</td>
                               <td>{value.email}</td>
                               <td>
-                                {value.postUrl ? (
+                                {value.postUrl && (
                                   <a
                                     href={value.postUrl}
                                     style={{ color: "blue" }}
                                     target="_blank"
                                   >
-                                    Odkaz na příspěvek
+                                    Odkaz
                                   </a>
-                                ) : (
-                                  <span>Zablokován z Admin tools</span>
                                 )}
                               </td>
                               <td>
@@ -110,6 +122,14 @@ const Tools = ({
                 Blokované příspěvky
               </Accordion.Toggle>
               <Accordion.Collapse eventKey="2">
+                <Card.Body>Hello! I'm another body</Card.Body>
+              </Accordion.Collapse>
+            </Card>
+            <Card>
+              <Accordion.Toggle as={Card.Header} eventKey="3">
+                Blokované komentáře
+              </Accordion.Toggle>
+              <Accordion.Collapse eventKey="3">
                 <Card.Body>Hello! I'm another body</Card.Body>
               </Accordion.Collapse>
             </Card>
@@ -209,47 +229,46 @@ const Tools = ({
                               </Dropdown.Toggle>
 
                               <Dropdown.Menu>
-                                <Dropdown.Item
-                                  onClick={() =>
-                                    changeSearchUserProp("role", "user")
-                                  }
-                                >
-                                  User
-                                </Dropdown.Item>
-                                <Dropdown.Item
-                                  onClick={() =>
-                                    changeSearchUserProp("role", "moderator")
-                                  }
-                                >
-                                  Moderator
-                                </Dropdown.Item>
-                                <Dropdown.Item
-                                  onClick={() =>
-                                    changeSearchUserProp("role", "partner")
-                                  }
-                                >
-                                  Partner
-                                </Dropdown.Item>
-                                <Dropdown.Item
-                                  onClick={() =>
-                                    changeSearchUserProp("role", "admin")
-                                  }
-                                >
-                                  Admin
-                                </Dropdown.Item>
+                                {roles.map((role) => (
+                                  <Dropdown.Item
+                                    onClick={() =>
+                                      changeSearchUserProp("role", role)
+                                    }
+                                  >
+                                    {capitalize(role)}
+                                  </Dropdown.Item>
+                                ))}
                               </Dropdown.Menu>
                             </Dropdown>
-                            <Button
-                              style={{ marginRight: "5px" }}
-                              variant="danger"
-                              size="sm"
-                              onClick={() =>
-                                changeSearchUserProp("blockedUser", true)
-                              }
-                              disabled={searchUser.blockedUser}
-                            >
-                              Zablokovat
-                            </Button>
+                            <Dropdown style={{ marginRight: "5px" }}>
+                              <Dropdown.Toggle
+                                variant="danger"
+                                id="dropdown-basic"
+                                size="sm"
+                                disabled={searchUser.blockedUser}
+                              >
+                                Zablokovat
+                              </Dropdown.Toggle>
+
+                              <Dropdown.Menu>
+                                {Object.entries(blockReasons).map(
+                                  ([reasonKey, reasonValue]) => (
+                                    <Dropdown.Item
+                                      onClick={() =>
+                                        changeSearchUserProp(
+                                          "blockedUser",
+                                          true,
+                                          reasonValue
+                                        )
+                                      }
+                                    >
+                                      {reasonValue}
+                                    </Dropdown.Item>
+                                  )
+                                )}
+                              </Dropdown.Menu>
+                            </Dropdown>
+
                             <Button
                               style={{ marginRight: "5px" }}
                               variant="secondary"
@@ -274,7 +293,7 @@ const Tools = ({
                                 <Card.Body>
                                   <div
                                     style={{
-                                      height: "150px",
+                                      maxHeight: "150px",
                                       overflow: "auto",
                                     }}
                                   >
@@ -309,6 +328,14 @@ const Tools = ({
                                 Příspěvky
                               </Accordion.Toggle>
                               <Accordion.Collapse eventKey="1">
+                                <Card.Body>Hello! I'm another body</Card.Body>
+                              </Accordion.Collapse>
+                            </Card>
+                            <Card>
+                              <Accordion.Toggle as={Card.Header} eventKey="2">
+                                Komentáře
+                              </Accordion.Toggle>
+                              <Accordion.Collapse eventKey="2">
                                 <Card.Body>Hello! I'm another body</Card.Body>
                               </Accordion.Collapse>
                             </Card>

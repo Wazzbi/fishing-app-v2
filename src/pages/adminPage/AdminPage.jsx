@@ -176,7 +176,7 @@ const AdminPage = ({ history }) => {
    * propName = "blockedUser" || "role"
    * newValue = boolean || string
    */
-  const changeSearchUserProp = (propName, newValue) => {
+  const changeSearchUserProp = (propName, newValue, note = null) => {
     // změn prop uživatele
     firebaseService
       .setUserData(searchUser.firebaseId, {
@@ -251,7 +251,7 @@ const AdminPage = ({ history }) => {
                       username: searchUser.username,
                       userId: searchUser.id,
                       // postUrl: user.postUrl, NENÍ PŘÍSPĚVĚK JAKO PODMĚT ZABLOKOVÁNÍ
-                      solverNote: "Blocked thru admin tools",
+                      solverNote: note,
                       solverId: currentUserData.id,
                       solverName: currentUserData.username,
                     },

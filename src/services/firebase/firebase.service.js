@@ -402,7 +402,7 @@ class firebaseService {
     return summaryRef(userUid, summaryUid).remove();
   };
 
-  static deletePost = (id) => {
+  static blockPost = (id) => {
     this.getPost(id)
       .then((post) => {
         blockedPostsRef.child(id).set(post);

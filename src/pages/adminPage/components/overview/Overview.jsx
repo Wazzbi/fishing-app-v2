@@ -66,8 +66,8 @@ const Overview = ({
       .catch((err) => console.error(err));
   };
 
-  const deletePost = (id, user) => {
-    firebaseService.deletePost(id).then(() => {
+  const blockPost = (id, user) => {
+    firebaseService.blockPost(id).then(() => {
       const filterReportedPosts =
         storeState &&
         storeState.reportedPosts &&
@@ -90,6 +90,7 @@ const Overview = ({
           username: user.username,
           userId: user.userId,
           postUrl: `${base_url}/#/blockedPost/${id}`,
+          solverNote: "Nevhodný příspěvek",
           solverId: currentUserData.id,
           solverName: currentUserData.username,
         },
@@ -140,7 +141,7 @@ const Overview = ({
       const firebaseId = _users && _users[0] && _users[0].firebaseId;
       if (!!firebaseId) {
         firebaseService.setUserData(firebaseId, _users[0]).then(() => {
-          deletePost(postId, user);
+          blockPost(postId, user);
           dispatch({
             type: "ADD_BLOCKED_USER",
             payload: _users[0],
@@ -153,6 +154,7 @@ const Overview = ({
               username: user.username,
               userId: user.userId,
               postUrl: `${base_url}/#/blockedPost/${postId}`,
+              solverNote: "Nevhodný příspěvek",
               solverId: currentUserData.id,
               solverName: currentUserData.username,
             },
@@ -185,15 +187,38 @@ const Overview = ({
           <Accordion>
             <ReportedPostsAccordion
               storeState={storeState}
-              deletePost={deletePost}
+              blockPost={blockPost}
               banUser={banUser}
               freePost={freePost}
+              convertToDate={convertToDate}
             />
+            <Card>
+              <Accordion.Toggle as={Card.Header} eventKey="4">
+                <div
+                  style={{
+                    width: "220px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <span>Reporty - komentáře</span>{" "}
+                  <Badge variant="danger">99</Badge>
+                </div>
+              </Accordion.Toggle>
+              <Accordion.Collapse eventKey="4">
+                <Card.Body>
+                  <span>zpráva 1</span>
+                  <hr />
+                  <span>zpráva 2</span>
+                </Card.Body>
+              </Accordion.Collapse>
+            </Card>
             <Card>
               <Accordion.Toggle as={Card.Header} eventKey="1">
                 <div
                   style={{
-                    width: "120px",
+                    width: "220px",
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
@@ -214,7 +239,7 @@ const Overview = ({
               <Accordion.Toggle as={Card.Header} eventKey="2">
                 <div
                   style={{
-                    width: "120px",
+                    width: "220px",
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
