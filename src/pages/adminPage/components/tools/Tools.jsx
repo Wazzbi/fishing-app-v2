@@ -8,6 +8,7 @@ import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
+import Dropdown from "react-bootstrap/Dropdown";
 
 // TODO opakovaný admin post -> udělat to nějak lépe
 
@@ -19,43 +20,9 @@ const Tools = ({
   getUser,
   searchUser,
   convertToDate,
+  handleUnBlockUser,
+  changeSearchUserProp,
 }) => {
-  const handleUnBlockUser = (firebaseId, user) => {
-    firebaseService
-      .setUserData(firebaseId, { ...user, blockedUser: false })
-      .then(() => {
-        return dispatch({
-          type: "REMOVE_BLOCKED_USER",
-          payload: firebaseId,
-        });
-      })
-      .then(() => {
-        const base_url = window.location.origin;
-
-        const adminNote = {
-          noteId: Date.now().toString(),
-          case: "User UNBLOCKED",
-          detail: {
-            username: user.username,
-            userId: user.id,
-            postUrl: user.postUrl,
-            solverId: currentUserData.id,
-            solverName: currentUserData.username,
-          },
-        };
-
-        firebaseService
-          .createAdminNote(adminNote)
-          .then(() => {
-            dispatch({
-              type: "ADD_ADMIN_NOTE",
-              payload: adminNote,
-            });
-          })
-          .catch((err) => console.error);
-      })
-      .catch((err) => console.log(err));
-  };
   useEffect(() => {
     if (!storeState.blockedUsers) {
       firebaseService.getBlockedUsers().then((blockedUsers) => {
@@ -78,7 +45,7 @@ const Tools = ({
           <Accordion>
             <Card>
               <Accordion.Toggle as={Card.Header} eventKey="0">
-                Zablokovaný uživatelé (
+                Blokovaný uživatelé (
                 {(storeState &&
                   storeState.blockedUsers &&
                   Object.keys(storeState.blockedUsers).length) ||
@@ -93,7 +60,7 @@ const Tools = ({
                         <th>ID</th>
                         <th>Uživatelské jméno</th>
                         <th>Email</th>
-                        <th>Odkaz na příspěvek</th>
+                        <th>Akce pozn.</th>
                         <th>Akce</th>
                       </tr>
                     </thead>
@@ -107,13 +74,17 @@ const Tools = ({
                               <td>{value.username}</td>
                               <td>{value.email}</td>
                               <td>
-                                <a
-                                  href={value.postUrl}
-                                  style={{ color: "blue" }}
-                                  target="_blank"
-                                >
-                                  odkaz
-                                </a>
+                                {value.postUrl ? (
+                                  <a
+                                    href={value.postUrl}
+                                    style={{ color: "blue" }}
+                                    target="_blank"
+                                  >
+                                    Odkaz na příspěvek
+                                  </a>
+                                ) : (
+                                  <span>Zablokován z Admin tools</span>
+                                )}
                               </td>
                               <td>
                                 <Button
@@ -132,6 +103,14 @@ const Tools = ({
                     </tbody>
                   </Table>
                 </Card.Body>
+              </Accordion.Collapse>
+            </Card>
+            <Card>
+              <Accordion.Toggle as={Card.Header} eventKey="2">
+                Blokované příspěvky
+              </Accordion.Toggle>
+              <Accordion.Collapse eventKey="2">
+                <Card.Body>Hello! I'm another body</Card.Body>
               </Accordion.Collapse>
             </Card>
             <Card>
@@ -218,15 +197,64 @@ const Tools = ({
                           </table>
 
                           <hr />
-                          <div>
+                          <div style={{ display: "flex" }}>
                             {/** TODO musí znovu provolat i načtení daného uživatele aby se změnil status, role... */}
-                            <Button variant="success" size="sm">
-                              Změnit roly
-                            </Button>{" "}
-                            <Button variant="danger" size="sm">
+                            <Dropdown style={{ marginRight: "5px" }}>
+                              <Dropdown.Toggle
+                                variant="success"
+                                id="dropdown-basic"
+                                size="sm"
+                              >
+                                Změnit roly
+                              </Dropdown.Toggle>
+
+                              <Dropdown.Menu>
+                                <Dropdown.Item
+                                  onClick={() =>
+                                    changeSearchUserProp("role", "user")
+                                  }
+                                >
+                                  User
+                                </Dropdown.Item>
+                                <Dropdown.Item
+                                  onClick={() =>
+                                    changeSearchUserProp("role", "moderator")
+                                  }
+                                >
+                                  Moderator
+                                </Dropdown.Item>
+                                <Dropdown.Item
+                                  onClick={() =>
+                                    changeSearchUserProp("role", "partner")
+                                  }
+                                >
+                                  Partner
+                                </Dropdown.Item>
+                                <Dropdown.Item
+                                  onClick={() =>
+                                    changeSearchUserProp("role", "admin")
+                                  }
+                                >
+                                  Admin
+                                </Dropdown.Item>
+                              </Dropdown.Menu>
+                            </Dropdown>
+                            <Button
+                              style={{ marginRight: "5px" }}
+                              variant="danger"
+                              size="sm"
+                              onClick={() =>
+                                changeSearchUserProp("blockedUser", true)
+                              }
+                              disabled={searchUser.blockedUser}
+                            >
                               Zablokovat
-                            </Button>{" "}
-                            <Button variant="secondary" size="sm">
+                            </Button>
+                            <Button
+                              style={{ marginRight: "5px" }}
+                              variant="secondary"
+                              size="sm"
+                            >
                               Poslat zprávu
                             </Button>
                           </div>
@@ -252,8 +280,9 @@ const Tools = ({
                                   >
                                     {searchUser &&
                                       searchUser.reportsCreated &&
-                                      searchUser.reportsCreated.map(
-                                        (report) => (
+                                      searchUser.reportsCreated
+                                        .reverse()
+                                        .map((report) => (
                                           <div
                                             style={{
                                               marginBottom: "5px",
@@ -270,8 +299,7 @@ const Tools = ({
                                               {report.reportedPost}
                                             </a>
                                           </div>
-                                        )
-                                      )}
+                                        ))}
                                   </div>
                                 </Card.Body>
                               </Accordion.Collapse>
@@ -290,14 +318,6 @@ const Tools = ({
                     </>
                   )}
                 </Card.Body>
-              </Accordion.Collapse>
-            </Card>
-            <Card>
-              <Accordion.Toggle as={Card.Header} eventKey="2">
-                Blokované příspěvky
-              </Accordion.Toggle>
-              <Accordion.Collapse eventKey="2">
-                <Card.Body>Hello! I'm another body</Card.Body>
               </Accordion.Collapse>
             </Card>
           </Accordion>

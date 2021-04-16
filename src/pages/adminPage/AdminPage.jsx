@@ -123,6 +123,158 @@ const AdminPage = ({ history }) => {
     });
   };
 
+  const handleUnBlockUser = (firebaseId, user) => {
+    firebaseService
+      .setUserData(firebaseId, { ...user, blockedUser: false })
+      .then(() => {
+        return dispatch({
+          type: "REMOVE_BLOCKED_USER",
+          payload: firebaseId,
+        });
+      })
+      .then(() => {
+        const adminNote = {
+          noteId: Date.now().toString(),
+          case: "User UNBLOCKED",
+          detail: {
+            username: user.username,
+            userId: user.id,
+            postUrl: user.postUrl ? user.postUrl : null,
+            solverId: currentUserData.id,
+            solverName: currentUserData.username,
+          },
+        };
+
+        firebaseService
+          .createAdminNote(adminNote)
+          .then(() => {
+            dispatch({
+              type: "ADD_ADMIN_NOTE",
+              payload: adminNote,
+            });
+          })
+          .catch((err) => console.error(err));
+      })
+      .then(() => {
+        if (!!searchUser) {
+          // aktualizuj data zobrazeného uživatele
+          firebaseService.getUser(searchUser.id).once("value", (snapshot) => {
+            const users =
+              snapshot &&
+              snapshot.val() &&
+              Object.entries(snapshot.val()).map(([key, value]) => value);
+            const user = users && users[0];
+            setSearchUser(user);
+          });
+        }
+      })
+      .catch((err) => console.log(err));
+  };
+
+  // TODO tyto konstrukce s snapshot mohou být v servise a né tady...
+  /*
+   * propName = "blockedUser" || "role"
+   * newValue = boolean || string
+   */
+  const changeSearchUserProp = (propName, newValue) => {
+    // změn prop uživatele
+    firebaseService
+      .setUserData(searchUser.firebaseId, {
+        ...searchUser,
+        [propName]: newValue,
+        postUrl:
+          propName === "blockedUser"
+            ? null
+            : searchUser.postUrl
+            ? searchUser.postUrl
+            : null, // pokud uživatele blokuji z konzole smaž referenci na post kvůli kterému dostal předtím ban a ošetři když chybí
+      })
+      .then(() => {
+        // notifikuj změnu v datech uživatele
+        const adminNote = {
+          noteId: Date.now().toString(),
+          case: "User Data CHANGED",
+          detail: {
+            username: searchUser.username,
+            userId: searchUser.id,
+            postUrl:
+              propName === "blockedUser"
+                ? null
+                : searchUser.postUrl
+                ? searchUser.postUrl
+                : null, // pokud uživatele blokuji z konzole smaž referenci na post kvůli kterému dostal předtím ban a ošetři když chybí
+            solverNote: `Changed ${propName} to ${newValue.toString()}`,
+            solverId: currentUserData.id,
+            solverName: currentUserData.username,
+          },
+        };
+
+        firebaseService
+          .createAdminNote(adminNote)
+          .then(() => {
+            dispatch({
+              type: "ADD_ADMIN_NOTE",
+              payload: adminNote,
+            });
+          })
+          .catch((err) => console.error(err));
+      })
+      .then(() => {
+        // aktualizuj data zobrazeného uživatele
+        firebaseService
+          .getUser(searchUser.id)
+          .once("value", (snapshot) => {
+            const users =
+              snapshot &&
+              snapshot.val() &&
+              Object.entries(snapshot.val()).map(([key, value]) => value);
+            const user = users && users[0];
+            setSearchUser(user);
+          })
+          .then(() => {
+            //pokud se mění stav blockUser aktualizuj i seznam blokovaných uživatelů
+            if (propName === "blockedUser") {
+              firebaseService
+                .getBlockedUsers()
+                .then((blockedUsers) => {
+                  return dispatch({
+                    type: "ADD_BLOCKED_USERS",
+                    payload: blockedUsers,
+                  });
+                })
+                .then(() => {
+                  // notifikuj že je uživatel zablokovaný
+                  const adminNote = {
+                    noteId: Date.now().toString(),
+                    case: "User BLOCKED",
+                    detail: {
+                      username: searchUser.username,
+                      userId: searchUser.id,
+                      // postUrl: user.postUrl, NENÍ PŘÍSPĚVĚK JAKO PODMĚT ZABLOKOVÁNÍ
+                      solverNote: "Blocked thru admin tools",
+                      solverId: currentUserData.id,
+                      solverName: currentUserData.username,
+                    },
+                  };
+
+                  firebaseService
+                    .createAdminNote(adminNote)
+                    .then(() => {
+                      dispatch({
+                        type: "ADD_ADMIN_NOTE",
+                        payload: adminNote,
+                      });
+                    })
+                    .catch((err) => console.error(err));
+                })
+                .catch((err) => console.error(err));
+            }
+          })
+          .catch((err) => console.error(err));
+      })
+      .catch((err) => console.error(err));
+  };
+
   useEffect(() => {
     getReportedPosts();
 
@@ -166,6 +318,8 @@ const AdminPage = ({ history }) => {
             getUser={getUser}
             searchUser={searchUser}
             convertToDate={convertToDate}
+            handleUnBlockUser={handleUnBlockUser}
+            changeSearchUserProp={changeSearchUserProp}
           />
 
           <Visits />

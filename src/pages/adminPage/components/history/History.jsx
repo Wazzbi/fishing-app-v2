@@ -104,7 +104,8 @@ const History = ({ storeState, getFilteredAdminNotes, getAdminNotes }) => {
                   <th>Datum</th>
                   <th>Případ</th>
                   <th>Uživatel</th>
-                  <th>Odkaz na příspěvek</th>
+                  <th>Příspěvek</th>
+                  <th>Akce pozn.</th>
                   <th>Řešitel</th>
                 </tr>
               </thead>
@@ -136,9 +137,14 @@ const History = ({ storeState, getFilteredAdminNotes, getAdminNotes }) => {
                                 target="_blank"
                                 style={{ color: "blue" }}
                               >
-                                odkaz
+                                Odkaz
                               </a>
                             )}
+                        </td>
+                        <td>
+                          {noteValue &&
+                            noteValue.detail &&
+                            noteValue.detail.solverNote}
                         </td>
                         <td>
                           {noteValue &&
